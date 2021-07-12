@@ -37,6 +37,12 @@ $ yarn install
 ## Running the app (choose one)
 
 ```bash
+# Generate RSA Key for JWT signing
+$ openssl genrsa -out JWT_PRIVATE_KEY.pem 1024
+
+# Get RSA Public Key from the private key
+$ openssl rsa -in JWT_PRIVATE_KEY.pem -pubout > JWT_PUBLIC_KEY.pub
+
 # development
 $ yarn run start
 
