@@ -12,8 +12,11 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('profile')
+  @Get('test')
   getProfile(@Request() req: any) {
-    return req.user;
+    return {
+      userDataFromJWT: req.user,
+      message: 'You passed the JWT Auth Guard',
+    };
   }
 }
