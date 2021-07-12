@@ -6,6 +6,8 @@
 logs
 *.log
 npm-debug.log*
+JWT_PRIVATE_KEY.pem
+JWT_PUBLIC_KEY.pub
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
