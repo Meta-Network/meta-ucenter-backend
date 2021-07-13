@@ -47,7 +47,7 @@ require('dotenv').config({
       autoLoadEntities: true,
       entities: [User],
       // shouldn't be used in production - otherwise you can *lose* production data.
-      synchronize: true,
+      synchronize: false,
     }),
     AuthModule,
     UsersModule,
