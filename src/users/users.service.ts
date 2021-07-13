@@ -21,10 +21,10 @@ export class UsersService {
     },
   ];
 
-  login(uid: number) {
+  login(uid: number, aud = 'ucenter') {
     const u = this.users.find(({ userId }) => {
       return userId === uid;
     });
-    return this.authService.login(u);
+    return this.authService.signJWT(u, aud);
   }
 }
