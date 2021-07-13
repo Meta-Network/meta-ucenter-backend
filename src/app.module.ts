@@ -1,18 +1,12 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { UserinfoController } from './userinfo/userinfo.controller';
-import { UserinfoService } from './userinfo/userinfo.service';
-import { LoginModule } from './login/login.module';
-import { ConfigModule } from '@nestjs/config';
+import { JWT_KEY } from './constants';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthModule } from './auth/auth.module';
+import { LoginModule } from './login/login.module';
 import { UsersModule } from './users/users.module';
-import fs from 'fs';
-import { JWT_KEY } from './constants';
+import { ConfigModule } from '@nestjs/config';
 import { SystemModule } from './system/system.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config({
   path:
@@ -20,6 +14,8 @@ require('dotenv').config({
       ? '.env.production'
       : '.env.devlopment',
 });
+import { AppService } from './app.service';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -52,7 +48,7 @@ require('dotenv').config({
     UsersModule,
     SystemModule,
   ],
-  controllers: [AppController, UserinfoController],
-  providers: [AppService, UserinfoService],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
