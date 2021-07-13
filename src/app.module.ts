@@ -1,17 +1,16 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { UserinfoController } from './userinfo/userinfo.controller';
-import { UserinfoService } from './userinfo/userinfo.service';
-import { LoginModule } from './login/login.module';
-import { ConfigModule } from '@nestjs/config';
-import { JwtModule } from '@nestjs/jwt';
-import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
-import fs from 'fs';
 import { JWT_KEY } from './constants';
+import { JwtModule } from '@nestjs/jwt';
+import { User } from './users/entities/User.entity';
+import { AuthModule } from './auth/auth.module';
+import { LoginModule } from './login/login.module';
+import { UsersModule } from './users/users.module';
+import { ConfigModule } from '@nestjs/config';
 import { SystemModule } from './system/system.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AppService } from './app.service';
+import { AppController } from './app.controller';
+import * as fs from 'fs';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config({
@@ -40,11 +39,13 @@ require('dotenv').config({
         ca: fs.readFileSync('./rds-ca-2019-root.pem', 'utf8').toString(),
       },
       port: 3306,
+      connectTimeout: 60 * 60 * 1000,
+      acquireTimeout: 60 * 60 * 1000,
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       autoLoadEntities: true,
-      entities: [],
+      entities: [User],
       // shouldn't be used in production - otherwise you can *lose* production data.
       synchronize: true,
     }),
@@ -52,7 +53,7 @@ require('dotenv').config({
     UsersModule,
     SystemModule,
   ],
-  controllers: [AppController, UserinfoController],
-  providers: [AppService, UserinfoService],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
