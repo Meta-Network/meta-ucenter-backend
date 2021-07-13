@@ -23,8 +23,7 @@ export class UsersController {
     @Param('aud') audPlatform: string,
     @Body() loginUserDto: LoginUserDto,
   ) {
-    // return this.usersService.login(1, audPlatform);
-    return this.usersService.login(loginUserDto);
+    return this.usersService.login(loginUserDto, audPlatform);
   }
 
   @UseGuards(JwtAuthGuard)

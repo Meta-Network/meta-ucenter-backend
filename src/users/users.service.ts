@@ -14,19 +14,13 @@ export class UsersService {
     private authService: AuthService,
   ) {}
 
-  // login(uid: number, aud = 'ucenter') {
-  //   const u = this.usersRepository.find();
-  // }
-
   async login(loginUser: LoginUserDto, aud = 'ucenter') {
     // TODO: verify the verifyCode first
-    let user: User = await this.usersRepository.findOne({
-      username: loginUser.username,
-    });
-
-    if (user === null) {
-      user = await this.usersRepository.save({ username: loginUser.username });
-    }
+    const user: User =
+      (await this.usersRepository.findOne({
+        username: loginUser.username,
+      })) ||
+      (await this.usersRepository.save({ username: loginUser.username }));
 
     return this.authService.signJWT(user, aud);
   }
@@ -36,8 +30,7 @@ export class UsersService {
   }
 
   async update(uid: number, updateUserDto: UpdateUserDto): Promise<User> {
-    const dataToUpdate: Partial<User> = { ...updateUserDto };
-    await this.usersRepository.update(uid, dataToUpdate);
+    await this.usersRepository.update(uid, updateUserDto);
     return this.usersRepository.findOne(uid);
   }
 }
