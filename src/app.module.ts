@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { JWT_KEY } from './constants';
 import { JwtModule } from '@nestjs/jwt';
-import { User } from './users/entities/User.entity';
+import { User } from './entities/User.entity';
 import { AuthModule } from './auth/auth.module';
 import { LoginModule } from './login/login.module';
 import { UsersModule } from './users/users.module';
