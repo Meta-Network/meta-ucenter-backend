@@ -8,12 +8,17 @@ export class AuthService {
   constructor(private jwtService: JwtService) {}
 
   async signJWT(user: any, aud: string) {
-    const payload = {
+    const payload: AccessTokenData = {
+      sub: user.id,
       username: user.username,
-      sub: user.userId,
+      avatar: user.avatar,
+      bio: user.bio,
+      nickname: user.nickname,
+      created_at: user.created_at,
+      updated_at: user.updated_at,
       aud,
       jti: crypto.randomBytes(20).toString('hex'),
-    } as AccessTokenData;
+    };
     return {
       accessToken: this.jwtService.sign(payload, {
         algorithm: 'RS256',

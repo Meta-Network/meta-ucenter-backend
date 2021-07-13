@@ -12,15 +12,15 @@ export class User {
   id: number;
 
   @Column()
-  nickname: string;
+  username: string;
 
   @Column()
-  username: string;
+  nickname: string;
 
   @Column({ default: 'https://i.loli.net/2021/05/13/CiEFPgWJzuk5prZ.png' })
   avatar: string;
 
-  @Column()
+  @Column({ default: '' })
   bio: string;
 
   @CreateDateColumn()
