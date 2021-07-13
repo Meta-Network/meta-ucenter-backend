@@ -10,6 +10,7 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import fs from 'fs';
 import { JWT_KEY } from './constants';
+import { SystemModule } from './system/system.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { JWT_KEY } from './constants';
     }),
     AuthModule,
     UsersModule,
+    SystemModule,
   ],
   controllers: [AppController, UserinfoController],
   providers: [AppService, UserinfoService],
