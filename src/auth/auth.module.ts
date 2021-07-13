@@ -10,7 +10,7 @@ import { JwtStrategy } from './jwt.strategy';
     PassportModule,
     JwtModule.registerAsync({
       useFactory: async () => ({
-        signOptions: { expiresIn: process.env.JWTExpiresTime },
+        signOptions: { expiresIn: process.env.JWT_EXPIRES_TIME },
         privateKey: JWT_KEY.privateKey,
         publicKey: JWT_KEY.publicKey,
         verifyOptions: {
