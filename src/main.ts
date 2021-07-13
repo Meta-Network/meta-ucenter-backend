@@ -9,7 +9,6 @@ async function bootstrap() {
     .setTitle('UCenter API')
     .setDescription('UCenter API testing branch')
     .setVersion('1.0')
-    .addTag('UCenter')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
