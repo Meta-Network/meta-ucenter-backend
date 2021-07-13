@@ -11,6 +11,15 @@ import { UsersModule } from './users/users.module';
 import fs from 'fs';
 import { JWT_KEY } from './constants';
 import { SystemModule } from './system/system.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+require('dotenv').config({
+  path:
+    process.env.NODE_ENV === 'production'
+      ? '.env.production'
+      : '.env.devlopment',
+});
 
 @Module({
   imports: [
@@ -23,6 +32,21 @@ import { SystemModule } from './system/system.module';
       verifyOptions: {
         algorithms: ['RS256', 'RS384'],
       },
+    }),
+    TypeOrmModule.forRoot({
+      type: 'mysql',
+      host: process.env.DB_HOST,
+      ssl: {
+        ca: fs.readFileSync('./rds-ca-2019-root.pem', 'utf8').toString(),
+      },
+      port: 3306,
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+      autoLoadEntities: true,
+      entities: [],
+      // shouldn't be used in production - otherwise you can *lose* production data.
+      synchronize: true,
     }),
     AuthModule,
     UsersModule,
