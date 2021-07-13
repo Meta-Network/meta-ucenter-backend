@@ -8,9 +8,15 @@ import { JwtStrategy } from './jwt.strategy';
 @Module({
   imports: [
     PassportModule,
-    JwtModule.register({
-      privateKey: JWT_KEY.privateKey,
-      signOptions: { expiresIn: '60s' },
+    JwtModule.registerAsync({
+      useFactory: async () => ({
+        signOptions: { expiresIn: process.env.JWTExpiresTime },
+        privateKey: JWT_KEY.privateKey,
+        publicKey: JWT_KEY.publicKey,
+        verifyOptions: {
+          algorithms: ['RS256', 'RS384'],
+        },
+      }),
     }),
   ],
   providers: [AuthService, JwtStrategy],
