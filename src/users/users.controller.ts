@@ -1,4 +1,11 @@
-import { Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt.guard';
 import { UsersService } from './users.service';
 
@@ -6,9 +13,9 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private userService: UsersService) {}
 
-  @Post('login/')
-  async login() {
-    return this.userService.login(1);
+  @Post('login/:aud')
+  async login(@Param('aud') audPlatform: string) {
+    return this.userService.login(1, audPlatform);
   }
 
   @UseGuards(JwtAuthGuard)
