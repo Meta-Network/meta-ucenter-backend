@@ -1,11 +1,9 @@
 import { Module } from '@nestjs/common';
-import { JWT_KEY } from './constants';
-import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule } from '@nestjs/config';
 import { User } from './entities/User.entity';
 import { AuthModule } from './auth/auth.module';
 import { LoginModule } from './login/login.module';
 import { UsersModule } from './users/users.module';
-import { ConfigModule } from '@nestjs/config';
 import { SystemModule } from './system/system.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppService } from './app.service';
@@ -22,15 +20,8 @@ require('dotenv').config({
 
 @Module({
   imports: [
-    LoginModule,
-    ConfigModule.forRoot({ isGlobal: true }),
-    JwtModule.register({
-      signOptions: { expiresIn: '60s' },
-      privateKey: JWT_KEY.privateKey,
-      publicKey: JWT_KEY.publicKey,
-      verifyOptions: {
-        algorithms: ['RS256', 'RS384'],
-      },
+    ConfigModule.forRoot({
+      isGlobal: true,
     }),
     TypeOrmModule.forRoot({
       type: 'mysql',
@@ -50,6 +41,7 @@ require('dotenv').config({
       synchronize: false,
     }),
     AuthModule,
+    LoginModule,
     UsersModule,
     SystemModule,
   ],
