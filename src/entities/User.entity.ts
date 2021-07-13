@@ -14,7 +14,7 @@ export class User {
   @Column()
   username: string;
 
-  @Column()
+  @Column({ default: '' })
   nickname: string;
 
   @Column({ default: 'https://i.loli.net/2021/05/13/CiEFPgWJzuk5prZ.png' })

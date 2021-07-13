@@ -1,30 +1,43 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { AuthService } from 'src/auth/auth.service';
-
-// This should be a real class/interface representing a user entity
-export type User = any;
+import { User } from '../entities/User.entity';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { LoginUserDto } from './dto/login-user.dto';
 
 @Injectable()
 export class UsersService {
-  constructor(private authService: AuthService) {}
+  constructor(
+    @InjectRepository(User)
+    private usersRepository: Repository<User>,
+    private authService: AuthService,
+  ) {}
 
-  private readonly users = [
-    {
-      userId: 1,
-      username: 'john',
-      password: 'changeme',
-    },
-    {
-      userId: 2,
-      username: 'maria',
-      password: 'guess',
-    },
-  ];
+  // login(uid: number, aud = 'ucenter') {
+  //   const u = this.usersRepository.find();
+  // }
 
-  login(uid: number, aud = 'ucenter') {
-    const u = this.users.find(({ userId }) => {
-      return userId === uid;
+  async login(loginUser: LoginUserDto, aud = 'ucenter') {
+    // TODO: verify the verifyCode first
+    let user: User = await this.usersRepository.findOne({
+      username: loginUser.username,
     });
-    return this.authService.signJWT(u, aud);
+
+    if (user === null) {
+      user = await this.usersRepository.save({ username: loginUser.username });
+    }
+
+    return this.authService.signJWT(user, aud);
+  }
+
+  async getUserInfo(uid: number): Promise<User> {
+    return await this.usersRepository.findOne(uid);
+  }
+
+  async update(uid: number, updateUserDto: UpdateUserDto): Promise<User> {
+    const dataToUpdate: Partial<User> = { ...updateUserDto };
+    await this.usersRepository.update(uid, dataToUpdate);
+    return this.usersRepository.findOne(uid);
   }
 }
