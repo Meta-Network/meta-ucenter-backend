@@ -11,6 +11,10 @@ export class UsersService {
     private usersRepository: Repository<User>,
   ) {}
 
+  async findOne(uid: number): Promise<User> {
+    return await this.usersRepository.findOne(uid);
+  }
+
   async findOrSave(username: string): Promise<User> {
     return (
       (await this.usersRepository.findOne({

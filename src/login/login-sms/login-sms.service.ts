@@ -1,0 +1,54 @@
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { CaptchaService } from 'src/captcha/captcha.service';
+import { User } from 'src/entities/User.entity';
+import { VerificationCodeService } from 'src/verification-code/verification-code.service';
+import { JWTTokens } from '../../type/jwt-login-result';
+import { LoginSmsDto } from './dto/login-sms.dto';
+import { AuthService } from 'src/auth/auth.service';
+import { UsersService } from 'src/users/users.service';
+
+@Injectable()
+export class LoginSmsService {
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly authService: AuthService,
+    private readonly captchaService: CaptchaService,
+    private readonly verificationCodeService: VerificationCodeService,
+  ) {}
+
+  async generateVerificationCodeForSms(phoneNumber: string): Promise<string> {
+    const code = await this.verificationCodeService.generate(phoneNumber);
+    await sendVerificationCodeSms(phoneNumber, code);
+    return code;
+  }
+
+  async login(loginSmsDto: LoginSmsDto, aud = 'ucenter') {
+    const isSmsVerified = await this.verificationCodeService.verify(
+      loginSmsDto.phoneNumber,
+      loginSmsDto.verifyCode,
+    );
+    if (!isSmsVerified) {
+      throw new BadRequestException('SMS authentication is not verified.');
+    }
+
+    const isCaptchaVerified = await this.captchaService.verify(
+      loginSmsDto.hcaptchaToken,
+    );
+    if (!isCaptchaVerified) {
+      throw new BadRequestException('Captcha authentication is not verified.');
+    }
+
+    const user: User = await this.usersService.findOrSave(
+      loginSmsDto.phoneNumber,
+    );
+    const tokens: JWTTokens = await this.authService.signJWT(user, aud);
+    return {
+      user,
+      tokens,
+    };
+  }
+}
+
+function sendVerificationCodeSms(phoneNumber: string, code: string) {
+  // throw new Error('Function not implemented.');
+}

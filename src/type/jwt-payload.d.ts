@@ -1,5 +1,6 @@
-export type AccessTokenData = {
+export type JWTTokenPayload = {
   sub: number; // user id
+  purpose: 'access_token' | 'refresh_token';
   username: string;
   nickname: string;
   avatar: string;

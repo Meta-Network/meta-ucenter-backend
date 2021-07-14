@@ -2,15 +2,16 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { User } from './entities/User.entity';
 import { AuthModule } from './auth/auth.module';
-import { LoginModule } from './login/login.module';
 import { UsersModule } from './users/users.module';
-import { SystemModule } from './system/system.module';
+import { LoginModule } from './login/login.module';
+// import { SystemModule } from './system/system.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppService } from './app.service';
 import { AppController } from './app.controller';
 import { CaptchaModule } from './captcha/captcha.module';
-import { LoginEmailModule } from './login-email/login-email.module';
-import { LoginSmsModule } from './login-sms/login-sms.module';
+import { LoginSmsModule } from './login/login-sms/login-sms.module';
+import { LoginEmailModule } from './login/login-email/login-email.module';
+import { VerificationCodeModule } from './verification-code/verification-code.module';
 import * as fs from 'fs';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -45,11 +46,12 @@ require('dotenv').config({
     }),
     AuthModule,
     UsersModule,
-    SystemModule,
     CaptchaModule,
+    // SystemModule,
     LoginModule,
     LoginSmsModule,
     LoginEmailModule,
+    VerificationCodeModule,
   ],
   controllers: [AppController],
   providers: [AppService],

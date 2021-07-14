@@ -1,3 +1,3 @@
-import { AccessTokenData } from './jwt';
+import { JWTTokenPayload } from './jwt-payload';
 
-export type JWTDecodedUser = Omit<AccessTokenData, 'sub'> & { id: number };
+export type JWTDecodedUser = Omit<JWTTokenPayload, 'sub'> & { id: number };
