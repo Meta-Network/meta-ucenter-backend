@@ -8,6 +8,9 @@ import { SystemModule } from './system/system.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppService } from './app.service';
 import { AppController } from './app.controller';
+import { CaptchaModule } from './captcha/captcha.module';
+import { LoginEmailModule } from './login-email/login-email.module';
+import { LoginSmsModule } from './login-sms/login-sms.module';
 import * as fs from 'fs';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -41,9 +44,12 @@ require('dotenv').config({
       synchronize: false,
     }),
     AuthModule,
-    LoginModule,
     UsersModule,
     SystemModule,
+    CaptchaModule,
+    LoginModule,
+    LoginSmsModule,
+    LoginEmailModule,
   ],
   controllers: [AppController],
   providers: [AppService],
