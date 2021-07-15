@@ -1,0 +1,126 @@
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+  NotImplementedException,
+} from '@nestjs/common';
+import { TwoFactorType } from 'src/type/TwoFactor';
+import { User } from 'src/entities/User.entity';
+import { TotpStrategy } from './totp.strategy';
+import { Repository } from 'typeorm';
+import { TwoFactorAuth } from 'src/entities/TwoFactorAuth.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+
+@Injectable()
+export class TwoFactorAuthService {
+  constructor(
+    @InjectRepository(TwoFactorAuth)
+    private readonly tfaRepo: Repository<TwoFactorAuth>,
+    @InjectRepository(User)
+    private readonly userRepo: Repository<User>,
+  ) {}
+
+  async get2FADetailFor(userId: number, type: TwoFactorType) {
+    const target = await this.tfaRepo.findOne(
+      { user: { id: userId }, type },
+      { relations: ['user'] },
+    );
+    return target;
+  }
+
+  async isTypeExistFor(userId: number, type: TwoFactorType): Promise<boolean> {
+    const target = await this.get2FADetailFor(userId, type);
+    return Boolean(target);
+  }
+
+  async bind2FA(type: TwoFactorType, _user: Partial<User>) {
+    const isTypeExist = await this.isTypeExistFor(_user.id, type);
+
+    if (isTypeExist)
+      throw new ConflictException('This 2FA Method is enabled already.');
+
+    const user = await this.userRepo.findOne(_user.id);
+
+    switch (type) {
+      case TwoFactorType.TOTP: {
+        const { secret, otpauth } = await TotpStrategy.generate(user.username);
+        // @todo: save the 2FA secret into the DB, for future verification
+        await this.tfaRepo.save({
+          secret,
+          type,
+          user,
+        });
+        return { otpauth, secret };
+      }
+      default:
+        throw new NotImplementedException(
+          `2FA type ${type} was not implemented`,
+        );
+    }
+  }
+
+  async _list2FAOf(userId: number) {
+    const twoFactors = await this.tfaRepo.find({ user: { id: userId } });
+    return twoFactors;
+  }
+
+  async list2FAOf(userId: number) {
+    const twoFactors = await this._list2FAOf(userId);
+    return twoFactors.map((tfa) => {
+      const returnedTfaDetail = Object.assign({}, tfa);
+      if (tfa.type === TwoFactorType.TOTP && tfa.isEnabled) {
+        // hide enabled TOTP's secret of safety
+        returnedTfaDetail.secret = '_REDACTED_FOR_ENABLED_2FA_';
+      }
+      return returnedTfaDetail;
+    });
+  }
+
+  async verify(
+    type: TwoFactorType,
+    userId: number,
+    code: string,
+  ): Promise<boolean> {
+    const detail = await this.get2FADetailFor(userId, type);
+    if (!detail) throw new NotFoundException(`No found for type: '${type}'`);
+    if (!detail.isEnabled)
+      throw new BadRequestException('Please activate before using');
+    return this._verify(detail, code);
+  }
+
+  async _verify(detail: TwoFactorAuth, code: string): Promise<boolean> {
+    switch (detail.type) {
+      case TwoFactorType.TOTP: {
+        const { secret } = detail;
+        return TotpStrategy.validate(code, secret);
+      }
+    }
+  }
+
+  async enable2FA(
+    type: TwoFactorType,
+    userId: number,
+    code: string,
+  ): Promise<boolean> {
+    const detail = await this.get2FADetailFor(userId, type);
+    if (!detail) throw new NotFoundException(`No found for type: '${type}'`);
+    const isOTPValid = await this._verify(detail, code);
+
+    if (!isOTPValid)
+      throw new BadRequestException(
+        'Failed, please check the code and try again',
+      );
+
+    // passed the check
+    detail.isEnabled = true;
+    // save into the DB
+    await this.tfaRepo.save(detail);
+    return true;
+  }
+
+  static getPriorityFromType(type: TwoFactorType) {
+    if (type === TwoFactorType.TOTP) return 3;
+    else return 1;
+  }
+}

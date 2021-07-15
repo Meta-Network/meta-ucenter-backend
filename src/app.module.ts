@@ -9,6 +9,7 @@ import { AppService } from './app.service';
 import { AppController } from './app.controller';
 import { LoginSmsModule } from './login/login-sms/login-sms.module';
 import { LoginEmailModule } from './login/login-email/login-email.module';
+import { TwoFactorAuthModule } from './two-factor-auth/two-factor-auth.module';
 import { EmailModule } from './email/email.module';
 import { VcodeCacheModule } from './vcode-cache/vcode-cache.module';
 import * as fs from 'fs';
@@ -48,6 +49,7 @@ require('dotenv').config({
     // LoginSmsModule,
     LoginModule,
     LoginEmailModule,
+    TwoFactorAuthModule,
     EmailModule,
     VcodeCacheModule,
   ],

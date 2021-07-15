@@ -4,7 +4,9 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   PrimaryGeneratedColumn,
+  OneToMany,
 } from 'typeorm';
+import { TwoFactorAuth } from './TwoFactorAuth.entity';
 
 @Entity()
 export class User {
@@ -28,4 +30,7 @@ export class User {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  @OneToMany(() => TwoFactorAuth, (twa) => twa.user)
+  twoFactors: TwoFactorAuth[];
 }

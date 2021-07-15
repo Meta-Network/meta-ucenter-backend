@@ -7,3 +7,5 @@ export const JWT_KEY = {
   ),
   publicKey: fs.readFileSync(path.join(__dirname, '../../JWT_PUBLIC_KEY.pub')),
 };
+
+export const APP_NAME_ON_AUTHENTICATOR = 'Meta Auth Dev';
