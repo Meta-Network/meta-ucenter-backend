@@ -21,7 +21,7 @@ export class LoginEmailService {
   ) {}
 
   async generateVerificationCodeForEmail(email: string): Promise<string> {
-    const code = await this.verificationCodeService.generate(email);
+    const code = await this.verificationCodeService.generateAndStore(email);
     //  用邮件服务发送生成的验证码
     await this.sendVerificationCodeEmail(email, code);
     return code;

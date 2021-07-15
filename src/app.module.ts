@@ -10,6 +10,7 @@ import { AppController } from './app.controller';
 import { LoginSmsModule } from './login/login-sms/login-sms.module';
 import { LoginEmailModule } from './login/login-email/login-email.module';
 import { EmailModule } from './email/email.module';
+import { VcodeCacheModule } from './vcode-cache/vcode-cache.module';
 import * as fs from 'fs';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -48,6 +49,7 @@ require('dotenv').config({
     LoginModule,
     LoginEmailModule,
     EmailModule,
+    VcodeCacheModule,
   ],
   controllers: [AppController],
   providers: [AppService],

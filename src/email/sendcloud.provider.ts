@@ -1,14 +1,12 @@
-import axios from 'axios';
 import { Injectable } from '@nestjs/common';
-import * as querystring from 'querystring';
 import { ConfigService } from '@nestjs/config';
+import axios from 'axios';
+import * as querystring from 'querystring';
 import { IEmailSender } from './email-sender.interface';
 
 @Injectable()
 export class SendcloudProvider implements IEmailSender {
-  constructor(
-    private readonly configService: ConfigService,
-  ) {}
+  constructor(private readonly configService: ConfigService) {}
 
   async send({ from, fromName, to, templateInvokeName }, placeholders) {
     const API_USER = this.configService.get<string>('SENDCLOUD_USER');
@@ -29,9 +27,8 @@ export class SendcloudProvider implements IEmailSender {
       xsmtpapi: JSON.stringify(xSmtpapi),
     };
     const querystringParams = querystring.stringify(params);
-    const result = await axios.post(
+    return await axios.post(
       `https://api.sendcloud.net/apiv2/mail/sendtemplate?${querystringParams}`,
     );
-    return result;
   }
 }

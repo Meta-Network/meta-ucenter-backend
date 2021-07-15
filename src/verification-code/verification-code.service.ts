@@ -1,7 +1,11 @@
+import * as randomstring from 'randomstring';
 import { Injectable } from '@nestjs/common';
+import { VcodeCacheService } from '../vcode-cache/vcode-cache.service';
 
 @Injectable()
 export class VerificationCodeService {
+  constructor(private readonly vcodeCacheService: VcodeCacheService) {}
+
   /**
    * 生成随机校验码的服务。
    * <p>
@@ -12,9 +16,12 @@ export class VerificationCodeService {
    * @param {string} key
    * @returns {Promise<string>}
    */
-  async generate(key: string): Promise<string> {
-    const code = '123450';
-    // TODO: redis store code
+  async generateAndStore(key: string): Promise<string> {
+    const code = randomstring.generate({
+      length: 6,
+      charset: 'numeric',
+    });
+    await this.vcodeCacheService.set(key, code);
     return code;
   }
 
@@ -26,7 +33,6 @@ export class VerificationCodeService {
    * @returns {Promise<boolean>}
    */
   async verify(key: string, code: string): Promise<boolean> {
-    //TODO repo.get(key)===code;
-    return code === '123450';
+    return code === (await this.vcodeCacheService.get(key));
   }
 }
