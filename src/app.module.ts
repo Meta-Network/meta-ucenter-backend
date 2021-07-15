@@ -1,17 +1,14 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { User } from './entities/User.entity';
-import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { LoginModule } from './login/login.module';
 // import { SystemModule } from './system/system.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppService } from './app.service';
 import { AppController } from './app.controller';
-import { CaptchaModule } from './captcha/captcha.module';
 import { LoginSmsModule } from './login/login-sms/login-sms.module';
 import { LoginEmailModule } from './login/login-email/login-email.module';
-import { VerificationCodeModule } from './verification-code/verification-code.module';
 import * as fs from 'fs';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -44,14 +41,11 @@ require('dotenv').config({
       // shouldn't be used in production - otherwise you can *lose* production data.
       synchronize: false,
     }),
-    AuthModule,
     UsersModule,
-    CaptchaModule,
     // SystemModule,
+    // LoginSmsModule,
     LoginModule,
-    LoginSmsModule,
     LoginEmailModule,
-    VerificationCodeModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -17,8 +17,8 @@ export class JWTCookieHelper {
       sameSite: 'strict',
       secure: true,
       httpOnly: true,
-      domain: this.configService.get<string>('ACCESS_COOKIE_DOMAIN'),
-      path: this.configService.get<string>('ACCESS_COOKIE_PATH'),
+      domain: this.configService.get<string>('COOKIE_ACCESS_DOMAIN'),
+      path: this.configService.get<string>('COOKIE_ACCESS_PATH'),
     });
     res.cookie('refreshToken', tokens.refreshToken, {
       expires: new Date(
@@ -28,8 +28,8 @@ export class JWTCookieHelper {
       sameSite: 'strict',
       secure: true,
       httpOnly: true,
-      domain: this.configService.get<string>('REFRESH_COOKIE_DOMAIN'),
-      path: this.configService.get<string>('REFRESH_COOKIE_PATH'),
+      domain: this.configService.get<string>('COOKIE_REFRESH_DOMAIN'),
+      path: this.configService.get<string>('COOKIE_REFRESH_PATH'),
     });
   }
 }
