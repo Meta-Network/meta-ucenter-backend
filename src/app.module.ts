@@ -9,6 +9,7 @@ import { AppService } from './app.service';
 import { AppController } from './app.controller';
 import { LoginSmsModule } from './login/login-sms/login-sms.module';
 import { LoginEmailModule } from './login/login-email/login-email.module';
+import { EmailModule } from './email/email.module';
 import * as fs from 'fs';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -46,6 +47,7 @@ require('dotenv').config({
     // LoginSmsModule,
     LoginModule,
     LoginEmailModule,
+    EmailModule,
   ],
   controllers: [AppController],
   providers: [AppService],

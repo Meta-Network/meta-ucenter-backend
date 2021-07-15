@@ -13,7 +13,7 @@ export class VerificationCodeService {
    * @returns {Promise<string>}
    */
   async generate(key: string): Promise<string> {
-    const code = 'random code';
+    const code = '123450';
     // TODO: redis store code
     return code;
   }
@@ -27,6 +27,6 @@ export class VerificationCodeService {
    */
   async verify(key: string, code: string): Promise<boolean> {
     //TODO repo.get(key)===code;
-    return true;
+    return code === '123450';
   }
 }
