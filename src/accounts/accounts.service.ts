@@ -18,4 +18,8 @@ export class AccountsService {
   async findOne(accountId: number): Promise<Account> {
     return await this.accountsRepository.findOne(accountId);
   }
+
+  async delete(accountId: number) {
+    return await this.accountsRepository.delete(accountId);
+  }
 }

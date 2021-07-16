@@ -1,11 +1,9 @@
 import {
   Entity,
   Column,
-  ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
   PrimaryGeneratedColumn,
-  JoinColumn,
 } from 'typeorm';
 import { User } from './User.entity';
 
@@ -14,9 +12,8 @@ export class Account {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User, (user) => user.accounts)
-  @JoinColumn()
-  user: User;
+  @Column()
+  user_id: number;
 
   @Column()
   account_id: string;

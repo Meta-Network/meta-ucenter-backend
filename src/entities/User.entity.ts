@@ -29,9 +29,6 @@ export class User {
   @OneToMany(() => TwoFactorAuth, (twa) => twa.user)
   twoFactors: TwoFactorAuth[];
 
-  @OneToMany(() => Account, (userAccount) => userAccount.user)
-  accounts: Account[];
-
   @CreateDateColumn()
   created_at: Date;
 

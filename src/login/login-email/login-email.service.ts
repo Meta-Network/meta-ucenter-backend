@@ -49,7 +49,7 @@ export class LoginEmailService {
   }
 
   async login(loginEmailDto: LoginEmailDto, aud = 'ucenter') {
-    await this.veryifyEmail(loginEmailDto);
+    await this.verifyEmail(loginEmailDto);
 
     const userAccountData = {
       account_id: loginEmailDto.email,
@@ -58,18 +58,17 @@ export class LoginEmailService {
 
     let userAccount: Account = await this.accountsService.findBy(
       userAccountData,
-      { relations: ['user'] },
     );
-    let user;
+    let user: User;
 
     if (!userAccount) {
       user = await this.usersService.save();
       userAccount = await this.accountsService.save({
         ...userAccountData,
-        user,
+        user_id: user.id,
       });
     } else {
-      user = userAccount.user;
+      user = await this.usersService.findOne(userAccount.user_id);
     }
 
     const tokens: JWTTokens = await this.authService.signJWT(
@@ -80,11 +79,40 @@ export class LoginEmailService {
     return {
       user,
       tokens,
-      userAccount,
+      account: userAccount,
     };
   }
 
-  private async veryifyEmail(loginEmailDto: LoginEmailDto): Promise<void> {
+  async bindEmailAccount(
+    loginEmailDto: LoginEmailDto,
+    userId: number,
+  ): Promise<Account> {
+    await this.verifyEmail(loginEmailDto);
+
+    const userAccountData = {
+      account_id: loginEmailDto.email,
+      platform: 'email',
+    };
+
+    return await this.accountsService.save({
+      ...userAccountData,
+      user_id: userId,
+    });
+  }
+
+  async unbindEmailAccount(loginEmailDto: LoginEmailDto): Promise<void> {
+    await this.verifyEmail(loginEmailDto);
+
+    const userAccountData = {
+      account_id: loginEmailDto.email,
+      platform: 'email',
+    };
+
+    const account = await this.accountsService.findBy(userAccountData);
+    await this.accountsService.delete(account.id);
+  }
+
+  async verifyEmail(loginEmailDto: LoginEmailDto): Promise<void> {
     const isEmailVerified = await this.verificationCodeService.verify(
       loginEmailDto.email,
       loginEmailDto.verifyCode,

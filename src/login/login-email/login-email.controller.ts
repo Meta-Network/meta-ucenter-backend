@@ -1,14 +1,18 @@
-import { Body, Controller, Param, Post, Res } from '@nestjs/common';
+import { Body, Controller, Param, Post, Res, UseGuards } from '@nestjs/common';
 import {
-  ApiBadRequestResponse,
-  ApiCreatedResponse,
-  ApiParam,
   ApiTags,
+  ApiParam,
+  ApiCreatedResponse,
+  ApiBadRequestResponse,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Response } from 'express';
 import { LoginEmailDto } from './dto/login-email.dto';
 import { LoginEmailService } from './login-email.service';
 import { JWTCookieHelper } from 'src/login/jwt-cookie-helper';
+import { User } from 'src/entities/User.entity';
+import { JWTAuthGuard } from 'src/auth/jwt.guard';
+import { CurrentUser } from 'src/users/user.decorator';
 import { VerificationCodeDto } from 'src/verification-code/dto/verification-code.dto';
 
 @ApiTags('Login')
@@ -55,12 +59,43 @@ export class LoginEmailController {
     @Res({ passthrough: true }) res: Response,
     @Body() loginEmailDto: LoginEmailDto,
   ) {
-    const { user, tokens } = await this.loginEmailService.login(
+    const { user, account, tokens } = await this.loginEmailService.login(
       loginEmailDto,
       audPlatform,
     );
 
     await this.jwtCookieHelper.JWTCookieWriter(res, tokens);
-    return { user };
+    return { user, account };
+  }
+
+  @Post('/bind')
+  @UseGuards(JWTAuthGuard)
+  @ApiCreatedResponse({
+    description: '绑定新账号到本用户',
+  })
+  @ApiBadRequestResponse({
+    description: '传入的表单参数不正确或无效时',
+  })
+  @ApiUnauthorizedResponse({
+    description: '当 Cookies 中的{accessToken}过期或无效时',
+  })
+  async bind(@CurrentUser() user: User, @Body() loginEmailDto: LoginEmailDto) {
+    return this.loginEmailService.bindEmailAccount(loginEmailDto, user.id);
+  }
+
+  @Post('/unbind')
+  @UseGuards(JWTAuthGuard)
+  @ApiCreatedResponse({
+    description: '解绑本用户的现有邮箱账户',
+  })
+  @ApiBadRequestResponse({
+    description: '传入的表单参数不正确或无效时',
+  })
+  @ApiUnauthorizedResponse({
+    description: '当 Cookies 中的{accessToken}过期或无效时',
+  })
+  // TODO: TEST bind and unbind method
+  async unbind(@Body() loginEmailDto: LoginEmailDto) {
+    return this.loginEmailService.unbindEmailAccount(loginEmailDto);
   }
 }

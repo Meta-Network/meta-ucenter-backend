@@ -1,9 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { platform } from 'os';
-import { Repository } from 'typeorm';
-import { AccountsService } from '../accounts/accounts.service';
 import { User } from '../entities/User.entity';
+import { Repository } from 'typeorm';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
@@ -11,7 +9,6 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
-    private readonly accountsService: AccountsService,
   ) {}
 
   async findOne(uid: number, options = {}) {
