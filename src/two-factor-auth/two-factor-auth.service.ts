@@ -68,9 +68,8 @@ export class TwoFactorAuthService {
   }
 
   async bind2FA(type: TwoFactorType, _user: Partial<User>) {
-    const isTypeExist = await this.isTypeExistFor(_user.id, type);
-    console.info('isTypeExist', isTypeExist);
-    if (isTypeExist)
+    const current2FAForThisType = await this.get2FADetailFor(_user.id, type);
+    if (Boolean(current2FAForThisType) && current2FAForThisType.isEnabled)
       throw new ConflictException('This 2FA Method is enabled already.');
 
     const user = await this.userRepo.findOne(_user.id);
@@ -82,6 +81,10 @@ export class TwoFactorAuthService {
       }
       case TwoFactorType.TOTP: {
         const { secret, otpauth } = await TotpStrategy.generate(user.username);
+        // replace the old one by rm
+        if (current2FAForThisType)
+          await this.tfaRepo.remove(current2FAForThisType);
+
         await this.tfaRepo.save({
           secret,
           type,
