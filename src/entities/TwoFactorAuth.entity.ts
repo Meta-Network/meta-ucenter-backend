@@ -26,6 +26,7 @@ export class TwoFactorAuth {
    */
   @Column({
     nullable: true,
+    select: false,
   })
   secret: string | null;
 

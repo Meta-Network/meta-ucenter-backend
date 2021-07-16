@@ -11,8 +11,8 @@ import { TotpStrategy } from './totp.strategy';
 import { Repository } from 'typeorm';
 import { TwoFactorAuth } from 'src/entities/TwoFactorAuth.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { VerificationCodeService } from 'src/verification-code/verification-code.service';
 import { EmailStrategy } from './email.strategy';
+import { VcodeCacheService } from 'src/vcode-cache/vcode-cache.service';
 
 @Injectable()
 export class TwoFactorAuthService {
@@ -21,8 +21,8 @@ export class TwoFactorAuthService {
     private readonly tfaRepo: Repository<TwoFactorAuth>,
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
-    private readonly verificationCodeService: VerificationCodeService,
     private readonly emailStrategy: EmailStrategy,
+    private readonly vcodeCacheService: VcodeCacheService,
   ) {}
 
   async get2FADetailFor(userId: number, type: TwoFactorType) {
@@ -69,9 +69,8 @@ export class TwoFactorAuthService {
   }
 
   async bind2FA(type: TwoFactorType, _user: Partial<User>) {
-    const isTypeExist = await this.isTypeExistFor(_user.id, type);
-
-    if (isTypeExist)
+    const current2FAForThisType = await this.get2FADetailFor(_user.id, type);
+    if (Boolean(current2FAForThisType) && current2FAForThisType.isEnabled)
       throw new ConflictException('This 2FA Method is enabled already.');
 
     const user = await this.userRepo.findOne(_user.id);
@@ -83,7 +82,10 @@ export class TwoFactorAuthService {
       }
       case TwoFactorType.TOTP: {
         const { secret, otpauth } = await TotpStrategy.generate(user.username);
-        // @todo: save the 2FA secret into the DB, for future verification
+        // replace the old one by rm
+        if (current2FAForThisType)
+          await this.tfaRepo.remove(current2FAForThisType);
+
         await this.tfaRepo.save({
           secret,
           type,
@@ -131,24 +133,55 @@ export class TwoFactorAuthService {
       );
     }
 
+    const USED_CODE_CACHE_VAL = `${type}-${userId}-2fa-used-code`;
+
+    const usedCodeLookup = await this.vcodeCacheService.get<string>(
+      USED_CODE_CACHE_VAL,
+    );
+
+    if (usedCodeLookup && usedCodeLookup === code)
+      throw new BadRequestException(
+        'This code was used, please wait and try again with new code.',
+      );
+
     const detail = await this.get2FADetailFor(userId, type);
     if (!detail) throw new NotFoundException(`No found for type: '${type}'`);
     if (!detail.isEnabled)
       throw new BadRequestException('Please activate before using');
-    return this._verify(detail, code);
+
+    const verificationResult = await this._verify(detail, code);
+    if (!verificationResult) {
+      // throw BadRequestException(400) here just in case.
+      throw new BadRequestException(
+        'Failed to verify, please check your code and try again.',
+      );
+    }
+    // add code to cache, avoid replay attack, stay for 9 mins
+    await this.vcodeCacheService.setWithTTL<string>(
+      USED_CODE_CACHE_VAL,
+      code,
+      60 * 9,
+    );
+    return true;
   }
 
   async _verify(
     detail: Partial<TwoFactorAuth>,
     code: string,
   ): Promise<boolean> {
+    const getDetailWithSecret = () => {
+      return this.tfaRepo.findOne(detail.id, {
+        select: ['secret'],
+      });
+    };
     switch (detail.type) {
       case TwoFactorType.EmailCode: {
         const email = detail.user.username;
         return this.emailStrategy.verify(email, code);
       }
       case TwoFactorType.TOTP: {
-        const { secret } = detail;
+        const { secret } = await getDetailWithSecret();
+        console.info('secret', secret)
         return TotpStrategy.validate(code, secret);
       }
     }

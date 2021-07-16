@@ -5,11 +5,15 @@ import { Cache } from 'cache-manager';
 export class VcodeCacheService {
   constructor(@Inject(CACHE_MANAGER) private readonly cache: Cache) {}
 
-  async get(key) {
-    return await this.cache.get(key);
+  async get<T = any>(key: string) {
+    return await this.cache.get<T>(key);
   }
 
-  async set(key, value) {
-    await this.cache.set(key, value);
+  async set<T = any>(key: string, value: T) {
+    await this.cache.set<T>(key, value);
+  }
+
+  async setWithTTL<T = any>(key: string, value: T, ttl: number) {
+    await this.cache.set(key, value, { ttl });
   }
 }
