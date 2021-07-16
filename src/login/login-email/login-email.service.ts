@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { User } from 'src/entities/User.entity';
 import { AuthService } from 'src/auth/auth.service';
 import { JWTTokens } from 'src/type/jwt-login-result';

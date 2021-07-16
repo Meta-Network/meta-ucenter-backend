@@ -1,16 +1,25 @@
 import { IsOptional } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateUserDto {
-  @ApiProperty()
+  @ApiPropertyOptional({
+    default: 'Brendan Eich',
+    description: '用户昵称',
+  })
   @IsOptional()
   nickname?: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional({
+    default: 'https://i.loli.net/2021/05/13/CiEFPgWJzuk5prZ.png',
+    description: '用户头像',
+  })
   @IsOptional()
   avatar?: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional({
+    default: 'some description of this user',
+    description: '个人简介',
+  })
   @IsOptional()
   bio?: string;
 }

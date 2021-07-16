@@ -9,8 +9,15 @@ import {
   BindTwoFactorDto,
   VerifyTwoFactorDto,
 } from './dto/bind-two-factor.dto';
-import { ApiCookieAuth } from '@nestjs/swagger';
+import {
+  ApiCookieAuth,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 
+@ApiTags('Users')
 @Controller('users')
 export class UsersController {
   constructor(
@@ -18,12 +25,24 @@ export class UsersController {
     private readonly tfaService: TwoFactorAuthService,
   ) {}
 
+  @ApiOkResponse({
+    description: '当 Cookies 中具有有效的{accessToken}时，返回当前用户信息',
+  })
+  @ApiUnauthorizedResponse({
+    description: '当 Cookies 中的{accessToken}过期或无效时',
+  })
   @UseGuards(JWTAuthGuard)
   @Get('me')
   async getMyInfo(@CurrentUser() user: JWTDecodedUser) {
     return this.usersService.getUserInfo(user.id);
   }
 
+  @ApiCreatedResponse({
+    description: '当 Cookies 中具有有效的{accessToken}时，修改当前用户资料',
+  })
+  @ApiUnauthorizedResponse({
+    description: '当 Cookies 中的{accessToken}过期或无效时',
+  })
   @UseGuards(JWTAuthGuard)
   @Patch('me')
   async updateMyInfo(

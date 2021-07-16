@@ -19,7 +19,6 @@ import * as redisStore from 'cache-manager-redis-store';
     }),
   ],
   providers: [VcodeCacheService],
-  // This is IMPORTANT,  you need to export RedisCacheService here so that other modules can use it
   exports: [VcodeCacheService],
 })
 export class VcodeCacheModule {}

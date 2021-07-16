@@ -4,7 +4,9 @@ import { JWTCookieHelper } from '../jwt-cookie-helper';
 import { LoginSmsDto } from './dto/login-sms.dto';
 import { LoginSmsService } from './login-sms.service';
 import { VerificationCodeDto } from 'src/verification-code/dto/verification-code.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Login')
 @Controller('login/sms')
 export class LoginSmsController {
   constructor(
