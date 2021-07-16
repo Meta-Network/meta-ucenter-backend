@@ -21,7 +21,6 @@ export class TwoFactorAuthService {
     private readonly tfaRepo: Repository<TwoFactorAuth>,
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
-    private readonly verificationCodeService: VerificationCodeService,
     private readonly emailStrategy: EmailStrategy,
   ) {}
 
@@ -70,7 +69,7 @@ export class TwoFactorAuthService {
 
   async bind2FA(type: TwoFactorType, _user: Partial<User>) {
     const isTypeExist = await this.isTypeExistFor(_user.id, type);
-
+    console.info('isTypeExist', isTypeExist);
     if (isTypeExist)
       throw new ConflictException('This 2FA Method is enabled already.');
 
@@ -83,7 +82,6 @@ export class TwoFactorAuthService {
       }
       case TwoFactorType.TOTP: {
         const { secret, otpauth } = await TotpStrategy.generate(user.username);
-        // @todo: save the 2FA secret into the DB, for future verification
         await this.tfaRepo.save({
           secret,
           type,
@@ -135,6 +133,8 @@ export class TwoFactorAuthService {
     if (!detail) throw new NotFoundException(`No found for type: '${type}'`);
     if (!detail.isEnabled)
       throw new BadRequestException('Please activate before using');
+
+    // @todo: add check in this API, throw Error here just in case.
     return this._verify(detail, code);
   }
 
@@ -142,13 +142,19 @@ export class TwoFactorAuthService {
     detail: Partial<TwoFactorAuth>,
     code: string,
   ): Promise<boolean> {
+    const getDetailWithSecret = () => {
+      return this.tfaRepo.findOne(detail.id, {
+        select: ['secret'],
+      });
+    };
     switch (detail.type) {
       case TwoFactorType.EmailCode: {
         const email = detail.user.username;
         return this.emailStrategy.verify(email, code);
       }
       case TwoFactorType.TOTP: {
-        const { secret } = detail;
+        const { secret } = await getDetailWithSecret();
+        console.info('secret', secret)
         return TotpStrategy.validate(code, secret);
       }
     }
