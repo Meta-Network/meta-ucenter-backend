@@ -11,8 +11,8 @@ import { TotpStrategy } from './totp.strategy';
 import { Repository } from 'typeorm';
 import { TwoFactorAuth } from 'src/entities/TwoFactorAuth.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { VerificationCodeService } from 'src/verification-code/verification-code.service';
 import { EmailStrategy } from './email.strategy';
+import { VcodeCacheService } from 'src/vcode-cache/vcode-cache.service';
 
 @Injectable()
 export class TwoFactorAuthService {
@@ -22,6 +22,7 @@ export class TwoFactorAuthService {
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
     private readonly emailStrategy: EmailStrategy,
+    private readonly vcodeCacheService: VcodeCacheService,
   ) {}
 
   async get2FADetailFor(userId: number, type: TwoFactorType) {
@@ -132,6 +133,17 @@ export class TwoFactorAuthService {
       );
     }
 
+    const USED_CODE_CACHE_VAL = `${type}-${userId}-2fa-used-code`;
+
+    const usedCodeLookup = await this.vcodeCacheService.get<string>(
+      USED_CODE_CACHE_VAL,
+    );
+
+    if (usedCodeLookup && usedCodeLookup === code)
+      throw new BadRequestException(
+        'This code was used, please wait and try again with new code.',
+      );
+
     const detail = await this.get2FADetailFor(userId, type);
     if (!detail) throw new NotFoundException(`No found for type: '${type}'`);
     if (!detail.isEnabled)
@@ -144,6 +156,12 @@ export class TwoFactorAuthService {
         'Failed to verify, please check your code and try again.',
       );
     }
+    // add code to cache, avoid replay attack, stay for 9 mins
+    await this.vcodeCacheService.setWithTTL<string>(
+      USED_CODE_CACHE_VAL,
+      code,
+      60 * 9,
+    );
     return true;
   }
 

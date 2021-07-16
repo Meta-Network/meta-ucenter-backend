@@ -7,11 +7,13 @@ import { User } from '../entities/User.entity';
 import { EmailStrategy } from './email.strategy';
 import { TwoFactorAuthService } from './two-factor-auth.service';
 import { TwoFactorAuthController } from './two-factor-auth.controller';
+import { VcodeCacheModule } from 'src/vcode-cache/vcode-cache.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, TwoFactorAuth]),
     VerificationCodeModule,
+    VcodeCacheModule,
     EmailModule,
   ],
   providers: [TwoFactorAuthService, EmailStrategy],
