@@ -4,9 +4,10 @@ import { UsersModule } from '../users/users.module';
 import { JWTCookieHelper } from './jwt-cookie-helper';
 import { LoginService } from './login.service';
 import { LoginController } from './login.controller';
+import { AccountsModule } from '../accounts/accounts.module';
 
 @Module({
-  imports: [UsersModule, AuthModule],
+  imports: [UsersModule, AuthModule, AccountsModule],
   controllers: [LoginController],
   providers: [LoginService, JWTCookieHelper],
   exports: [LoginService, JWTCookieHelper],
