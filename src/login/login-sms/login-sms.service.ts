@@ -38,10 +38,12 @@ export class LoginSmsService {
       throw new BadRequestException('Captcha authentication is not verified.');
     }
 
-    const user: User = await this.usersService.findOrSave(
-      loginSmsDto.phoneNumber,
-    );
-    const tokens: JWTTokens = await this.authService.signJWT(user, aud);
+    // const user: User = await this.usersService.findOrSave(
+    //   loginSmsDto.phoneNumber,
+    // );
+    let user;
+    // const tokens: JWTTokens = await this.authService.signJWT(user, aud);
+    let tokens;
     return {
       user,
       tokens,

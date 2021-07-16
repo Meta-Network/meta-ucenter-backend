@@ -42,7 +42,11 @@ export class LoginController {
       throw new UnauthorizedException();
     }
     const payload: JWTTokenPayload = await this.jwtService.verify(token);
-    const tokens = await this.loginService.refresh(payload.sub, payload.aud);
+    const tokens = await this.loginService.refresh(
+      payload.sub,
+      payload.account.id,
+      payload.aud,
+    );
     await this.jwtCookieHelper.JWTCookieWriter(res, tokens);
     return { success: true };
   }

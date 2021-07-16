@@ -10,10 +10,9 @@ import {
   VerifyTwoFactorDto,
 } from './dto/bind-two-factor.dto';
 import {
-  ApiCookieAuth,
-  ApiCreatedResponse,
-  ApiOkResponse,
   ApiTags,
+  ApiCookieAuth,
+  ApiOkResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
@@ -37,7 +36,7 @@ export class UsersController {
     return this.usersService.getUserInfo(user.id);
   }
 
-  @ApiCreatedResponse({
+  @ApiOkResponse({
     description: '当 Cookies 中具有有效的{accessToken}时，修改当前用户资料',
   })
   @ApiUnauthorizedResponse({

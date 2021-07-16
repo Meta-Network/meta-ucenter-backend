@@ -1,13 +1,15 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { User } from 'src/entities/User.entity';
 import { AuthService } from 'src/auth/auth.service';
 import { JWTTokens } from 'src/type/jwt-login-result';
+import { EmailService } from 'src/email/email.service';
 import { UsersService } from 'src/users/users.service';
 import { CaptchaService } from 'src/captcha/captcha.service';
 import { VerificationCodeService } from 'src/verification-code/verification-code.service';
-import { EmailService } from '../../email/email.service';
+import { AccountsService } from '../../accounts/accounts.service';
+import { Account } from '../../entities/Account.entity';
 import { LoginEmailDto } from './dto/login-email.dto';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class LoginEmailService {
@@ -15,6 +17,7 @@ export class LoginEmailService {
     private readonly emailService: EmailService,
     private readonly authService: AuthService,
     private readonly usersService: UsersService,
+    private readonly accountsService: AccountsService,
     private readonly configService: ConfigService,
     private readonly captchaService: CaptchaService,
     private readonly verificationCodeService: VerificationCodeService,
@@ -46,6 +49,42 @@ export class LoginEmailService {
   }
 
   async login(loginEmailDto: LoginEmailDto, aud = 'ucenter') {
+    await this.veryifyEmail(loginEmailDto);
+
+    const userAccountData = {
+      account_id: loginEmailDto.email,
+      platform: 'email',
+    };
+
+    let userAccount: Account = await this.accountsService.findBy(
+      userAccountData,
+      { relations: ['user'] },
+    );
+    let user;
+
+    if (!userAccount) {
+      user = await this.usersService.save();
+      userAccount = await this.accountsService.save({
+        ...userAccountData,
+        user,
+      });
+    } else {
+      user = userAccount.user;
+    }
+
+    const tokens: JWTTokens = await this.authService.signJWT(
+      user,
+      userAccount,
+      aud,
+    );
+    return {
+      user,
+      tokens,
+      userAccount,
+    };
+  }
+
+  private async veryifyEmail(loginEmailDto: LoginEmailDto): Promise<void> {
     const isEmailVerified = await this.verificationCodeService.verify(
       loginEmailDto.email,
       loginEmailDto.verifyCode,
@@ -60,11 +99,5 @@ export class LoginEmailService {
     if (!isCaptchaVerified) {
       throw new BadRequestException('Captcha authentication is not verified.');
     }
-    const user: User = await this.usersService.findOrSave(loginEmailDto.email);
-    const tokens: JWTTokens = await this.authService.signJWT(user, aud);
-    return {
-      user,
-      tokens,
-    };
   }
 }

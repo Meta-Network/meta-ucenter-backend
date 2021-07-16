@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { JWTTokenPayload } from 'src/type/jwt-payload';
 import { ConfigService } from '@nestjs/config';
+import { Account } from '../entities/Account.entity';
 import { User } from '../entities/User.entity';
 
 @Injectable()
@@ -12,7 +13,7 @@ export class AuthService {
     private configService: ConfigService,
   ) {}
 
-  async signJWT(user: User, aud: string | string[]) {
+  async signJWT(user: User, account: Account, aud: string | string[]) {
     const basePayload = {
       sub: user.id,
       username: user.username,
@@ -21,6 +22,7 @@ export class AuthService {
       nickname: user.nickname,
       created_at: user.created_at,
       updated_at: user.updated_at,
+      account,
       aud,
     };
 
