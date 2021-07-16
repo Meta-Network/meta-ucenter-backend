@@ -137,8 +137,14 @@ export class TwoFactorAuthService {
     if (!detail.isEnabled)
       throw new BadRequestException('Please activate before using');
 
-    // @todo: add check in this API, throw Error here just in case.
-    return this._verify(detail, code);
+    const verificationResult = await this._verify(detail, code);
+    if (!verificationResult) {
+      // throw BadRequestException(400) here just in case.
+      throw new BadRequestException(
+        'Failed to verify, please check your code and try again.',
+      );
+    }
+    return true;
   }
 
   async _verify(
