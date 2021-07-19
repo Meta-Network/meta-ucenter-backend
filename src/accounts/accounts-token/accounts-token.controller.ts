@@ -17,7 +17,7 @@ import { AccountsTokenService } from './accounts-token.service';
 import { Request, Response } from 'express';
 
 @ApiTags('Accounts')
-@Controller('accounts')
+@Controller('accounts/token')
 export class AccountsTokenController {
   constructor(
     private readonly jwtService: JwtService,
@@ -32,7 +32,7 @@ export class AccountsTokenController {
   @ApiUnauthorizedResponse({
     description: '当 Cookies 中的{refreshToken}过期或无效时',
   })
-  @Patch('token/refresh')
+  @Patch('/refresh')
   async refresh(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
