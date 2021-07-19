@@ -16,8 +16,8 @@ import { JWTCookieHelper } from './jwt-cookie-helper';
 import { LoginService } from './login.service';
 import { Request, Response } from 'express';
 
-@ApiTags('Login')
-@Controller('login')
+@ApiTags('Accounts')
+@Controller('accounts')
 export class LoginController {
   constructor(
     private readonly jwtService: JwtService,
@@ -32,7 +32,7 @@ export class LoginController {
   @ApiUnauthorizedResponse({
     description: '当 Cookies 中的{refreshToken}过期或无效时',
   })
-  @Patch('/refresh')
+  @Patch('token/refresh')
   async refresh(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,

@@ -15,8 +15,8 @@ import { JWTAuthGuard } from 'src/auth/jwt.guard';
 import { CurrentUser } from 'src/users/user.decorator';
 import { VerificationCodeDto } from 'src/verification-code/dto/verification-code.dto';
 
-@ApiTags('Login')
-@Controller('login/email')
+@ApiTags('Accounts')
+@Controller('accounts/email')
 export class LoginEmailController {
   constructor(
     private readonly loginEmailService: LoginEmailService,
@@ -39,7 +39,7 @@ export class LoginEmailController {
     return { key: verifyCode.key };
   }
 
-  @Post('/:aud')
+  @Post('login/:aud')
   @ApiParam({
     name: 'aud',
     example: 'ucenter',
