@@ -2,17 +2,15 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { User } from './entities/User.entity';
 import { UsersModule } from './users/users.module';
-import { LoginModule } from './login/login.module';
-// import { SystemModule } from './system/system.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppService } from './app.service';
 import { AppController } from './app.controller';
-import { LoginSmsModule } from './login/login-sms/login-sms.module';
-import { LoginEmailModule } from './login/login-email/login-email.module';
-import { TwoFactorAuthModule } from './two-factor-auth/two-factor-auth.module';
 import { EmailModule } from './email/email.module';
-import { VcodeCacheModule } from './vcode-cache/vcode-cache.module';
 import { AccountsModule } from './accounts/accounts.module';
+import { VcodeCacheModule } from './vcode-cache/vcode-cache.module';
+import { TwoFactorAuthModule } from './two-factor-auth/two-factor-auth.module';
+import { AccountsEmailModule } from './accounts/accounts-email/accounts-email.module';
+// import { SystemModule } from './system/system.module';
 import * as fs from 'fs';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -48,8 +46,7 @@ require('dotenv').config({
     UsersModule,
     // SystemModule,
     // LoginSmsModule,
-    LoginModule,
-    LoginEmailModule,
+    AccountsEmailModule,
     TwoFactorAuthModule,
     EmailModule,
     VcodeCacheModule,

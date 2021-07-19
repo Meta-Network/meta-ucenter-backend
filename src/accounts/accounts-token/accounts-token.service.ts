@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { Account } from '../entities/Account.entity';
-import { User } from '../entities/User.entity';
-import { AuthService } from '../auth/auth.service';
-import { UsersService } from '../users/users.service';
-import { AccountsService } from '../accounts/accounts.service';
+import { Account } from 'src/entities/Account.entity';
+import { UsersService } from 'src/users/users.service';
+import { User } from 'src/entities/User.entity';
+import { AuthService } from 'src/auth/auth.service';
+import { AccountsService } from '../accounts.service';
 
 @Injectable()
-export class LoginService {
+export class AccountsTokenService {
   constructor(
-    private readonly usersService: UsersService,
     private readonly authService: AuthService,
+    private readonly usersService: UsersService,
     private readonly accountsService: AccountsService,
   ) {}
 

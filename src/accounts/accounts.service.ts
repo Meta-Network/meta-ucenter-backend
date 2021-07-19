@@ -9,16 +9,15 @@ export class AccountsService {
     @InjectRepository(Account)
     private accountsRepository: Repository<Account>,
   ) {}
-  async findBy(searchParams: any, options = {}): Promise<Account> {
+  async find(searchParams: any) {
+    return await this.accountsRepository.find(searchParams);
+  }
+  async findOne(searchParams: any, options = {}): Promise<Account> {
     return await this.accountsRepository.findOne(searchParams, options);
   }
   async save(saveParams: any): Promise<Account> {
     return await this.accountsRepository.save(saveParams);
   }
-  async findOne(accountId: number): Promise<Account> {
-    return await this.accountsRepository.findOne(accountId);
-  }
-
   async delete(accountId: number) {
     return await this.accountsRepository.delete(accountId);
   }

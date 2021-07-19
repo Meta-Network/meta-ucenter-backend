@@ -7,9 +7,9 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Response } from 'express';
-import { LoginEmailDto } from './dto/login-email.dto';
-import { LoginEmailService } from './login-email.service';
-import { JWTCookieHelper } from 'src/login/jwt-cookie-helper';
+import { AccountsEmailDto } from './dto/accounts-email.dto';
+import { AccountsEmailService } from './accounts-email.service';
+import { JWTCookieHelper } from 'src/accounts/jwt-cookie-helper';
 import { User } from 'src/entities/User.entity';
 import { JWTAuthGuard } from 'src/auth/jwt.guard';
 import { CurrentUser } from 'src/users/user.decorator';
@@ -17,9 +17,9 @@ import { VerificationCodeDto } from 'src/verification-code/dto/verification-code
 
 @ApiTags('Accounts')
 @Controller('accounts/email')
-export class LoginEmailController {
+export class AccountsEmailController {
   constructor(
-    private readonly loginEmailService: LoginEmailService,
+    private readonly accountsEmailService: AccountsEmailService,
     private readonly jwtCookieHelper: JWTCookieHelper,
   ) {}
 
@@ -33,7 +33,7 @@ export class LoginEmailController {
   async generateVerificationCodeForEmail(
     @Body() verifyCode: VerificationCodeDto,
   ): Promise<{ key }> {
-    await this.loginEmailService.generateVerificationCodeForEmail(
+    await this.accountsEmailService.generateVerificationCodeForEmail(
       verifyCode.key,
     );
     return { key: verifyCode.key };
@@ -57,10 +57,10 @@ export class LoginEmailController {
   async login(
     @Param('aud') audPlatform: string,
     @Res({ passthrough: true }) res: Response,
-    @Body() loginEmailDto: LoginEmailDto,
+    @Body() accountsEmailDto: AccountsEmailDto,
   ) {
-    const { user, account, tokens } = await this.loginEmailService.login(
-      loginEmailDto,
+    const { user, account, tokens } = await this.accountsEmailService.login(
+      accountsEmailDto,
       audPlatform,
     );
 
@@ -79,8 +79,14 @@ export class LoginEmailController {
   @ApiUnauthorizedResponse({
     description: '当 Cookies 中的{accessToken}过期或无效时',
   })
-  async bind(@CurrentUser() user: User, @Body() loginEmailDto: LoginEmailDto) {
-    return this.loginEmailService.bindEmailAccount(loginEmailDto, user.id);
+  async bind(
+    @CurrentUser() user: User,
+    @Body() accountsEmailDto: AccountsEmailDto,
+  ) {
+    return this.accountsEmailService.bindEmailAccount(
+      accountsEmailDto,
+      user.id,
+    );
   }
 
   @Post('/unbind')
@@ -95,7 +101,7 @@ export class LoginEmailController {
     description: '当 Cookies 中的{accessToken}过期或无效时',
   })
   // TODO: TEST bind and unbind method
-  async unbind(@Body() loginEmailDto: LoginEmailDto) {
-    return this.loginEmailService.unbindEmailAccount(loginEmailDto);
+  async unbind(@Body() accountsEmailDto: AccountsEmailDto) {
+    return this.accountsEmailService.unbindEmailAccount(accountsEmailDto);
   }
 }

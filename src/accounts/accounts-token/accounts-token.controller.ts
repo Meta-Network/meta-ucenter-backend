@@ -11,17 +11,17 @@ import {
   ApiCreatedResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { JWTTokenPayload } from '../type/jwt-payload';
-import { JWTCookieHelper } from './jwt-cookie-helper';
-import { LoginService } from './login.service';
+import { JWTTokenPayload } from 'src/type/jwt-payload';
+import { JWTCookieHelper } from 'src/accounts/jwt-cookie-helper';
+import { AccountsTokenService } from './accounts-token.service';
 import { Request, Response } from 'express';
 
 @ApiTags('Accounts')
 @Controller('accounts')
-export class LoginController {
+export class AccountsTokenController {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly loginService: LoginService,
+    private readonly loginService: AccountsTokenService,
     private readonly jwtCookieHelper: JWTCookieHelper,
   ) {}
 

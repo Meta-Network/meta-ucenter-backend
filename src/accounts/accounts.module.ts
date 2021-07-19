@@ -1,13 +1,14 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { Account } from '../entities/Account.entity';
+import { AuthModule } from '../auth/auth.module';
+import { UsersModule } from '../users/users.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AccountsService } from './accounts.service';
-import { AccountsController } from './accounts.controller';
+import { JWTCookieHelper } from './jwt-cookie-helper';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Account])],
-  controllers: [AccountsController],
-  providers: [AccountsService],
-  exports: [AccountsService],
+  imports: [AuthModule, UsersModule, TypeOrmModule.forFeature([Account])],
+  providers: [AccountsService, JWTCookieHelper],
+  exports: [AccountsService, JWTCookieHelper],
 })
 export class AccountsModule {}

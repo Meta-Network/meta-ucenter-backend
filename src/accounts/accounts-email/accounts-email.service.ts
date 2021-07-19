@@ -7,12 +7,12 @@ import { EmailService } from 'src/email/email.service';
 import { UsersService } from 'src/users/users.service';
 import { CaptchaService } from 'src/captcha/captcha.service';
 import { VerificationCodeService } from 'src/verification-code/verification-code.service';
-import { AccountsService } from '../../accounts/accounts.service';
+import { AccountsService } from '../accounts.service';
 import { Account } from '../../entities/Account.entity';
-import { LoginEmailDto } from './dto/login-email.dto';
+import { AccountsEmailDto } from './dto/accounts-email.dto';
 
 @Injectable()
-export class LoginEmailService {
+export class AccountsEmailService {
   constructor(
     private readonly emailService: EmailService,
     private readonly authService: AuthService,
@@ -48,15 +48,15 @@ export class LoginEmailService {
     );
   }
 
-  async login(loginEmailDto: LoginEmailDto, aud = 'ucenter') {
-    await this.verifyEmail(loginEmailDto);
+  async login(accountsEmailDto: AccountsEmailDto, aud = 'ucenter') {
+    await this.verifyEmail(accountsEmailDto);
 
     const userAccountData = {
-      account_id: loginEmailDto.email,
+      account_id: accountsEmailDto.email,
       platform: 'email',
     };
 
-    let userAccount: Account = await this.accountsService.findBy(
+    let userAccount: Account = await this.accountsService.findOne(
       userAccountData,
     );
     let user: User;
@@ -84,45 +84,60 @@ export class LoginEmailService {
   }
 
   async bindEmailAccount(
-    loginEmailDto: LoginEmailDto,
+    accountsEmailDto: AccountsEmailDto,
     userId: number,
   ): Promise<Account> {
-    await this.verifyEmail(loginEmailDto);
+    await this.verifyEmail(accountsEmailDto);
 
     const userAccountData = {
-      account_id: loginEmailDto.email,
+      account_id: accountsEmailDto.email,
       platform: 'email',
     };
+    const hasAlreadyBound = await this.accountsService.findOne(userAccountData);
 
+    if (hasAlreadyBound) {
+      throw new BadRequestException(
+        'This Email has already bound to this user.',
+      );
+    }
     return await this.accountsService.save({
       ...userAccountData,
       user_id: userId,
     });
   }
 
-  async unbindEmailAccount(loginEmailDto: LoginEmailDto): Promise<void> {
-    await this.verifyEmail(loginEmailDto);
+  async unbindEmailAccount(accountsEmailDto: AccountsEmailDto): Promise<void> {
+    await this.verifyEmail(accountsEmailDto);
 
     const userAccountData = {
-      account_id: loginEmailDto.email,
+      account_id: accountsEmailDto.email,
       platform: 'email',
     };
 
-    const account = await this.accountsService.findBy(userAccountData);
+    const user = await this.accountsService.findOne(userAccountData);
+    const accounts = await this.accountsService.find({ user_id: user.user_id });
+
+    if (accounts.length < 2) {
+      throw new BadRequestException(
+        'The user has only this one account, which cannot be unbound.',
+      );
+    }
+
+    const account = await this.accountsService.findOne(userAccountData);
     await this.accountsService.delete(account.id);
   }
 
-  async verifyEmail(loginEmailDto: LoginEmailDto): Promise<void> {
+  async verifyEmail(accountsEmailDto: AccountsEmailDto): Promise<void> {
     const isEmailVerified = await this.verificationCodeService.verify(
-      loginEmailDto.email,
-      loginEmailDto.verifyCode,
+      accountsEmailDto.email,
+      accountsEmailDto.verifyCode,
     );
     if (!isEmailVerified) {
       throw new BadRequestException('Email authentication is not verified.');
     }
 
     const isCaptchaVerified = await this.captchaService.verify(
-      loginEmailDto.hcaptchaToken,
+      accountsEmailDto.hcaptchaToken,
     );
     if (!isCaptchaVerified) {
       throw new BadRequestException('Captcha authentication is not verified.');

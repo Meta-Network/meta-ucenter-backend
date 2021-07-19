@@ -1,18 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumberString, IsPhoneNumber } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsNumberString } from 'class-validator';
 
-export class LoginSmsDto {
+export class AccountsEmailDto {
   @ApiProperty({
-    default: '13102278990',
-    description: '登陆用的手机号。验证码将发送至该手机短信',
+    default: 'someone@example.com',
+    description: '登陆使用的邮箱。验证码会发送至此邮箱里',
   })
   @IsNotEmpty()
-  @IsPhoneNumber()
-  phoneNumber: string;
+  @IsEmail()
+  email: string;
 
   @ApiProperty({
     default: '571802',
-    description: '生成后发送至登陆者手机短信的，与手机绑定的验证码',
+    description: '生成后发送至登陆者邮箱的，与邮箱绑定的验证码',
   })
   @IsNotEmpty()
   @IsNumberString()

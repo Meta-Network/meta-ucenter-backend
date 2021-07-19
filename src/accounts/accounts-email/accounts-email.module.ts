@@ -5,23 +5,21 @@ import { UsersModule } from 'src/users/users.module';
 import { CaptchaModule } from 'src/captcha/captcha.module';
 import { VerificationCodeModule } from 'src/verification-code/verification-code.module';
 import { EmailModule } from 'src/email/email.module';
-import { LoginModule } from '../login.module';
-import { LoginEmailService } from './login-email.service';
+import { AccountsEmailService } from './accounts-email.service';
 import { AccountsModule } from 'src/accounts/accounts.module';
-import { LoginEmailController } from './login-email.controller';
+import { AccountsEmailController } from './accounts-email.controller';
 
 @Module({
   imports: [
     HttpModule,
     EmailModule,
-    AccountsModule,
     AuthModule,
     UsersModule,
-    LoginModule,
     CaptchaModule,
+    AccountsModule,
     VerificationCodeModule,
   ],
-  providers: [LoginEmailService],
-  controllers: [LoginEmailController],
+  providers: [AccountsEmailService],
+  controllers: [AccountsEmailController],
 })
-export class LoginEmailModule {}
+export class AccountsEmailModule {}

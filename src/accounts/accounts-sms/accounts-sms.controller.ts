@@ -1,16 +1,16 @@
 import { Response } from 'express';
 import { Body, Controller, Param, Post, Res } from '@nestjs/common';
 import { JWTCookieHelper } from '../jwt-cookie-helper';
-import { LoginSmsDto } from './dto/login-sms.dto';
-import { LoginSmsService } from './login-sms.service';
+import { AccountsSmsDto } from './dto/accounts-sms.dto';
+import { AccountsSmsService } from './accounts-sms.service';
 import { VerificationCodeDto } from 'src/verification-code/dto/verification-code.dto';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Login')
 @Controller('login/sms')
-export class LoginSmsController {
+export class AccountsSmsController {
   constructor(
-    private readonly loginSmsService: LoginSmsService,
+    private readonly loginSmsService: AccountsSmsService,
     private readonly jwtCookieHelper: JWTCookieHelper,
   ) {}
 
@@ -26,7 +26,7 @@ export class LoginSmsController {
   async login(
     @Param('aud') audPlatform: string,
     @Res({ passthrough: true }) res: Response,
-    @Body() loginSmsDto: LoginSmsDto,
+    @Body() loginSmsDto: AccountsSmsDto,
   ) {
     const { user, tokens } = await this.loginSmsService.login(
       loginSmsDto,

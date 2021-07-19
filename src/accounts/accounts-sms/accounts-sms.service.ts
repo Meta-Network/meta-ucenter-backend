@@ -3,12 +3,12 @@ import { CaptchaService } from 'src/captcha/captcha.service';
 import { User } from 'src/entities/User.entity';
 import { VerificationCodeService } from 'src/verification-code/verification-code.service';
 import { JWTTokens } from '../../type/jwt-login-result';
-import { LoginSmsDto } from './dto/login-sms.dto';
+import { AccountsSmsDto } from './dto/accounts-sms.dto';
 import { AuthService } from 'src/auth/auth.service';
 import { UsersService } from 'src/users/users.service';
 
 @Injectable()
-export class LoginSmsService {
+export class AccountsSmsService {
   constructor(
     private readonly usersService: UsersService,
     private readonly authService: AuthService,
@@ -17,12 +17,14 @@ export class LoginSmsService {
   ) {}
 
   async generateVerificationCodeForSms(phoneNumber: string): Promise<string> {
-    const code = await this.verificationCodeService.generateAndStore(phoneNumber);
+    const code = await this.verificationCodeService.generateAndStore(
+      phoneNumber,
+    );
     await sendVerificationCodeSms(phoneNumber, code);
     return code;
   }
 
-  async login(loginSmsDto: LoginSmsDto, aud = 'ucenter') {
+  async login(loginSmsDto: AccountsSmsDto, aud = 'ucenter') {
     const isSmsVerified = await this.verificationCodeService.verify(
       loginSmsDto.phoneNumber,
       loginSmsDto.verifyCode,
