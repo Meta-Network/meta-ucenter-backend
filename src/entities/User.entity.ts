@@ -10,7 +10,6 @@ import {
   AfterInsert,
   AfterUpdate,
 } from 'typeorm';
-import { Account } from './Account.entity';
 import { TwoFactorAuth } from './TwoFactorAuth.entity';
 
 @Entity()
