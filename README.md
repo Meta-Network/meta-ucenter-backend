@@ -5,7 +5,7 @@
 
 ## Description
 
-Meta Network UCenter
+UCenter for Meta Network 
 
 ## Installation
 
