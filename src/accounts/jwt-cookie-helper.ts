@@ -14,7 +14,7 @@ export class JWTCookieHelper {
         new Date().getTime() +
           ms(this.configService.get<string>('JWT_ACCESS_TOKEN_EXPIRES')),
       ),
-      sameSite: 'lax',
+      sameSite: 'none',
       secure: true,
       httpOnly: true,
       domain: this.configService.get<string>('COOKIE_ACCESS_DOMAIN'),
@@ -25,7 +25,7 @@ export class JWTCookieHelper {
         new Date().getTime() +
           ms(this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRES')),
       ),
-      sameSite: 'lax',
+      sameSite: 'none',
       secure: true,
       httpOnly: true,
       domain: this.configService.get<string>('COOKIE_REFRESH_DOMAIN'),
