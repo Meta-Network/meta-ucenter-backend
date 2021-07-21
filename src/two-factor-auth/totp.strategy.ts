@@ -1,7 +1,11 @@
 // import { Injectable } from '@nestjs/common';
 import { authenticator } from 'otplib';
-import { APP_NAME_ON_AUTHENTICATOR } from 'src/constants';
-import { User } from 'src/entities/User.entity';
+import { APP_NAME_ON_AUTHENTICATOR, TotpWindow } from 'src/constants';
+// import { User } from 'src/entities/User.entity';
+
+authenticator.options = {
+  window: [TotpWindow.past, TotpWindow.future],
+};
 
 // @Injectable()
 export class TotpStrategy {
