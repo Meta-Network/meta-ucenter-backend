@@ -18,7 +18,7 @@ export class AccountsSmsService {
 
   async generateVerificationCodeForSms(phoneNumber: string): Promise<string> {
     const code = await this.verificationCodeService.generateVcode(
-      'phone-login',
+      'sms-login',
       phoneNumber,
     );
     await sendVerificationCodeSms(phoneNumber, code);
@@ -27,6 +27,7 @@ export class AccountsSmsService {
 
   async login(loginSmsDto: AccountsSmsDto, aud = 'ucenter') {
     const isSmsVerified = await this.verificationCodeService.verify(
+      'sms-login',
       loginSmsDto.phoneNumber,
       loginSmsDto.verifyCode,
     );

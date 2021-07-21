@@ -40,6 +40,7 @@ export class EmailStrategy {
 
   async verify(email: string, verifyCode: string): Promise<boolean> {
     const isEmailVerified = await this.verificationCodeService.verify(
+      'email-login',
       email,
       verifyCode,
     );

@@ -26,7 +26,7 @@ export class AccountsMetamaskService {
 
   async generateMetamaskNonce(address: string): Promise<string> {
     return await this.verificationCodeService.generateVcode(
-      'email-login',
+      'metamask-login',
       address,
     );
   }
@@ -105,6 +105,7 @@ export class AccountsMetamaskService {
     accountsMetaMaskDto: AccountsMetaMaskDto,
   ): Promise<void> {
     const nonce = await this.verificationCodeService.getVcode(
+      'metamask-login',
       accountsMetaMaskDto.address,
     );
 

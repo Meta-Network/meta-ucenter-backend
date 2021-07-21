@@ -34,20 +34,22 @@ export class VerificationCodeService {
   /**
    * 校验验证码是否与本地生成的一致。
    * 如果{code}同以传入的{key}保存的验证码相同
+   * @param prefix
    * @param {string} key
    * @param {string} code
    * @returns {Promise<boolean>}
    */
-  async verify(key: string, code: string): Promise<boolean> {
-    return code === (await this.vcodeCacheService.get(key));
+  async verify(prefix: string, key: string, code: string): Promise<boolean> {
+    return code === (await this.vcodeCacheService.get(`${prefix}_${key}`));
   }
 
   /**
    * 获取本地生成的校验码。
+   * @param prefix
    * @param {string} key
    * @returns {Promise<string>}
    */
-  async getVcode(key: string): Promise<string> {
-    return await this.vcodeCacheService.get(key);
+  async getVcode(prefix: string, key: string): Promise<string> {
+    return await this.vcodeCacheService.get(`${prefix}_${key}`);
   }
 }

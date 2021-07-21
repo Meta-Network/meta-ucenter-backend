@@ -122,6 +122,7 @@ export class AccountsEmailService {
 
   async verifyEmail(accountsEmailDto: AccountsEmailDto): Promise<void> {
     const isEmailVerified = await this.verificationCodeService.verify(
+      'email-login',
       accountsEmailDto.email,
       accountsEmailDto.verifyCode,
     );
