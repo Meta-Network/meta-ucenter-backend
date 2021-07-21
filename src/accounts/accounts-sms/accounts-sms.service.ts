@@ -17,7 +17,7 @@ export class AccountsSmsService {
   ) {}
 
   async generateVerificationCodeForSms(phoneNumber: string): Promise<string> {
-    const code = await this.verificationCodeService.generateAndStore(
+    const code = await this.verificationCodeService.generateVcode(
       phoneNumber,
     );
     await sendVerificationCodeSms(phoneNumber, code);

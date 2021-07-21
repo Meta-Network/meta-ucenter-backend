@@ -13,6 +13,10 @@ export class VcodeCacheService {
     await this.cache.set<T>(key, value);
   }
 
+  async del(key: string): Promise<void> {
+    await this.cache.del(key);
+  }
+
   async setWithTTL<T = any>(key: string, value: T, ttl: number) {
     await this.cache.set(key, value, { ttl });
   }

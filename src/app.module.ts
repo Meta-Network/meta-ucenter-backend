@@ -5,12 +5,11 @@ import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppService } from './app.service';
 import { AppController } from './app.controller';
-import { EmailModule } from './email/email.module';
 import { AccountsModule } from './accounts/accounts.module';
-import { VcodeCacheModule } from './vcode-cache/vcode-cache.module';
+import { AccountsTokenModule } from './accounts/accounts-token/accounts-token.module';
 import { TwoFactorAuthModule } from './two-factor-auth/two-factor-auth.module';
 import { AccountsEmailModule } from './accounts/accounts-email/accounts-email.module';
-// import { SystemModule } from './system/system.module';
+import { AccountsMetamaskModule } from './accounts/accounts-metamask/accounts-metamask.module';
 import * as fs from 'fs';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -46,11 +45,11 @@ require('dotenv').config({
     UsersModule,
     // SystemModule,
     // LoginSmsModule,
-    AccountsEmailModule,
-    TwoFactorAuthModule,
-    EmailModule,
-    VcodeCacheModule,
     AccountsModule,
+    TwoFactorAuthModule,
+    AccountsEmailModule,
+    AccountsTokenModule,
+    AccountsMetamaskModule,
   ],
   controllers: [AppController],
   providers: [AppService],

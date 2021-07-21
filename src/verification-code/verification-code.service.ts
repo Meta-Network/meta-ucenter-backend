@@ -16,7 +16,10 @@ export class VerificationCodeService {
    * @param {string} key
    * @returns {Promise<string>}
    */
-  async generateAndStore(key: string): Promise<string> {
+  async generateVcode(key: string): Promise<string> {
+    // clear the remain saved values
+    await this.vcodeCacheService.del(key);
+
     const code = randomstring.generate({
       length: 6,
       charset: 'numeric',
@@ -34,5 +37,14 @@ export class VerificationCodeService {
    */
   async verify(key: string, code: string): Promise<boolean> {
     return code === (await this.vcodeCacheService.get(key));
+  }
+
+  /**
+   * 获取本地生成的校验码。
+   * @param {string} key
+   * @returns {Promise<string>}
+   */
+  async getVcode(key: string): Promise<string> {
+    return await this.vcodeCacheService.get(key);
   }
 }

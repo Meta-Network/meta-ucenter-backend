@@ -3,18 +3,18 @@ import { ConfigService } from '@nestjs/config';
 import { Account } from 'src/entities/Account.entity';
 import { AuthService } from 'src/auth/auth.service';
 import { JWTTokens } from 'src/type/jwt-login-result';
-import { EmailService } from 'src/email/email.service';
 import { UsersService } from 'src/users/users.service';
 import { CaptchaService } from 'src/captcha/captcha.service';
-import { VerificationCodeService } from 'src/verification-code/verification-code.service';
 import { AccountsService } from '../accounts.service';
-import { AccountsEmailDto } from './dto/accounts-email.dto';
+import { AccountsMetaMaskDto } from './dto/accounts-metamask.dto';
+import { VerificationCodeService } from 'src/verification-code/verification-code.service';
 import { UserAccountHelper } from '../get-init-user-account-helper';
+import { recoverPersonalSignature } from 'eth-sig-util';
+import { bufferToHex } from 'ethereumjs-util';
 
 @Injectable()
-export class AccountsEmailService {
+export class AccountsMetamaskService {
   constructor(
-    private readonly emailService: EmailService,
     private readonly authService: AuthService,
     private readonly usersService: UsersService,
     private readonly accountsService: AccountsService,
@@ -24,37 +24,16 @@ export class AccountsEmailService {
     private readonly verificationCodeService: VerificationCodeService,
   ) {}
 
-  async generateVerificationCodeForEmail(email: string): Promise<string> {
-    const code = await this.verificationCodeService.generateVcode(email);
-    //  用邮件服务发送生成的验证码
-    await this.sendVerificationCodeEmail(email, code);
-    return code;
+  async generateMetamaskNonce(address: string): Promise<string> {
+    return await this.verificationCodeService.generateVcode(address);
   }
 
-  private async sendVerificationCodeEmail(email: string, code: string) {
-    const [from, fromName, templateInvokeName] = [
-      'EMAIL_FROM',
-      'EMAIL_FROM_NAME',
-      'EMAIL_TEMPLATE_INVOKE_NAME_VCODE',
-    ].map((key) => this.configService.get<string>(key));
-
-    this.emailService.send(
-      {
-        from,
-        fromName,
-        to: email,
-        templateInvokeName,
-      },
-      { code },
-    );
-  }
-
-  async login(accountsEmailDto: AccountsEmailDto, aud = 'ucenter') {
-    await this.verifyEmail(accountsEmailDto);
+  async login(accountsMetaMaskDto: AccountsMetaMaskDto, aud = 'ucenter') {
+    await this.verifySignature(accountsMetaMaskDto);
 
     const userAccountData = {
-      account_id: accountsEmailDto.email,
-      platform: 'email',
+      account_id: accountsMetaMaskDto.address,
+      platform: 'MetaMask',
     };
 
     const { user, userAccount } = await this.userAccountHelper.getOrInit(
@@ -73,21 +52,21 @@ export class AccountsEmailService {
     };
   }
 
-  async bindEmailAccount(
-    accountsEmailDto: AccountsEmailDto,
+  async bindMetaMaskAccount(
+    accountsMetaMaskDto: AccountsMetaMaskDto,
     userId: number,
   ): Promise<Account> {
-    await this.verifyEmail(accountsEmailDto);
+    await this.verifySignature(accountsMetaMaskDto);
 
     const userAccountData = {
-      account_id: accountsEmailDto.email,
-      platform: 'email',
+      account_id: accountsMetaMaskDto.address,
+      platform: 'MetaMask',
     };
     const hasAlreadyBound = await this.accountsService.findOne(userAccountData);
 
     if (hasAlreadyBound) {
       throw new BadRequestException(
-        'This Email has already bound to this user.',
+        'This MetaMask account has already bound to this user.',
       );
     }
     return await this.accountsService.save({
@@ -96,12 +75,14 @@ export class AccountsEmailService {
     });
   }
 
-  async unbindEmailAccount(accountsEmailDto: AccountsEmailDto): Promise<void> {
-    await this.verifyEmail(accountsEmailDto);
+  async unbindMetaMaskAccount(
+    accountsMetaMaskDto: AccountsMetaMaskDto,
+  ): Promise<void> {
+    await this.verifySignature(accountsMetaMaskDto);
 
     const userAccountData = {
-      account_id: accountsEmailDto.email,
-      platform: 'email',
+      account_id: accountsMetaMaskDto.address,
+      platform: 'MetaMask',
     };
 
     const user = await this.accountsService.findOne(userAccountData);
@@ -117,17 +98,34 @@ export class AccountsEmailService {
     await this.accountsService.delete(account.id);
   }
 
-  async verifyEmail(accountsEmailDto: AccountsEmailDto): Promise<void> {
-    const isEmailVerified = await this.verificationCodeService.verify(
-      accountsEmailDto.email,
-      accountsEmailDto.verifyCode,
+  async verifySignature(
+    accountsMetaMaskDto: AccountsMetaMaskDto,
+  ): Promise<void> {
+    const nonce = await this.verificationCodeService.getVcode(
+      accountsMetaMaskDto.address,
     );
-    if (!isEmailVerified) {
-      throw new BadRequestException('Email authentication is not verified.');
+
+    const message = `\x19Ethereum Signed Message:\n${nonce.length}${nonce}`;
+
+    // We now are in possession of msg, publicAddress and signature. We
+    // will use a helper from eth-sig-util to extract the address from the signature
+    const msgBufferHex = bufferToHex(Buffer.from(message, 'utf8'));
+    const address = recoverPersonalSignature({
+      data: msgBufferHex,
+      sig: accountsMetaMaskDto.signature,
+    });
+
+    // The signature verification is successful if the address found with
+    // sigUtil.recoverPersonalSignature matches the initial publicAddress
+    const isSignatureVerified =
+      address.toLowerCase() === accountsMetaMaskDto.address.toLowerCase();
+
+    if (!isSignatureVerified) {
+      throw new BadRequestException('MetaMask authentication is not verified.');
     }
 
     const isCaptchaVerified = await this.captchaService.verify(
-      accountsEmailDto.hcaptchaToken,
+      accountsMetaMaskDto.hcaptchaToken,
     );
     if (!isCaptchaVerified) {
       throw new BadRequestException('Captcha authentication is not verified.');
