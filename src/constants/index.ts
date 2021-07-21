@@ -9,3 +9,13 @@ export const JWT_KEY = {
 };
 
 export const APP_NAME_ON_AUTHENTICATOR = 'Meta Auth Dev';
+
+/**
+ * Config for OTPLib
+ * default 1 step = 30 secs
+ * so current valid code range: [-30 + now(), 60 + now()]
+ */
+export const TotpWindow = {
+  past: 1,
+  future: 2,
+};
