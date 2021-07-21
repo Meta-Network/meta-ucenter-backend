@@ -9,7 +9,7 @@ export class EmailService implements IEmailSender {
     // private readonly emailSender: IEmailSender,
     private readonly emailSender: SendcloudProvider,
   ) {}
-  send(
+  async send(
     {
       from,
       fromName,
@@ -18,7 +18,7 @@ export class EmailService implements IEmailSender {
     }: { from: any; fromName: any; to: any; templateInvokeName: any },
     placeholders: any,
   ) {
-    this.emailSender.send(
+    await this.emailSender.send(
       { from, fromName, to, templateInvokeName },
       placeholders,
     );

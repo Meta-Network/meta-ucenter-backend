@@ -25,7 +25,10 @@ export class AccountsEmailService {
   ) {}
 
   async generateVerificationCodeForEmail(email: string): Promise<string> {
-    const code = await this.verificationCodeService.generateVcode(email);
+    const code = await this.verificationCodeService.generateVcode(
+      'email-login',
+      email,
+    );
     //  用邮件服务发送生成的验证码
     await this.sendVerificationCodeEmail(email, code);
     return code;
@@ -38,7 +41,7 @@ export class AccountsEmailService {
       'EMAIL_TEMPLATE_INVOKE_NAME_VCODE',
     ].map((key) => this.configService.get<string>(key));
 
-    this.emailService.send(
+    await this.emailService.send(
       {
         from,
         fromName,

@@ -181,7 +181,7 @@ export class TwoFactorAuthService {
       }
       case TwoFactorType.TOTP: {
         const { secret } = await getDetailWithSecret();
-        console.info('secret', secret)
+        console.info('secret', secret);
         return TotpStrategy.validate(code, secret);
       }
     }

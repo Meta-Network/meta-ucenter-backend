@@ -11,20 +11,23 @@ export class VerificationCodeService {
    * <p>
    * 将验证码以{key}作为键，保存于 Redis 或其他临时存储媒介
    * 保存的验证码会于指定时间内失效。删除相关存储。
-   * {key}可以是用户名或时间戳，返回值为验证码。
+   * {key} 可以是用户名或时间戳，返回值为验证码。
+   * {prefix} 自动添加在key之前，用于甄别key的应用
    * </p>
+   * @param {string} prefix
    * @param {string} key
    * @returns {Promise<string>}
    */
-  async generateVcode(key: string): Promise<string> {
+  async generateVcode(prefix: string, key: string): Promise<string> {
+    const savedKey = `${prefix}_${key}`;
     // clear the remain saved values
-    await this.vcodeCacheService.del(key);
+    await this.vcodeCacheService.del(savedKey);
 
     const code = randomstring.generate({
       length: 6,
       charset: 'numeric',
     });
-    await this.vcodeCacheService.set(key, code);
+    await this.vcodeCacheService.set(savedKey, code);
     return code;
   }
 

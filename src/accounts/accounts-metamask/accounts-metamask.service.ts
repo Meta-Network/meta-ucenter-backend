@@ -25,7 +25,10 @@ export class AccountsMetamaskService {
   ) {}
 
   async generateMetamaskNonce(address: string): Promise<string> {
-    return await this.verificationCodeService.generateVcode(address);
+    return await this.verificationCodeService.generateVcode(
+      'email-login',
+      address,
+    );
   }
 
   async login(accountsMetaMaskDto: AccountsMetaMaskDto, aud = 'ucenter') {
@@ -104,6 +107,12 @@ export class AccountsMetamaskService {
     const nonce = await this.verificationCodeService.getVcode(
       accountsMetaMaskDto.address,
     );
+
+    if (nonce === null) {
+      throw new BadRequestException(
+        'Failed to get verification code from database.',
+      );
+    }
 
     const message = `\x19Ethereum Signed Message:\n${nonce.length}${nonce}`;
 

@@ -12,7 +12,10 @@ export class EmailStrategy {
   ) {}
 
   async generateVerificationCodeForEmail(email: string): Promise<void> {
-    const code = await this.verificationCodeService.generateVcode(email);
+    const code = await this.verificationCodeService.generateVcode(
+      'email-login',
+      email,
+    );
     //  用邮件服务发送生成的验证码
     await this.sendVerificationCodeEmail(email, code);
   }
