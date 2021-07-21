@@ -37,7 +37,7 @@ export class AccountsTokenController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const token = req.cookies.refreshToken;
+    const token = req.cookies['ucenter_refreshToken'];
     if (!token) {
       throw new UnauthorizedException();
     }

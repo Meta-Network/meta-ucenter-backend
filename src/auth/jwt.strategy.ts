@@ -8,7 +8,7 @@ import { JWTTokenPayload } from '../type/jwt-payload';
 export class JWTStrategy extends PassportStrategy(Strategy) {
   constructor() {
     super({
-      jwtFromRequest: (req) => req.cookies.accessToken,
+      jwtFromRequest: (req) => req.cookies['ucenter_accessToken'],
       ignoreExpiration: false,
       secretOrKey: JWT_KEY.privateKey,
       algorithms: ['RS256', 'RS384'],
