@@ -18,8 +18,7 @@ module.exports = {
   host: config.db.host,
   ssl: {
     rejectUnauthorized: true,
-    ca: fs
-      .readFileSync(join(__dirname, 'rds-ca-2019-root.pem'))
+    ca: readFileSync(join(__dirname, 'rds-ca-2019-root.pem'))
       .toString(),
   },
   port: config.db.port || 3306,
