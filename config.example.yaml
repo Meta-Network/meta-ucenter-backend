@@ -1,0 +1,42 @@
+app:
+  port: 
+
+db:
+  host: 
+  username: 
+  password: 
+  database: 
+
+jwt:
+  access_token_expires: 
+  refresh_token_expires: 
+  issuer: 
+
+cors:
+  origins: 
+
+cookies:
+  access_domain: 
+  access_path: 
+  refresh_domain: 
+  refresh_path: 
+
+email:
+  from: 
+  from_name: 
+  template_invoke_name_vcode: 
+
+sendcloud:
+  user: 
+  key: 
+
+hcaptcha:
+  is_enabled: 
+  secret: 
+
+redis:
+  host: 
+  port: 
+  pass:
+  vcode_ttl: 
+  vcode_max_items: 

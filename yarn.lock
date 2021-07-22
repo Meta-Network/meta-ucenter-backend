@@ -994,6 +994,11 @@
     jest-diff "^26.0.0"
     pretty-format "^26.0.0"
 
+"@types/js-yaml@^4.0.2":
+  version "4.0.2"
+  resolved "https://registry.nlark.com/@types/js-yaml/download/@types/js-yaml-4.0.2.tgz#4117a7a378593a218e9d6f0ef44ce6d5d9edf7fa"
+  integrity sha1-QReno3hZOiGOnW8O9Ezm1dnt9/o=
+
 "@types/json-schema@*", "@types/json-schema@^7.0.4", "@types/json-schema@^7.0.5", "@types/json-schema@^7.0.7":
   version "7.0.8"
   resolved "https://registry.npmjs.org/@types/json-schema/-/json-schema-7.0.8.tgz"
@@ -3247,6 +3252,11 @@ hcaptcha@^0.1.0:
   resolved "https://registry.yarnpkg.com/hcaptcha/-/hcaptcha-0.1.0.tgz#a1053a520158484ae8b7e1c022c81df00e4556ec"
   integrity sha512-mVRkhNcOuP7QJO50nYdu3vS+uaOg6Ku2HpMy50C2EckjB9DlnwX24iePi912IXuVIq5L8ukjISG4Ea6MimZ5+w==
 
+helmet@^4.6.0:
+  version "4.6.0"
+  resolved "https://registry.nlark.com/helmet/download/helmet-4.6.0.tgz#579971196ba93c5978eb019e4e8ec0e50076b4df"
+  integrity sha1-V5lxGWupPFl46wGeTo7A5QB2tN8=
+
 highlight.js@^10.7.1:
   version "10.7.3"
   resolved "https://registry.npmjs.org/highlight.js/-/highlight.js-10.7.3.tgz"
@@ -4029,10 +4039,10 @@ js-yaml@^3.13.1:
     argparse "^1.0.7"
     esprima "^4.0.0"
 
-js-yaml@^4.0.0:
+js-yaml@^4.0.0, js-yaml@^4.1.0:
   version "4.1.0"
-  resolved "https://registry.npmjs.org/js-yaml/-/js-yaml-4.1.0.tgz"
-  integrity sha512-wpxZs9NoxZaJESJGIZTyDEaYpl0FKSA+FB9aJiyemKhMwkxQg63h4T1KJgUGHpTqPDNRcmmYLugrRjJlBtWvRA==
+  resolved "https://registry.nlark.com/js-yaml/download/js-yaml-4.1.0.tgz?cache=0&sync_timestamp=1618847165988&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fjs-yaml%2Fdownload%2Fjs-yaml-4.1.0.tgz#c1fb65f8f5017901cdd2c951864ba18458a10602"
+  integrity sha1-wftl+PUBeQHN0slRhkuhhFihBgI=
   dependencies:
     argparse "^2.0.1"
 

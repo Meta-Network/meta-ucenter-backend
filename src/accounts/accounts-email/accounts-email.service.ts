@@ -36,9 +36,9 @@ export class AccountsEmailService {
 
   private async sendVerificationCodeEmail(email: string, code: string) {
     const [from, fromName, templateInvokeName] = [
-      'EMAIL_FROM',
-      'EMAIL_FROM_NAME',
-      'EMAIL_TEMPLATE_INVOKE_NAME_VCODE',
+      'email.from',
+      'email.from_name',
+      'email.template_invoke_name_vcode',
     ].map((key) => this.configService.get<string>(key));
 
     await this.emailService.send(

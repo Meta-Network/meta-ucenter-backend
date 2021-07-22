@@ -12,7 +12,7 @@ import { JWTStrategy } from './jwt.strategy';
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
-        issuer: configService.get<string>('JWT_ISSUER'),
+        issuer: configService.get<string>('jwt.issuer'),
         privateKey: JWT_KEY.privateKey,
         publicKey: JWT_KEY.publicKey,
         verifyOptions: {

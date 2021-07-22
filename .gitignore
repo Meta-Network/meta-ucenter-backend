@@ -2,14 +2,10 @@
 /dist
 /node_modules
 
-.env.*
-
 # Logs
 logs
 *.log
 npm-debug.log*
-JWT_PRIVATE_KEY.pem
-JWT_PUBLIC_KEY.pub
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
@@ -39,4 +35,10 @@ lerna-debug.log*
 
 
 # Environment file
-*.env
+.env.*
+config.*
+!config.example.yaml
+
+# JWT keys
+JWT_PRIVATE_KEY.pem
+JWT_PUBLIC_KEY.pub

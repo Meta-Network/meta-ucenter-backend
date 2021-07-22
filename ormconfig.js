@@ -1,28 +1,31 @@
-require('dotenv').config({
-  path:
-    process.env.NODE_ENV === 'production'
-      ? '.env.production'
-      : '.env.development',
-});
-const fs = require("fs");
-const path = require('path');
+import { join } from 'path';
+import * as yaml from 'js-yaml';
+import { readFileSync } from 'fs';
 
-console.info('pr', process.env.NODE_ENV);
-console.info(process.env.DB_NAME);
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const YAML_CONFIG_FILENAME =
+  process.env.NODE_ENV === 'production'
+    ? 'config.production.yaml'
+    : 'config.development.yaml';
+
+const config = yaml.load(
+    readFileSync(join(__dirname, YAML_CONFIG_FILENAME), 'utf8'),
+);
+
 
 module.exports = {
   type: 'mysql',
-  host: process.env.DB_HOST,
+  host: config.db.host,
   ssl: {
     rejectUnauthorized: true,
     ca: fs
-      .readFileSync(path.resolve(__dirname) + '/rds-ca-2019-root.pem')
+      .readFileSync(join(__dirname, 'rds-ca-2019-root.pem'))
       .toString(),
   },
-  port: 3306,
-  username: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
+  port: config.db.port || 3306,
+  username: config.db.username,
+  password: config.db.password,
+  database: config.db.database,
   synchronize: false,
   entities: ['src/entities/**/*.ts'],
   migrations: ['migration/**/*.ts'],

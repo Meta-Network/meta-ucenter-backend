@@ -41,11 +41,11 @@ export class AuthService {
     return {
       accessToken: this.jwtService.sign(accessToken, {
         algorithm: 'RS256',
-        expiresIn: this.configService.get<string>('JWT_ACCESS_TOKEN_EXPIRES'),
+        expiresIn: this.configService.get<string>('jwt.access_token_expires'),
       }),
       refreshToken: this.jwtService.sign(refreshToken, {
         algorithm: 'RS256',
-        expiresIn: this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRES'),
+        expiresIn: this.configService.get<string>('jwt.refresh_token_expires'),
       }),
     };
   }

@@ -12,24 +12,24 @@ export class JWTCookieHelper {
     res.cookie('ucenter_accessToken', tokens.accessToken, {
       expires: new Date(
         new Date().getTime() +
-          ms(this.configService.get<string>('JWT_ACCESS_TOKEN_EXPIRES')),
+          ms(this.configService.get<string>('jwt.access_token_expires')),
       ),
       sameSite: 'none',
       secure: true,
       httpOnly: true,
-      domain: this.configService.get<string>('COOKIE_ACCESS_DOMAIN'),
-      path: this.configService.get<string>('COOKIE_ACCESS_PATH'),
+      domain: this.configService.get<string>('cookies.access_domain'),
+      path: this.configService.get<string>('cookies.access_path'),
     });
     res.cookie('ucenter_refreshToken', tokens.refreshToken, {
       expires: new Date(
         new Date().getTime() +
-          ms(this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRES')),
+          ms(this.configService.get<string>('jwt.refresh_token_expires')),
       ),
       sameSite: 'none',
       secure: true,
       httpOnly: true,
-      domain: this.configService.get<string>('COOKIE_REFRESH_DOMAIN'),
-      path: this.configService.get<string>('COOKIE_REFRESH_PATH'),
+      domain: this.configService.get<string>('cookies.refresh_domain'),
+      path: this.configService.get<string>('cookies.refresh_path'),
     });
   }
 }

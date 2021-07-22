@@ -22,7 +22,7 @@ export class EmailStrategy {
 
   private async sendVerificationCodeEmail(email: string, code: string) {
     const [from, fromName, templateInvokeName] = [
-      'EMAIL_FROM',
+      'email_from',
       'EMAIL_FROM_NAME',
       'EMAIL_TEMPLATE_INVOKE_NAME_VCODE',
     ].map((key) => this.configService.get<string>(key));

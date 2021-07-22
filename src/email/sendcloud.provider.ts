@@ -14,8 +14,8 @@ export class SendcloudProvider implements IEmailSender {
   ) {}
 
   async send({ from, fromName, to, templateInvokeName }, placeholders) {
-    const API_USER = this.configService.get<string>('SENDCLOUD_USER');
-    const API_KEY = this.configService.get<string>('SENDCLOUD_KEY');
+    const API_USER = this.configService.get<string>('sendcloud.user');
+    const API_KEY = this.configService.get<string>('sendcloud.key');
     const xSmtpapi = {
       to: [to],
       sub: {
