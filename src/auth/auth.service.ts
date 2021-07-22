@@ -16,14 +16,15 @@ export class AuthService {
   async signJWT(user: User, account: Account, aud: string | string[]) {
     const basePayload = {
       sub: user.id,
-      username: user.username,
-      avatar: user.avatar,
       bio: user.bio,
+      avatar: user.avatar,
+      username: user.username,
       nickname: user.nickname,
       created_at: user.created_at,
       updated_at: user.updated_at,
-      account,
       aud,
+      account,
+      iss: this.configService.get<string>('jwt.issuer'),
     };
 
     const accessToken: JWTTokenPayload = {

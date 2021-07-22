@@ -21,4 +21,11 @@ export class AccountsMetaMaskDto {
   })
   @IsNotEmpty()
   hcaptchaToken: string;
+
+  @ApiProperty({
+    default: ['ucenter'],
+    description: 'Tokens 的受众',
+  })
+  @IsNotEmpty()
+  aud: string | string[];
 }

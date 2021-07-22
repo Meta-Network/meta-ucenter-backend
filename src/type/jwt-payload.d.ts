@@ -12,4 +12,5 @@ export type JWTTokenPayload = {
   updated_at: Date;
   aud: string | string[];
   jti: string;
+  iss: string;
 };

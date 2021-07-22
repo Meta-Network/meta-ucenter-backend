@@ -39,15 +39,17 @@ export class AccountsTokenController {
   ) {
     const token = req.cookies['ucenter_refreshToken'];
     if (!token) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(
+        'Failed to refresh token; You must login.',
+      );
     }
     const payload: JWTTokenPayload = await this.jwtService.verify(token);
-    const tokens = await this.loginService.refresh(
+    const { user, tokens } = await this.loginService.refresh(
       payload.sub,
       payload.account.id,
       payload.aud,
     );
     await this.jwtCookieHelper.JWTCookieWriter(res, tokens);
-    return { success: true };
+    return user;
   }
 }

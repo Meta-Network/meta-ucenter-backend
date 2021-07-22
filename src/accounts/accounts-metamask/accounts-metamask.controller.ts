@@ -1,7 +1,6 @@
-import { Body, Controller, Param, Post, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, Res, UseGuards } from '@nestjs/common';
 import {
   ApiTags,
-  ApiParam,
   ApiCreatedResponse,
   ApiBadRequestResponse,
   ApiUnauthorizedResponse,
@@ -39,14 +38,7 @@ export class AccountsMetamaskController {
     return { code };
   }
 
-  @Post('login/:aud')
-  @ApiParam({
-    name: 'aud',
-    example: 'ucenter',
-    description: 'tokens 的受众',
-    type: 'string',
-    required: true,
-  })
+  @Post('login')
   @ApiCreatedResponse({
     description:
       '通过 MetaMask 验证和 Captcha 验证后，返回登陆的用户信息并在 Cookies 中写入用户 tokens',
@@ -55,13 +47,11 @@ export class AccountsMetamaskController {
     description: '传入的表单参数不正确或无效时',
   })
   async login(
-    @Param('aud') audPlatform: string,
     @Res({ passthrough: true }) res: Response,
     @Body() accountsMetaMaskDto: AccountsMetaMaskDto,
   ) {
     const { user, account, tokens } = await this.accountsMetaMaskService.login(
       accountsMetaMaskDto,
-      audPlatform,
     );
 
     await this.jwtCookieHelper.JWTCookieWriter(res, tokens);

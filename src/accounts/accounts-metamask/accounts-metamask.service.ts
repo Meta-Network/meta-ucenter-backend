@@ -31,7 +31,7 @@ export class AccountsMetamaskService {
     );
   }
 
-  async login(accountsMetaMaskDto: AccountsMetaMaskDto, aud = 'ucenter') {
+  async login(accountsMetaMaskDto: AccountsMetaMaskDto) {
     await this.verifySignature(accountsMetaMaskDto);
 
     const userAccountData = {
@@ -46,7 +46,7 @@ export class AccountsMetamaskService {
     const tokens: JWTTokens = await this.authService.signJWT(
       user,
       userAccount,
-      aud,
+      accountsMetaMaskDto.aud,
     );
     return {
       user,

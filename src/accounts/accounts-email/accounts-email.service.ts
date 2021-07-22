@@ -52,7 +52,7 @@ export class AccountsEmailService {
     );
   }
 
-  async login(accountsEmailDto: AccountsEmailDto, aud = 'ucenter') {
+  async login(accountsEmailDto: AccountsEmailDto) {
     await this.verifyEmail(accountsEmailDto);
 
     const userAccountData = {
@@ -67,7 +67,7 @@ export class AccountsEmailService {
     const tokens: JWTTokens = await this.authService.signJWT(
       user,
       userAccount,
-      aud,
+      accountsEmailDto.aud,
     );
     return {
       user,
