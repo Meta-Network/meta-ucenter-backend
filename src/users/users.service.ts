@@ -15,12 +15,31 @@ export class UsersService {
     return await this.usersRepository.findOne(uid, options);
   }
 
-  async updateUsername(uid: number, username: string): Promise<User> {
-    const user = await this.usersRepository.findOne(uid);
-    // only modify the username when it's empty
-    user.username = user.username || username;
+  async updateUsername(
+    uid: number,
+    username: string,
+  ): Promise<{ success: boolean; reason: string; user: User }> {
+    const isAlreadyExists = await this.usersRepository.findOne({ username });
 
-    return await this.usersRepository.save(user);
+    if (isAlreadyExists) {
+      return { success: false, reason: 'Username already exists', user: null };
+    }
+
+    const user = await this.usersRepository.findOne(uid);
+    if (user.username !== '') {
+      return {
+        success: false,
+        reason: 'User already has a username',
+        user: null,
+      };
+    }
+
+    await this.usersRepository.update(uid, { username });
+    return {
+      success: true,
+      reason: 'Update username completed',
+      user: await this.usersRepository.findOne(uid),
+    };
   }
 
   async getUserInfo(uid: number): Promise<User> {

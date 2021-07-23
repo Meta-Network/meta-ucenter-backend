@@ -1,4 +1,12 @@
-import { Get, Patch, Body, UseGuards, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  UseGuards,
+  Controller,
+  Get,
+  Put,
+  Post,
+  Patch,
+} from '@nestjs/common';
 import { CurrentUser } from './user.decorator';
 import { UsersService } from './users.service';
 import { JWTAuthGuard } from 'src/auth/jwt.guard';
@@ -49,6 +57,21 @@ export class UsersController {
     @Body() updateUserDto: UpdateUserDto,
   ) {
     return this.usersService.update(user.id, updateUserDto);
+  }
+
+  @ApiOkResponse({
+    description: '当 Cookies 中具有有效的{accessToken}时，更新本用户的用户名',
+  })
+  @ApiUnauthorizedResponse({
+    description: '当 Cookies 中的{accessToken}过期或无效时',
+  })
+  @UseGuards(JWTAuthGuard)
+  @Put('me/username')
+  async setMyUsername(
+    @CurrentUser() user: JWTDecodedUser,
+    @Body() body: { username: string },
+  ) {
+    return this.usersService.updateUsername(user.id, body.username);
   }
 
   @UseGuards(JWTAuthGuard)
