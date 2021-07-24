@@ -15,6 +15,9 @@ import { TwoFactorAuthModule } from './two-factor-auth/two-factor-auth.module';
 import * as fs from 'fs';
 import * as winston from 'winston';
 import { WinstonModule } from 'nest-winston';
+
+//import { InvitationModule } from './invitation/invitation.module';
+
 const { combine, timestamp, printf, metadata, label } = winston.format;
 
 const logFormat = printf((info) => {
@@ -78,6 +81,7 @@ const logFormat = printf((info) => {
     AccountsEmailModule,
     AccountsTokenModule,
     AccountsMetamaskModule,
+    // InvitationModule,
   ],
   controllers: [AppController],
   providers: [AppService],
