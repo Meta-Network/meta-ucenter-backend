@@ -5,6 +5,7 @@ import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
+import { allowXhrOnlyMiddleware } from './allow-xhr-only.middleware';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -18,6 +19,7 @@ async function bootstrap() {
 
   app.use(helmet());
   app.use(cookieParser());
+  app.use(allowXhrOnlyMiddleware);
 
   app.enableCors({
     origin: configService.get<string[]>('cors.origins'),

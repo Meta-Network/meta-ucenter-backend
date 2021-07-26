@@ -38,4 +38,14 @@ export class JWTCookieHelper {
       path: this.configService.get<string>('cookies.refresh_path'),
     });
   }
+  async JWTCookieDeleter(res: Response) {
+    const accessTokenName = this.configService.get<string>(
+      'jwt.access_token_name',
+    );
+    const refreshTokenName = this.configService.get<string>(
+      'jwt.refresh_token_name',
+    );
+    res.clearCookie(accessTokenName);
+    res.clearCookie(refreshTokenName);
+  }
 }

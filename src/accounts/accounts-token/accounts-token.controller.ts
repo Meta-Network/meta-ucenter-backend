@@ -56,4 +56,12 @@ export class AccountsTokenController {
     await this.jwtCookieHelper.JWTCookieWriter(res, tokens);
     return user;
   }
+
+  @ApiCreatedResponse({
+    description: '清除登录的 tokens',
+  })
+  @Patch('delete')
+  async delete(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    await this.jwtCookieHelper.JWTCookieDeleter(res);
+  }
 }
