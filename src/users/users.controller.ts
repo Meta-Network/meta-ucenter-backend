@@ -23,6 +23,7 @@ import {
   ApiOkResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { UpdateUsernameDto } from './dto/update-username.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -69,7 +70,7 @@ export class UsersController {
   @Put('me/username')
   async setMyUsername(
     @CurrentUser() user: JWTDecodedUser,
-    @Body() body: { username: string },
+    @Body() body: UpdateUsernameDto,
   ) {
     return this.usersService.updateUsername(user.id, body.username);
   }

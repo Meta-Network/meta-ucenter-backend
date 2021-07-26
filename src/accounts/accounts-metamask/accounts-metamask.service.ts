@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Account } from 'src/entities/Account.entity';
 import { AuthService } from 'src/auth/auth.service';
@@ -11,6 +15,7 @@ import { VerificationCodeService } from 'src/verification-code/verification-code
 import { UserAccountHelper } from '../get-init-user-account-helper';
 import { recoverPersonalSignature } from 'eth-sig-util';
 import { bufferToHex } from 'ethereumjs-util';
+import { InvitationService } from '../../invitation/invitation.service';
 
 @Injectable()
 export class AccountsMetamaskService {
@@ -21,6 +26,7 @@ export class AccountsMetamaskService {
     private readonly configService: ConfigService,
     private readonly captchaService: CaptchaService,
     private readonly userAccountHelper: UserAccountHelper,
+    private readonly invitationService: InvitationService,
     private readonly verificationCodeService: VerificationCodeService,
   ) {}
 
@@ -31,6 +37,45 @@ export class AccountsMetamaskService {
     );
   }
 
+  async signup(accountsMetaMaskDto: AccountsMetaMaskDto, signature: string) {
+    await this.verifySignature(accountsMetaMaskDto);
+
+    const invitation = await this.invitationService.findOne(signature);
+    if (!invitation) {
+      throw new BadRequestException('Invitation does not exist.');
+    }
+
+    if (invitation.invitee_user_id) {
+      throw new BadRequestException('Invitation is already used.');
+    }
+
+    const userAccountData = {
+      account_id: accountsMetaMaskDto.address,
+      platform: 'MetaMask',
+    };
+
+    const hasAlreadySigned: { user; userAccount } =
+      await this.userAccountHelper.get(userAccountData);
+
+    if (hasAlreadySigned.user) {
+      throw new BadRequestException('User is signed already, please login.');
+    }
+
+    const { user, userAccount } = await this.userAccountHelper.init(
+      userAccountData,
+    );
+
+    invitation.invitee_user_id = user.id;
+    await this.invitationService.update(invitation);
+
+    const tokens: JWTTokens = await this.authService.signJWT(user, userAccount);
+    return {
+      user,
+      tokens,
+      account: userAccount,
+    };
+  }
+
   async login(accountsMetaMaskDto: AccountsMetaMaskDto) {
     await this.verifySignature(accountsMetaMaskDto);
 
@@ -39,15 +84,15 @@ export class AccountsMetamaskService {
       platform: 'MetaMask',
     };
 
-    const { user, userAccount } = await this.userAccountHelper.getOrInit(
+    const { user, userAccount } = await this.userAccountHelper.get(
       userAccountData,
     );
 
-    const tokens: JWTTokens = await this.authService.signJWT(
-      user,
-      userAccount,
-      accountsMetaMaskDto.aud,
-    );
+    if (!user || !userAccount) {
+      throw new UnauthorizedException('User account does not exist');
+    }
+
+    const tokens: JWTTokens = await this.authService.signJWT(user, userAccount);
     return {
       user,
       tokens,

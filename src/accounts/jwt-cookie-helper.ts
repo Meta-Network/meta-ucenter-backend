@@ -9,7 +9,13 @@ const ms = require('ms');
 export class JWTCookieHelper {
   constructor(private configService: ConfigService) {}
   async JWTCookieWriter(res: Response, tokens: JWTTokens) {
-    res.cookie('ucenter_accessToken', tokens.accessToken, {
+    const accessTokenName = this.configService.get<string>(
+      'jwt.access_token_name',
+    );
+    const refreshTokenName = this.configService.get<string>(
+      'jwt.refresh_token_name',
+    );
+    res.cookie(accessTokenName, tokens.accessToken, {
       expires: new Date(
         new Date().getTime() +
           ms(this.configService.get<string>('jwt.access_token_expires')),
@@ -20,7 +26,7 @@ export class JWTCookieHelper {
       domain: this.configService.get<string>('cookies.access_domain'),
       path: this.configService.get<string>('cookies.access_path'),
     });
-    res.cookie('ucenter_refreshToken', tokens.refreshToken, {
+    res.cookie(refreshTokenName, tokens.refreshToken, {
       expires: new Date(
         new Date().getTime() +
           ms(this.configService.get<string>('jwt.refresh_token_expires')),

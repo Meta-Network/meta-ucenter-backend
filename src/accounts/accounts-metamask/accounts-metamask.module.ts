@@ -2,11 +2,12 @@ import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { AuthModule } from 'src/auth/auth.module';
 import { UsersModule } from 'src/users/users.module';
-import { CaptchaModule } from 'src/captcha/captcha.module';
-import { VerificationCodeModule } from 'src/verification-code/verification-code.module';
 import { EmailModule } from 'src/email/email.module';
-import { AccountsMetamaskService } from './accounts-metamask.service';
+import { CaptchaModule } from 'src/captcha/captcha.module';
 import { AccountsModule } from 'src/accounts/accounts.module';
+import { InvitationModule } from 'src/invitation/invitation.module';
+import { VerificationCodeModule } from 'src/verification-code/verification-code.module';
+import { AccountsMetamaskService } from './accounts-metamask.service';
 import { AccountsMetamaskController } from './accounts-metamask.controller';
 
 @Module({
@@ -17,6 +18,7 @@ import { AccountsMetamaskController } from './accounts-metamask.controller';
     UsersModule,
     CaptchaModule,
     AccountsModule,
+    InvitationModule,
     VerificationCodeModule,
   ],
   providers: [AccountsMetamaskService],

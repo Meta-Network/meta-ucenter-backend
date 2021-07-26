@@ -3,12 +3,14 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { JWT_KEY } from '../constants';
 import { JWTTokenPayload } from '../type/jwt-payload';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class JWTStrategy extends PassportStrategy(Strategy) {
-  constructor() {
+  constructor(private readonly configService: ConfigService) {
     super({
-      jwtFromRequest: (req) => req.cookies['ucenter_accessToken'],
+      jwtFromRequest: (req) =>
+        req.cookies[this.configService.get<string>('jwt.access_token_name')],
       ignoreExpiration: false,
       secretOrKey: JWT_KEY.privateKey,
       algorithms: ['RS256', 'RS384'],

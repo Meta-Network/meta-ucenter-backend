@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Account } from 'src/entities/Account.entity';
 import { AuthService } from 'src/auth/auth.service';
@@ -10,6 +14,7 @@ import { VerificationCodeService } from 'src/verification-code/verification-code
 import { AccountsService } from '../accounts.service';
 import { AccountsEmailDto } from './dto/accounts-email.dto';
 import { UserAccountHelper } from '../get-init-user-account-helper';
+import { InvitationService } from 'src/invitation/invitation.service';
 
 @Injectable()
 export class AccountsEmailService {
@@ -18,6 +23,7 @@ export class AccountsEmailService {
     private readonly authService: AuthService,
     private readonly usersService: UsersService,
     private readonly accountsService: AccountsService,
+    private readonly invitationService: InvitationService,
     private readonly configService: ConfigService,
     private readonly captchaService: CaptchaService,
     private readonly userAccountHelper: UserAccountHelper,
@@ -52,6 +58,45 @@ export class AccountsEmailService {
     );
   }
 
+  async signup(accountsEmailDto: AccountsEmailDto, signature) {
+    await this.verifyEmail(accountsEmailDto);
+
+    const invitation = await this.invitationService.findOne(signature);
+    if (!invitation) {
+      throw new BadRequestException('Invitation does not exist.');
+    }
+
+    if (invitation.invitee_user_id) {
+      throw new BadRequestException('Invitation is already used.');
+    }
+
+    const userAccountData = {
+      account_id: accountsEmailDto.email,
+      platform: 'email',
+    };
+
+    const hasAlreadySigned: { user; userAccount } =
+      await this.userAccountHelper.get(userAccountData);
+
+    if (hasAlreadySigned.user) {
+      throw new BadRequestException('User is signed already, please login.');
+    }
+
+    const { user, userAccount } = await this.userAccountHelper.init(
+      userAccountData,
+    );
+
+    invitation.invitee_user_id = user.id;
+    await this.invitationService.update(invitation);
+
+    const tokens: JWTTokens = await this.authService.signJWT(user, userAccount);
+    return {
+      user,
+      tokens,
+      account: userAccount,
+    };
+  }
+
   async login(accountsEmailDto: AccountsEmailDto) {
     await this.verifyEmail(accountsEmailDto);
 
@@ -60,15 +105,15 @@ export class AccountsEmailService {
       platform: 'email',
     };
 
-    const { user, userAccount } = await this.userAccountHelper.getOrInit(
+    const { user, userAccount } = await this.userAccountHelper.get(
       userAccountData,
     );
 
-    const tokens: JWTTokens = await this.authService.signJWT(
-      user,
-      userAccount,
-      accountsEmailDto.aud,
-    );
+    if (!user || !userAccount) {
+      throw new UnauthorizedException('User account does not exist');
+    }
+
+    const tokens: JWTTokens = await this.authService.signJWT(user, userAccount);
     return {
       user,
       tokens,

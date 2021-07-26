@@ -22,18 +22,14 @@ export class AccountsSmsController {
     return { key: verifyCode.key };
   }
 
-  @Post('/:aud')
+  @Post('/')
   async login(
-    @Param('aud') audPlatform: string,
     @Res({ passthrough: true }) res: Response,
     @Body() loginSmsDto: AccountsSmsDto,
   ) {
-    const { user, tokens } = await this.loginSmsService.login(
-      loginSmsDto,
-      audPlatform,
-    );
-
+    const { user, tokens } = await this.loginSmsService.login(loginSmsDto);
     await this.jwtCookieHelper.JWTCookieWriter(res, tokens);
+
     return { user };
   }
 }

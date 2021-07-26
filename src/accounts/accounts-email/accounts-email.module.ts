@@ -8,6 +8,7 @@ import { EmailModule } from 'src/email/email.module';
 import { AccountsEmailService } from './accounts-email.service';
 import { AccountsModule } from 'src/accounts/accounts.module';
 import { AccountsEmailController } from './accounts-email.controller';
+import { InvitationModule } from '../../invitation/invitation.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { AccountsEmailController } from './accounts-email.controller';
     UsersModule,
     CaptchaModule,
     AccountsModule,
+    InvitationModule,
     VerificationCodeModule,
   ],
   providers: [AccountsEmailService],
