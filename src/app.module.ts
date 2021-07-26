@@ -15,6 +15,7 @@ import { TwoFactorAuthModule } from './two-factor-auth/two-factor-auth.module';
 import * as fs from 'fs';
 import * as winston from 'winston';
 import { WinstonModule } from 'nest-winston';
+
 const { combine, timestamp, printf, metadata, label } = winston.format;
 
 const logFormat = printf((info) => {

@@ -2,6 +2,7 @@ import { IsOptional } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateUserDto {
+  // TODO: add validate
   @ApiPropertyOptional({
     default: 'Brendan Eich',
     description: '用户昵称',

@@ -25,7 +25,7 @@ export class AccountsSmsService {
     return code;
   }
 
-  async login(loginSmsDto: AccountsSmsDto, aud = 'ucenter') {
+  async login(loginSmsDto: AccountsSmsDto) {
     const isSmsVerified = await this.verificationCodeService.verify(
       'sms-login',
       loginSmsDto.phoneNumber,

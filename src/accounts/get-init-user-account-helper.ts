@@ -10,24 +10,31 @@ export class UserAccountHelper {
     private usersService: UsersService,
     private accountsService: AccountsService,
   ) {}
-  async getOrInit(userAccountData: {
+
+  async get(userAccountData: {
     account_id: string;
     platform: string;
   }): Promise<{ user: User; userAccount: Account }> {
-    let userAccount: Account = await this.accountsService.findOne(
+    const userAccount: Account = await this.accountsService.findOne(
       userAccountData,
     );
-    let user: User;
 
-    if (!userAccount) {
-      user = await this.usersService.save();
-      userAccount = await this.accountsService.save({
-        ...userAccountData,
-        user_id: user.id,
-      });
-    } else {
-      user = await this.usersService.findOne(userAccount.user_id);
-    }
+    const user = userAccount
+      ? await this.usersService.findOne(userAccount.user_id)
+      : null;
+
+    return { user, userAccount };
+  }
+
+  async init(userAccountData: {
+    account_id: string;
+    platform: string;
+  }): Promise<{ user: User; userAccount: Account }> {
+    const user = await this.usersService.save();
+    const userAccount = await this.accountsService.save({
+      ...userAccountData,
+      user_id: user.id,
+    });
 
     return { user, userAccount };
   }

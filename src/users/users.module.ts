@@ -6,10 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TwoFactorAuthModule } from 'src/two-factor-auth/two-factor-auth.module';
 
 @Module({
-  imports: [
-    TwoFactorAuthModule,
-    TypeOrmModule.forFeature([User]),
-  ],
+  imports: [TwoFactorAuthModule, TypeOrmModule.forFeature([User])],
   providers: [UsersService],
   exports: [UsersService],
   controllers: [UsersController],

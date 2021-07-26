@@ -1,4 +1,3 @@
-import { JwtService } from '@nestjs/jwt';
 import {
   Req,
   Res,
@@ -11,16 +10,19 @@ import {
   ApiCreatedResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { JwtService } from '@nestjs/jwt';
 import { JWTTokenPayload } from 'src/type/jwt-payload';
 import { JWTCookieHelper } from 'src/accounts/jwt-cookie-helper';
 import { AccountsTokenService } from './accounts-token.service';
 import { Request, Response } from 'express';
+import { ConfigService } from '@nestjs/config';
 
 @ApiTags('Accounts')
 @Controller('accounts/token')
 export class AccountsTokenController {
   constructor(
     private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
     private readonly loginService: AccountsTokenService,
     private readonly jwtCookieHelper: JWTCookieHelper,
   ) {}
@@ -37,17 +39,21 @@ export class AccountsTokenController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const token = req.cookies['ucenter_refreshToken'];
+    const refreshTokenName = this.configService.get<string>(
+      'jwt.refresh_token_name',
+    );
+    const token = req.cookies[refreshTokenName];
     if (!token) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(
+        'Failed to refresh token; You must login.',
+      );
     }
     const payload: JWTTokenPayload = await this.jwtService.verify(token);
-    const tokens = await this.loginService.refresh(
+    const { user, tokens } = await this.loginService.refresh(
       payload.sub,
       payload.account.id,
-      payload.aud,
     );
     await this.jwtCookieHelper.JWTCookieWriter(res, tokens);
-    return { success: true };
+    return user;
   }
 }

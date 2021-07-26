@@ -1,7 +1,6 @@
 import { Body, Controller, Param, Post, Res, UseGuards } from '@nestjs/common';
 import {
   ApiTags,
-  ApiParam,
   ApiCreatedResponse,
   ApiBadRequestResponse,
   ApiUnauthorizedResponse,
@@ -39,14 +38,29 @@ export class AccountsEmailController {
     return { key: verifyCode.key };
   }
 
-  @Post('login/:aud')
-  @ApiParam({
-    name: 'aud',
-    example: 'ucenter',
-    description: 'tokens 的受众',
-    type: 'string',
-    required: true,
+  @Post('signup/:signature')
+  @ApiCreatedResponse({
+    description:
+      '通过邮箱验证和 Captcha 验证后，返回创建的用户信息并在 Cookies 中写入用户 tokens',
   })
+  @ApiBadRequestResponse({
+    description: '传入的表单参数不正确或无效时',
+  })
+  async signup(
+    @Param('signature') signature: string,
+    @Res({ passthrough: true }) res: Response,
+    @Body() accountsEmailDto: AccountsEmailDto,
+  ) {
+    const { user, account, tokens } = await this.accountsEmailService.signup(
+      accountsEmailDto,
+      signature,
+    );
+
+    await this.jwtCookieHelper.JWTCookieWriter(res, tokens);
+    return { user, account };
+  }
+
+  @Post('login')
   @ApiCreatedResponse({
     description:
       '通过邮箱验证和 Captcha 验证后，返回登陆的用户信息并在 Cookies 中写入用户 tokens',
@@ -54,14 +68,13 @@ export class AccountsEmailController {
   @ApiBadRequestResponse({
     description: '传入的表单参数不正确或无效时',
   })
+  @ApiUnauthorizedResponse({ description: '用户不存在' })
   async login(
-    @Param('aud') audPlatform: string,
     @Res({ passthrough: true }) res: Response,
     @Body() accountsEmailDto: AccountsEmailDto,
   ) {
     const { user, account, tokens } = await this.accountsEmailService.login(
       accountsEmailDto,
-      audPlatform,
     );
 
     await this.jwtCookieHelper.JWTCookieWriter(res, tokens);
@@ -100,7 +113,6 @@ export class AccountsEmailController {
   @ApiUnauthorizedResponse({
     description: '当 Cookies 中的{accessToken}过期或无效时',
   })
-  // TODO: TEST bind and unbind method
   async unbind(@Body() accountsEmailDto: AccountsEmailDto) {
     return this.accountsEmailService.unbindEmailAccount(accountsEmailDto);
   }
