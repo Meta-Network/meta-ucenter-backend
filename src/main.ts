@@ -1,10 +1,11 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
+import { NotAcceptableException, ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
+import formCors from 'form-cors';
 import { allowXhrOnlyMiddleware } from './allow-xhr-only.middleware';
 
 async function bootstrap() {
@@ -19,6 +20,12 @@ async function bootstrap() {
 
   app.use(helmet());
   app.use(cookieParser());
+  app.use(
+    formCors({
+      allowList: configService.get<string[]>('cors.origins'),
+      exception: new NotAcceptableException('This request is not allowed.'),
+    }),
+  );
   app.use(allowXhrOnlyMiddleware);
 
   app.enableCors({
