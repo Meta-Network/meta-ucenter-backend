@@ -6,7 +6,6 @@ import { ConfigService } from '@nestjs/config';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import formCors from 'form-cors';
-import { allowXhrOnlyMiddleware } from './allow-xhr-only.middleware';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -26,7 +25,6 @@ async function bootstrap() {
       exception: new NotAcceptableException('This request is not allowed.'),
     }),
   );
-  app.use(allowXhrOnlyMiddleware);
 
   app.enableCors({
     origin: configService.get<string[]>('cors.origins'),
