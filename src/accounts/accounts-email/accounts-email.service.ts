@@ -15,6 +15,7 @@ import { AccountsService } from '../accounts.service';
 import { AccountsEmailDto } from './dto/accounts-email.dto';
 import { UserAccountHelper } from '../get-init-user-account-helper';
 import { InvitationService } from 'src/invitation/invitation.service';
+import { VerifyExistsDto } from './dto/verify-exists.dto';
 
 @Injectable()
 export class AccountsEmailService {
@@ -181,5 +182,19 @@ export class AccountsEmailService {
     if (!isCaptchaVerified) {
       throw new BadRequestException('Captcha authentication is not verified.');
     }
+  }
+
+  async verifyAccountExists(
+    verifyExistsDto: VerifyExistsDto,
+  ): Promise<boolean> {
+    const userAccountData = {
+      account_id: verifyExistsDto.email,
+      platform: 'email',
+    };
+
+    const hasAlreadySigned: { user; userAccount } =
+      await this.userAccountHelper.get(userAccountData);
+
+    return Boolean(hasAlreadySigned.user);
   }
 }

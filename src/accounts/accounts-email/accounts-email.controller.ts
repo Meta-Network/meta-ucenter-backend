@@ -1,18 +1,28 @@
-import { Body, Controller, Param, Post, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  Param,
+  Post,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import {
   ApiTags,
+  ApiOkResponse,
   ApiCreatedResponse,
   ApiBadRequestResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { CurrentUser } from 'src/users/user.decorator';
 import { Response } from 'express';
 import { AccountsEmailDto } from './dto/accounts-email.dto';
 import { AccountsEmailService } from './accounts-email.service';
 import { JWTCookieHelper } from 'src/accounts/jwt-cookie-helper';
 import { User } from 'src/entities/User.entity';
 import { JWTAuthGuard } from 'src/auth/jwt.guard';
-import { CurrentUser } from 'src/users/user.decorator';
 import { VerificationCodeDto } from 'src/verification-code/dto/verification-code.dto';
+import { VerifyExistsDto } from './dto/verify-exists.dto';
 
 @ApiTags('Accounts')
 @Controller('accounts/email')
@@ -79,6 +89,17 @@ export class AccountsEmailController {
 
     await this.jwtCookieHelper.JWTCookieWriter(res, tokens);
     return { user, account };
+  }
+
+  @Post('is-exists')
+  @HttpCode(200)
+  @ApiOkResponse({ description: '验证登陆邮箱是否已被注册' })
+  async isExists(
+    @Body() verifyExistsDto: VerifyExistsDto,
+  ): Promise<{ isExists: boolean }> {
+    const isExists: boolean =
+      await this.accountsEmailService.verifyAccountExists(verifyExistsDto);
+    return { isExists };
   }
 
   @Post('/bind')
