@@ -1,14 +1,15 @@
+import { Response } from 'express';
 import { Repository } from 'typeorm';
+import { User } from 'src/entities/User.entity';
 import { ConfigService } from '@nestjs/config';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { AuthorizeRequestDto } from '../dto/authorize-request.dto';
 import { AuthorizeCallbackDto } from '../dto/authorize-callback.dto';
-import { User } from 'src/entities/User.entity';
-import { SocialAuth } from 'src/entities/SocialAuth.entity';
 import { VcodeCacheService } from 'src/vcode-cache/vcode-cache.service';
+import { SocialAuth } from 'src/entities/SocialAuth.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 import * as randomstring from 'randomstring';
 import axios from 'axios';
-import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class GithubStrategy {
@@ -59,7 +60,7 @@ export class GithubStrategy {
   async authorizeCallback(
     authorizeCallbackDto: AuthorizeCallbackDto,
     user: User,
-    res,
+    res: Response,
   ): Promise<void> {
     const state = await this.vcodeCacheService.get<string>(
       `github_authorize_request_state_by_user_${user.id}`,

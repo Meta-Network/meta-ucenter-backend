@@ -34,8 +34,8 @@ export class JWTCookieHelper {
       sameSite: 'none',
       secure: true,
       httpOnly: true,
-      domain: this.configService.get<string>('cookies.refresh_domain'),
       path: this.configService.get<string>('cookies.refresh_path'),
+      domain: this.configService.get<string>('cookies.refresh_domain'),
     });
   }
   async JWTCookieDeleter(res: Response) {
@@ -45,7 +45,13 @@ export class JWTCookieHelper {
     const refreshTokenName = this.configService.get<string>(
       'jwt.refresh_token_name',
     );
-    res.clearCookie(accessTokenName);
-    res.clearCookie(refreshTokenName);
+    res.clearCookie(accessTokenName, {
+      path: this.configService.get<string>('cookies.access_path'),
+      domain: this.configService.get<string>('cookies.access_domain'),
+    });
+    res.clearCookie(refreshTokenName, {
+      path: this.configService.get<string>('cookies.refresh_path'),
+      domain: this.configService.get<string>('cookies.refresh_domain'),
+    });
   }
 }

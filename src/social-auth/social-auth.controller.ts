@@ -1,13 +1,14 @@
 import {
-  Body,
-  Controller,
   Get,
-  Param,
-  Post,
-  Query,
   Res,
+  Post,
+  Body,
+  Query,
+  Param,
   UseGuards,
+  Controller,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { ApiCreatedResponse, ApiParam, ApiTags } from '@nestjs/swagger';
 import { User } from 'src/entities/User.entity';
 import { JWTAuthGuard } from 'src/auth/jwt.guard';
@@ -55,7 +56,7 @@ export class SocialAuthController {
     // DTO is not working here
     @Query() authorizeCallbackDto: any, // AuthorizeCallbackDto,
     @CurrentUser() user: User,
-    @Res() res,
+    @Res() res: Response,
   ) {
     return await this.socialAuthService.authorizeCallback(
       platform,
