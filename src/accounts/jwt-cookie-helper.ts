@@ -46,10 +46,16 @@ export class JWTCookieHelper {
       'jwt.refresh_token_name',
     );
     res.clearCookie(accessTokenName, {
+      sameSite: 'none',
+      secure: true,
+      httpOnly: true,
       path: this.configService.get<string>('cookies.access_path'),
       domain: this.configService.get<string>('cookies.access_domain'),
     });
     res.clearCookie(refreshTokenName, {
+      sameSite: 'none',
+      secure: true,
+      httpOnly: true,
       path: this.configService.get<string>('cookies.refresh_path'),
       domain: this.configService.get<string>('cookies.refresh_domain'),
     });
