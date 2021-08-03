@@ -1,6 +1,6 @@
-import { readFileSync } from 'fs';
 import * as yaml from 'js-yaml';
 import { join } from 'path';
+import { readFileSync } from 'fs';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const YAML_CONFIG_FILENAME =
