@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { AuthModule } from 'src/auth/auth.module';
 import { UsersModule } from 'src/users/users.module';
@@ -17,11 +17,12 @@ import { AccountsMetamaskController } from './accounts-metamask.controller';
     AuthModule,
     UsersModule,
     CaptchaModule,
-    AccountsModule,
     InvitationModule,
     VerificationCodeModule,
+    forwardRef(() => AccountsModule),
   ],
   providers: [AccountsMetamaskService],
   controllers: [AccountsMetamaskController],
+  exports: [AccountsMetamaskService],
 })
 export class AccountsMetamaskModule {}

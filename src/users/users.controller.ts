@@ -1,11 +1,11 @@
 import {
-  Body,
-  UseGuards,
-  Controller,
   Get,
   Put,
   Post,
   Patch,
+  Body,
+  UseGuards,
+  Controller,
 } from '@nestjs/common';
 import { CurrentUser } from './user.decorator';
 import { UsersService } from './users.service';
@@ -22,8 +22,11 @@ import {
   ApiCookieAuth,
   ApiOkResponse,
   ApiUnauthorizedResponse,
+  ApiOperation,
+  ApiBadRequestResponse,
 } from '@nestjs/swagger';
 import { UpdateUsernameDto } from './dto/update-username.dto';
+import { User } from '../entities/User.entity';
 
 @ApiTags('Users')
 @Controller('users')
@@ -33,45 +36,43 @@ export class UsersController {
     private readonly tfaService: TwoFactorAuthService,
   ) {}
 
-  @ApiOkResponse({
-    description: '当 Cookies 中具有有效的{accessToken}时，返回当前用户信息',
-  })
-  @ApiUnauthorizedResponse({
-    description: '当 Cookies 中的{accessToken}过期或无效时',
-  })
-  @UseGuards(JWTAuthGuard)
   @Get('me')
-  async getMyInfo(@CurrentUser() user: JWTDecodedUser) {
+  @UseGuards(JWTAuthGuard)
+  @ApiOperation({ summary: '获取当前用户的用户信息' })
+  @ApiOkResponse({ description: '返回当前用户的用户信息' })
+  @ApiUnauthorizedResponse({
+    description: 'Cookies 中的 access_token 过期或无效',
+  })
+  async getMyInfo(@CurrentUser() user: JWTDecodedUser): Promise<User> {
     return this.usersService.getUserInfo(user.id);
   }
 
-  @ApiOkResponse({
-    description: '当 Cookies 中具有有效的{accessToken}时，修改当前用户资料',
-  })
-  @ApiUnauthorizedResponse({
-    description: '当 Cookies 中的{accessToken}过期或无效时',
-  })
-  @UseGuards(JWTAuthGuard)
   @Patch('me')
+  @UseGuards(JWTAuthGuard)
+  @ApiOperation({ summary: '修改当前用户的用户信息' })
+  @ApiOkResponse({ description: '返回修改后的用户信息' })
+  @ApiUnauthorizedResponse({
+    description: 'Cookies 中的 access_token 过期或无效',
+  })
   async updateMyInfo(
     @CurrentUser() user: JWTDecodedUser,
     @Body() updateUserDto: UpdateUserDto,
-  ) {
+  ): Promise<User> {
     return this.usersService.update(user.id, updateUserDto);
   }
 
-  @ApiOkResponse({
-    description: '当 Cookies 中具有有效的{accessToken}时，更新本用户的用户名',
-  })
-  @ApiUnauthorizedResponse({
-    description: '当 Cookies 中的{accessToken}过期或无效时',
-  })
-  @UseGuards(JWTAuthGuard)
   @Put('me/username')
+  @UseGuards(JWTAuthGuard)
+  @ApiOperation({ summary: '更新用户的用户名' })
+  @ApiOkResponse({ description: '返回修改后的用户信息' })
+  @ApiBadRequestResponse({ description: '用户名已存在，或用户已有用户名' })
+  @ApiUnauthorizedResponse({
+    description: 'Cookies 中的 access_token 过期或无效',
+  })
   async setMyUsername(
     @CurrentUser() user: JWTDecodedUser,
     @Body() body: UpdateUsernameDto,
-  ) {
+  ): Promise<User> {
     return this.usersService.updateUsername(user.id, body.username);
   }
 

@@ -1,13 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsNumberString } from 'class-validator';
+import { IsNotEmpty, MaxLength } from 'class-validator';
 
 export class AccountsMetaMaskDto {
   @ApiProperty({
     default: '0x1234567890',
-    description: '登陆使用的钱包地址，与认证码对应',
+    description: '登录使用的钱包地址，与认证码对应',
   })
+  @MaxLength(220)
   @IsNotEmpty()
-  address: string;
+  account: string;
 
   @ApiProperty({
     description: '前端回传的对 WebMask 的签名校验',

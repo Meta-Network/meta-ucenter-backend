@@ -1,98 +1,90 @@
 import { Body, Controller, Post, Res, UseGuards } from '@nestjs/common';
 import {
   ApiTags,
+  ApiOperation,
   ApiCreatedResponse,
   ApiBadRequestResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Response } from 'express';
+import { AccountsService } from '../accounts.service';
 import { AccountsMetaMaskDto } from './dto/accounts-metamask.dto';
 import { AccountsMetamaskService } from './accounts-metamask.service';
-import { JWTCookieHelper } from 'src/accounts/jwt-cookie-helper';
 import { User } from 'src/entities/User.entity';
 import { JWTAuthGuard } from 'src/auth/jwt.guard';
-import { CurrentUser } from 'src/users/user.decorator';
+import { JWTCookieHelper } from 'src/accounts/jwt-cookie-helper';
 import { VerificationCodeDto } from 'src/verification-code/dto/verification-code.dto';
+import { CurrentUser } from 'src/users/user.decorator';
+import { Account } from '../../entities/Account.entity';
 
 @ApiTags('Accounts')
 @Controller('accounts/metamask')
 export class AccountsMetamaskController {
   constructor(
-    private readonly accountsMetaMaskService: AccountsMetamaskService,
+    private readonly accountsService: AccountsService,
+    private readonly accountsMetamaskService: AccountsMetamaskService,
     private readonly jwtCookieHelper: JWTCookieHelper,
   ) {}
 
   @Post('/verification-code')
-  @ApiCreatedResponse({
-    description: '在缓存中保存并回传一个校验码，与钱包地址绑定',
-  })
-  @ApiBadRequestResponse({
-    description: '传入的表单参数不正确或无效时',
-  })
+  @ApiOperation({ summary: '返回一段随机数供前端 API 进行签名，用于登录校验' })
+  @ApiCreatedResponse({ description: '在缓存中保存并回传校验码' })
+  @ApiBadRequestResponse({ description: '传入的表单参数不正确或无效' })
   async generateVerificationCodeForMetaMask(
     @Body() verifyCode: VerificationCodeDto,
   ): Promise<{ code }> {
-    const code = await this.accountsMetaMaskService.generateMetamaskNonce(
+    const code = await this.accountsMetamaskService.generateMetamaskNonce(
       verifyCode.key,
     );
     return { code };
   }
 
   @Post('login')
+  @ApiOperation({ summary: '以 MetaMask 钱包登录到现有账号' })
   @ApiCreatedResponse({
-    description:
-      '通过 MetaMask 验证和 Captcha 验证后，返回登陆的用户信息并在 Cookies 中写入用户 tokens',
+    description: '返回登录的用户信息。并在 Cookies 中写入 access_token',
   })
-  @ApiBadRequestResponse({
-    description: '传入的表单参数不正确或无效时',
-  })
+  @ApiBadRequestResponse({ description: '传入的表单参数不正确或无效' })
   async login(
     @Res({ passthrough: true }) res: Response,
     @Body() accountsMetaMaskDto: AccountsMetaMaskDto,
-  ) {
-    const { user, account, tokens } = await this.accountsMetaMaskService.login(
+  ): Promise<{ user: User; account: Account }> {
+    const { user, account, tokens } = await this.accountsService.login(
       accountsMetaMaskDto,
+      'metamask',
     );
-
     await this.jwtCookieHelper.JWTCookieWriter(res, tokens);
     return { user, account };
   }
 
   @Post('/bind')
   @UseGuards(JWTAuthGuard)
-  @ApiCreatedResponse({
-    description: '绑定新账号到本用户',
-  })
-  @ApiBadRequestResponse({
-    description: '传入的表单参数不正确或无效时',
-  })
+  @ApiOperation({ summary: '绑定一个未注册的 MetaMask 账号到本用户' })
+  @ApiCreatedResponse({ description: '绑定并返回账号信息' })
+  @ApiBadRequestResponse({ description: '传入的表单参数不正确或无效' })
   @ApiUnauthorizedResponse({
-    description: '当 Cookies 中的{accessToken}过期或无效时',
+    description: 'Cookies 中的 access_token 过期或无效',
   })
   async bind(
     @CurrentUser() user: User,
     @Body() accountsMetaMaskDto: AccountsMetaMaskDto,
-  ) {
-    return this.accountsMetaMaskService.bindMetaMaskAccount(
+  ): Promise<Account> {
+    return this.accountsService.bindAccount(
       accountsMetaMaskDto,
       user.id,
+      'metamask',
     );
   }
 
   @Post('/unbind')
   @UseGuards(JWTAuthGuard)
-  @ApiCreatedResponse({
-    description: '解绑本用户的现有邮箱账户',
-  })
-  @ApiBadRequestResponse({
-    description: '传入的表单参数不正确或无效时',
-  })
+  @ApiOperation({ summary: '解绑本用户的现有 MetaMask 账户' })
+  @ApiCreatedResponse({ description: '完成解绑，不返回 data' })
+  @ApiBadRequestResponse({ description: '传入的表单参数不正确或无效' })
   @ApiUnauthorizedResponse({
-    description: '当 Cookies 中的{accessToken}过期或无效时',
+    description: 'Cookies 中的 access_token 过期或无效',
   })
   async unbind(@Body() accountsMetaMaskDto: AccountsMetaMaskDto) {
-    return this.accountsMetaMaskService.unbindMetaMaskAccount(
-      accountsMetaMaskDto,
-    );
+    return this.accountsService.unbindAccount(accountsMetaMaskDto, 'metamask');
   }
 }

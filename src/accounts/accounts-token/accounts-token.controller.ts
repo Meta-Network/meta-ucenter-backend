@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiTags,
+  ApiOperation,
   ApiOkResponse,
   ApiCreatedResponse,
   ApiUnauthorizedResponse,
@@ -18,6 +19,7 @@ import { Request, Response } from 'express';
 import { JWTTokenPayload } from 'src/type/jwt-payload';
 import { JWTCookieHelper } from 'src/accounts/jwt-cookie-helper';
 import { AccountsTokenService } from './accounts-token.service';
+import { User } from '../../entities/User.entity';
 
 @ApiTags('AccountsToken')
 @Controller('accounts/tokens')
@@ -29,18 +31,18 @@ export class AccountsTokenController {
     private readonly jwtCookieHelper: JWTCookieHelper,
   ) {}
 
+  @Patch()
+  @ApiOperation({ summary: '刷新登录 Tokens 的有效期' })
   @ApiCreatedResponse({
-    description:
-      '当 Cookies 中具有有效的{refreshToken}时，重新对{refreshToken}和{accessToken}进行签名',
+    description: '更新 Cookies，返回当前用户信息',
   })
   @ApiUnauthorizedResponse({
-    description: '当 Cookies 中的{refreshToken}过期或无效时',
+    description: 'Cookies 中的 refresh_token 过期或无效',
   })
-  @Patch()
   async refresh(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
-  ) {
+  ): Promise<User> {
     const refreshTokenName = this.configService.get<string>(
       'jwt.refresh_token_name',
     );
@@ -59,11 +61,10 @@ export class AccountsTokenController {
     return user;
   }
 
-  @ApiOkResponse({
-    description: '清除登录的 tokens',
-  })
   @Delete()
-  async delete(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+  @ApiOperation({ summary: '清除登录的 Tokens' })
+  @ApiOkResponse({ description: '删除相关 Cookies，不返回 data' })
+  async delete(@Req() req: Request, @Res({ passthrough: true }) res: Response): Promise<void> {
     await this.jwtCookieHelper.JWTCookieDeleter(res);
   }
 }

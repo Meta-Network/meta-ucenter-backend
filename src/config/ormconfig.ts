@@ -1,4 +1,3 @@
-import { join } from 'path';
 import { readFileSync } from 'fs';
 import getConfig from './configuration';
 

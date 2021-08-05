@@ -33,7 +33,7 @@ export class SocialAuthService {
     );
   }
 
-  async getToken(platform: string, user: User) {
+  async getToken(platform: string, user: User): Promise<string> {
     return this.use(platform).getToken(user);
   }
 }

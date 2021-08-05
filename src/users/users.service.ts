@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '../entities/User.entity';
+import { User } from 'src/entities/User.entity';
 import { Repository } from 'typeorm';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { BadRequestException, Injectable } from '@nestjs/common';
 
 @Injectable()
 export class UsersService {
@@ -15,31 +15,20 @@ export class UsersService {
     return await this.usersRepository.findOne(uid, options);
   }
 
-  async updateUsername(
-    uid: number,
-    username: string,
-  ): Promise<{ success: boolean; reason: string; user: User }> {
+  async updateUsername(uid: number, username: string): Promise<User> {
     const isAlreadyExists = await this.usersRepository.findOne({ username });
 
     if (isAlreadyExists) {
-      return { success: false, reason: 'Username already exists', user: null };
+      throw new BadRequestException('Username already exists.');
     }
 
     const user = await this.usersRepository.findOne(uid);
     if (user.username !== '') {
-      return {
-        success: false,
-        reason: 'User already has a username',
-        user: null,
-      };
+      throw new BadRequestException('User already has a username');
     }
 
     await this.usersRepository.update(uid, { username });
-    return {
-      success: true,
-      reason: 'Update username completed',
-      user: await this.usersRepository.findOne(uid),
-    };
+    return await this.usersRepository.findOne(uid);
   }
 
   async getUserInfo(uid: number): Promise<User> {

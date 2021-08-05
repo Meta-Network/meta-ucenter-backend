@@ -1,12 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, MaxLength } from 'class-validator';
 
 export class VerifyExistsDto {
   @ApiProperty({
     default: 'someone@example.com',
-    description: '检查该邮箱是否已被注册',
+    description: '检查该账号是否已被注册',
   })
   @IsNotEmpty()
-  @IsEmail()
-  email: string;
+  @MaxLength(220)
+  account: string;
 }

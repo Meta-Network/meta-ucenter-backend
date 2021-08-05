@@ -9,7 +9,13 @@ import {
   Controller,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { ApiCreatedResponse, ApiParam, ApiTags } from '@nestjs/swagger';
+import {
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
 import { User } from 'src/entities/User.entity';
 import { JWTAuthGuard } from 'src/auth/jwt.guard';
 import { CurrentUser } from 'src/users/user.decorator';
@@ -22,16 +28,15 @@ import { AuthorizeRequestDto } from './dto/authorize-request.dto';
 export class SocialAuthController {
   constructor(private readonly socialAuthService: SocialAuthService) {}
 
+  @Post(':platform/authorize-request')
+  @UseGuards(JWTAuthGuard)
+  @ApiOperation({ summary: '前端请求一个进行 OAuth 验证的链接' })
   @ApiParam({
     name: 'platform',
     required: true,
     description: '指定进行认证的平台',
   })
-  @ApiCreatedResponse({
-    description: '返回 platform 对应的邀请链接',
-  })
-  @UseGuards(JWTAuthGuard)
-  @Post(':platform/authorize-request')
+  @ApiCreatedResponse({ description: '返回 platform 对应的邀请链接' })
   async authorizeRequest(
     @Param('platform') platform: string,
     @Body() authorizeRequestDto: AuthorizeRequestDto,
@@ -44,21 +49,23 @@ export class SocialAuthController {
     );
   }
 
+  @Get(':platform/authorize-callback')
+  @UseGuards(JWTAuthGuard)
+  @ApiOperation({ summary: '由对方服务器访问的回传接口' })
   @ApiParam({
     name: 'platform',
     required: true,
     description: '指定进行认证的平台',
   })
-  @UseGuards(JWTAuthGuard)
-  @Get(':platform/authorize-callback')
+  @ApiOkResponse({ description: '保存对应的 token，不返回 data' })
   async authorizeCallback(
     @Param('platform') platform: string,
     // DTO is not working here
     @Query() authorizeCallbackDto: any, // AuthorizeCallbackDto,
     @CurrentUser() user: User,
     @Res() res: Response,
-  ) {
-    return await this.socialAuthService.authorizeCallback(
+  ): Promise<void> {
+    await this.socialAuthService.authorizeCallback(
       platform,
       authorizeCallbackDto,
       user,
@@ -66,17 +73,19 @@ export class SocialAuthController {
     );
   }
 
+  @Get(':platform/token')
+  @UseGuards(JWTAuthGuard)
+  @ApiOperation({ summary: '返回已经保存的 OAuth token' })
   @ApiParam({
     name: 'platform',
     required: true,
     description: '指定进行认证的平台',
   })
-  @UseGuards(JWTAuthGuard)
-  @Get(':platform/token')
+  @ApiOkResponse({ description: '返回名为 token 的键值对' })
   async getToken(
     @Param('platform') platform: string,
     @CurrentUser() user: User,
-  ) {
-    return await this.socialAuthService.getToken(platform, user);
+  ): Promise<{ token: string }> {
+    return { token: await this.socialAuthService.getToken(platform, user) };
   }
 }
