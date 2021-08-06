@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { CookieOptions, Response } from 'express';
 import { JWTTokens } from 'src/type/jwt-login-result';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const ms = require('ms');
+import ms from 'ms';
 
 @Injectable()
 export class JWTCookieHelper {

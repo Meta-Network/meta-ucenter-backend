@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Repository } from 'typeorm';
 import { Platforms } from './type';
 import { User } from 'src/entities/User.entity';
@@ -36,6 +37,7 @@ export class AccountsService {
     private readonly accountsEmailService: AccountsEmailService,
     @Inject(forwardRef(() => AccountsMetamaskService))
     private readonly accountsMetamaskService: AccountsMetamaskService,
+    private eventEmitter: EventEmitter2,
   ) {}
   async find(searchParams: any) {
     return await this.accountsRepository.find(searchParams);
@@ -84,6 +86,7 @@ export class AccountsService {
       user_id: user.id,
     });
 
+    this.eventEmitter.emit('user.created', user);
     return { user, userAccount };
   }
 

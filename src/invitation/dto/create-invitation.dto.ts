@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
 
-export class InvitationDto {
+export class CreateInvitationDto {
   @ApiProperty({
     default: 'someone@example.com',
     description: '主体，邀请对象名称',
@@ -30,6 +30,7 @@ export class InvitationDto {
   @IsNotEmpty()
   matataki_user_id: number;
 
+  // TODO: verify at user signup
   @ApiProperty({
     description: '邀请的到期时间',
   })

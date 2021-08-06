@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { NotAcceptableException, ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { TransformInterceptor } from 'nestjs-general-interceptor';
+import { Transport } from '@nestjs/microservices';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import cookieParser from 'cookie-parser';
@@ -10,8 +11,12 @@ import formCors from 'form-cors';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const configService = app.get<ConfigService>(ConfigService);
+  const microservice = app.connectMicroservice({
+    transport: Transport.TCP,
+    options: { host: '0.0.0.0', port: 3098 },
+  });
 
+  const configService = app.get<ConfigService>(ConfigService);
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -43,6 +48,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
+  await app.startAllMicroservices();
   await app.listen(configService.get<string>('app.port'));
 }
 

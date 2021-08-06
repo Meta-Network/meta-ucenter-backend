@@ -1,19 +1,22 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import configuration from './config/configuration';
 import { AppService } from './app.service';
 import { AppController } from './app.controller';
+import { AppMsController } from './app.ms.controller';
+import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
+import { WinstonModule } from 'nest-winston';
 import { AccountsModule } from './accounts/accounts.module';
+import { SocialAuthModule } from './social-auth/social-auth.module';
+import { InvitationModule } from './invitation/invitation.module';
 import { AccountsTokenModule } from './accounts/accounts-token/accounts-token.module';
 import { AccountsEmailModule } from './accounts/accounts-email/accounts-email.module';
-import { AccountsMetamaskModule } from './accounts/accounts-metamask/accounts-metamask.module';
 import { TwoFactorAuthModule } from './two-factor-auth/two-factor-auth.module';
+import { AccountsMetamaskModule } from './accounts/accounts-metamask/accounts-metamask.module';
+import { InvitationHandlerModule } from './invitation-handler/invitation-handler.module';
 import * as winston from 'winston';
 import * as ormconfig from './config/ormconfig';
-import { WinstonModule } from 'nest-winston';
-import { SocialAuthModule } from './social-auth/social-auth.module';
 
 const { combine, timestamp, printf, metadata, label } = winston.format;
 
@@ -52,15 +55,16 @@ const logFormat = printf((info) => {
     }),
     TypeOrmModule.forRoot(ormconfig),
     UsersModule,
-    // LoginSmsModule,
     AccountsModule,
+    InvitationModule,
+    SocialAuthModule,
     TwoFactorAuthModule,
     AccountsEmailModule,
     AccountsTokenModule,
     AccountsMetamaskModule,
-    SocialAuthModule,
+    InvitationHandlerModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, AppMsController],
   providers: [AppService],
 })
 export class AppModule {}
