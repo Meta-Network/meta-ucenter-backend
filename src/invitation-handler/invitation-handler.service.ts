@@ -7,9 +7,10 @@ import dayjs from 'dayjs';
 @Injectable()
 export class InvitationHandlerService {
   constructor(
-    private readonly logger = new Logger(InvitationHandlerService.name),
     private invitationService: InvitationService,
   ) {}
+
+  private readonly logger = new Logger(InvitationHandlerService.name);
 
   @OnEvent('user.created')
   async handleUserCreated(payload: User) {

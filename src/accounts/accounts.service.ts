@@ -37,8 +37,9 @@ export class AccountsService {
     private readonly accountsEmailService: AccountsEmailService,
     @Inject(forwardRef(() => AccountsMetamaskService))
     private readonly accountsMetamaskService: AccountsMetamaskService,
-    private eventEmitter: EventEmitter2,
   ) {}
+  private eventEmitter: EventEmitter2;
+
   async find(searchParams: any) {
     return await this.accountsRepository.find(searchParams);
   }

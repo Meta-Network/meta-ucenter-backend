@@ -14,8 +14,9 @@ export class InvitationService {
     @InjectRepository(Invitation)
     private invitationRepository: Repository<Invitation>,
     private configService: ConfigService,
-    private readonly logger = new Logger(InvitationService.name),
   ) {}
+
+  private readonly logger = new Logger(InvitationService.name);
 
   async createInvitation(invitationDto: CreateInvitationDto): Promise<string> {
     this.logger.log('handleNewInvitation', invitationDto);
