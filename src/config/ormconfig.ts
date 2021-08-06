@@ -26,7 +26,7 @@ module.exports = {
   connectTimeout: db.connect_timeout,
   synchronize: false,
   entities: ['dist/entities/*.entity.js'],
-  migrations: ['*.ts'],
+  migrations: ['migration/*.ts'],
   cli: {
     entitiesDir: 'entities',
     migrationsDir: 'migration',

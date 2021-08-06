@@ -24,6 +24,8 @@ const logFormat = printf((info) => {
   return `${info.timestamp} ${info.level} [${info.label}]: ${info.message}`;
 });
 
+const { migrations, ...appOrmConfig } = ormconfig as Record<string, any>;
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -53,7 +55,7 @@ const logFormat = printf((info) => {
       ],
       exitOnError: false,
     }),
-    TypeOrmModule.forRoot(ormconfig),
+    TypeOrmModule.forRoot(appOrmConfig),
     UsersModule,
     AccountsModule,
     InvitationModule,
