@@ -74,11 +74,12 @@ export class AccountsEmailController {
 
   @Post('login')
   @ApiOperation({ summary: '以邮箱登录到现有账号' })
-  @ApiCreatedResponse({
+  @ApiOkResponse({
     description: '返回登录的用户信息。并在 Cookies 中写入 access_token',
   })
   @ApiBadRequestResponse({ description: '传入的表单参数不正确或无效' })
   @ApiUnauthorizedResponse({ description: '用户不存在' })
+  @HttpCode(HttpStatus.OK)
   async login(
     @Res({ passthrough: true }) res: Response,
     @Body() accountsEmailDto: AccountsEmailDto,

@@ -31,10 +31,13 @@ export class InvitationService {
       issuer: this.configService.get<string>('jwt.issuer'),
     };
 
-    // to always build the same hash
-    const payload: Partial<Invitation> = { ...invitation };
-    delete payload.updated_at;
-    delete payload.invitee_user_id;
+    // to always generate the same hash
+    const payload: Partial<Invitation> = {
+      id: invitation.id,
+      salt: invitation.salt,
+      inviter_user_id: invitation.inviter_user_id,
+      created_at: invitation.created_at,
+    };
 
     const signature = createHash('sha256')
       .update(serialize(payload))

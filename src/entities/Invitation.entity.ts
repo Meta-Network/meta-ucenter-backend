@@ -12,6 +12,9 @@ export class Invitation {
   id: number;
 
   @Column()
+  sub: string;
+
+  @Column()
   signature: string;
 
   @Column()
