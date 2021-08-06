@@ -7,7 +7,6 @@ class DB {
   database: string;
   username: string;
   password: string;
-  connect_timeout: number;
 }
 
 const { db } = getConfig() as { db: DB };
@@ -23,7 +22,6 @@ module.exports = {
   username: db.username,
   password: db.password,
   database: db.database,
-  connectTimeout: db.connect_timeout,
   synchronize: false,
   entities: ['dist/entities/*.entity.js'],
   migrations: ['migration/*.ts'],
