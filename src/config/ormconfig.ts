@@ -7,6 +7,7 @@ class DB {
   database: string;
   username: string;
   password: string;
+  connect_timeout: number;
 }
 
 const { db } = getConfig() as { db: DB };
