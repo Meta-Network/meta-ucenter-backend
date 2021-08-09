@@ -84,7 +84,7 @@ export class AccountsService {
 
     if (hasBoundAlready) {
       throw new BadRequestException(
-        `This ${platform} account has bound to a user already .`,
+        `This ${platform} account has bound to a user already.`,
       );
     }
 
@@ -92,7 +92,7 @@ export class AccountsService {
     const hasAccountAlready = await this.findOne(userHasAccountDto);
 
     if (hasAccountAlready) {
-      throw new BadRequestException(`You have an ${platform} Account already.`);
+      throw new BadRequestException(`You have an ${platform} account already.`);
     }
 
     return await this.save({ ...userAccountDto, user_id: userId });

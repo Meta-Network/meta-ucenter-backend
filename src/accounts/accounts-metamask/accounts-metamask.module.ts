@@ -34,7 +34,7 @@ import { AccountsMetaMaskDto } from './dto/accounts-metamask.dto';
       ) =>
         new AccountsManager(
           accountsService,
-          'email',
+          'metamask',
           (accountsMetamaskDto: AccountsMetaMaskDto) =>
             accountsMetaMaskService.verify(accountsMetamaskDto),
         ),
