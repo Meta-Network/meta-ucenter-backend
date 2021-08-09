@@ -23,6 +23,10 @@ export class CreateInvitationDto {
   @IsNotEmpty()
   inviter_user_id: number;
 
+  @ApiProperty({ description: '邀请被创建的原因，用以区分创建邀请的多种方式' })
+  @IsNotEmpty()
+  cause: string;
+
   @ApiProperty({
     default: 0,
     description: '是发送给 matataki 用户则填入其id，不是则填0',

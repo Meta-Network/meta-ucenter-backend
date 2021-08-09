@@ -16,6 +16,7 @@ export class InvitationHandlerService {
     const newInvitationDto = {
       sub: '',
       message: '',
+      cause: 'user.created',
       inviter_user_id: payload.id,
       matataki_user_id: 0,
       expired_at: dayjs().add(2, 'month').toDate(),

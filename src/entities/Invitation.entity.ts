@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   Entity,
   Column,
@@ -25,6 +26,13 @@ export class Invitation {
 
   @Column()
   message: string;
+
+  @ApiProperty({ description: '邀请被创建的原因，用以区分创建邀请的多种方式' })
+  @Column({
+    default: '',
+    comment: '邀请被创建的原因，用以区分创建邀请的多种方式',
+  })
+  cause: string;
 
   @Column({ default: 0 })
   invitee_user_id: number;
