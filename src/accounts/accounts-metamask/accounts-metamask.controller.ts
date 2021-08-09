@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Logger, Post, Res, UseGuards } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -16,12 +16,14 @@ import { JWTCookieHelper } from 'src/accounts/jwt-cookie-helper';
 import { VerificationCodeDto } from 'src/verification-code/dto/verification-code.dto';
 import { CurrentUser } from 'src/users/user.decorator';
 import { Account } from '../../entities/Account.entity';
+import { AccountsManager } from '../accounts.manager';
 
 @ApiTags('Accounts')
 @Controller('accounts/metamask')
 export class AccountsMetamaskController {
+  private logger = new Logger(AccountsMetamaskController.name);
   constructor(
-    private readonly accountsService: AccountsService,
+    private readonly accountsManager: AccountsManager,
     private readonly accountsMetamaskService: AccountsMetamaskService,
     private readonly jwtCookieHelper: JWTCookieHelper,
   ) {}
@@ -49,9 +51,8 @@ export class AccountsMetamaskController {
     @Res({ passthrough: true }) res: Response,
     @Body() accountsMetaMaskDto: AccountsMetaMaskDto,
   ): Promise<{ user: User; account: Account }> {
-    const { user, account, tokens } = await this.accountsService.login(
+    const { user, account, tokens } = await this.accountsManager.login(
       accountsMetaMaskDto,
-      'metamask',
     );
     await this.jwtCookieHelper.JWTCookieWriter(res, tokens);
     return { user, account };
@@ -69,11 +70,7 @@ export class AccountsMetamaskController {
     @CurrentUser() user: User,
     @Body() accountsMetaMaskDto: AccountsMetaMaskDto,
   ): Promise<Account> {
-    return this.accountsService.bindAccount(
-      accountsMetaMaskDto,
-      user.id,
-      'metamask',
-    );
+    return this.accountsManager.bindAccount(accountsMetaMaskDto, user.id);
   }
 
   @Post('/unbind')
@@ -85,6 +82,6 @@ export class AccountsMetamaskController {
     description: 'Cookies 中的 access_token 过期或无效',
   })
   async unbind(@Body() accountsMetaMaskDto: AccountsMetaMaskDto) {
-    return this.accountsService.unbindAccount(accountsMetaMaskDto, 'metamask');
+    return this.accountsManager.unbindAccount(accountsMetaMaskDto);
   }
 }

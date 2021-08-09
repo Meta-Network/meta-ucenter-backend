@@ -4,10 +4,12 @@ import { ConfigService } from '@nestjs/config';
 import { CaptchaService } from 'src/captcha/captcha.service';
 import { AccountsEmailDto } from './dto/accounts-email.dto';
 import { VerificationCodeService } from 'src/verification-code/verification-code.service';
+import { AccountsService } from '../accounts.service';
 
 @Injectable()
 export class AccountsEmailService {
   constructor(
+    private readonly accountsService: AccountsService,
     private readonly emailService: EmailService,
     private readonly configService: ConfigService,
     private readonly captchaService: CaptchaService,

@@ -1,9 +1,8 @@
 import {
-  Inject,
   Injectable,
-  forwardRef,
   BadRequestException,
   UnauthorizedException,
+  Logger,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -17,15 +16,11 @@ import { AuthService } from 'src/auth/auth.service';
 import { UsersService } from 'src/users/users.service';
 import { InvitationService } from 'src/invitation/invitation.service';
 import { VerifyExistsDto } from './dto/verify-exists.dto';
-import { AccountsEmailService } from './accounts-email/accounts-email.service';
-import { AccountsMetamaskService } from './accounts-metamask/accounts-metamask.service';
-
-function capitalize(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-}
+import { AccountsVerifer } from './accounts.verifier';
 
 @Injectable()
 export class AccountsService {
+  private logger = new Logger(AccountsService.name);
   constructor(
     @InjectRepository(Account)
     private readonly accountsRepository: Repository<Account>,
@@ -33,12 +28,8 @@ export class AccountsService {
     private readonly usersService: UsersService,
     private readonly configService: ConfigService,
     private readonly invitationService: InvitationService,
-    @Inject(forwardRef(() => AccountsEmailService))
-    private readonly accountsEmailService: AccountsEmailService,
-    @Inject(forwardRef(() => AccountsMetamaskService))
-    private readonly accountsMetamaskService: AccountsMetamaskService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
-  private eventEmitter: EventEmitter2;
 
   async find(searchParams: any) {
     return await this.accountsRepository.find(searchParams);
@@ -51,17 +42,6 @@ export class AccountsService {
   }
   async delete(accountId: number) {
     return await this.accountsRepository.delete(accountId);
-  }
-
-  private getVerify(platform: string) {
-    const service = this[`accounts${capitalize(platform)}Service`];
-    const verify = service.verify.bind(service);
-
-    if (verify) {
-      return verify;
-    } else {
-      throw new Error(`No verify defined for the platform: "${platform}"`);
-    }
   }
 
   async getUser(userAccountData: {
@@ -95,8 +75,8 @@ export class AccountsService {
     accountDto: any,
     userId: number,
     platform: Platforms,
+    verify: AccountsVerifer,
   ): Promise<Account> {
-    const verify = this.getVerify(platform);
     await verify(accountDto);
 
     const userAccountDto = { account_id: accountDto.account, platform };
@@ -118,8 +98,12 @@ export class AccountsService {
     return await this.save({ ...userAccountDto, user_id: userId });
   }
 
-  async signup(accountDto: any, signature: string, platform: Platforms) {
-    const verify = this.getVerify(platform);
+  async signup(
+    accountDto: any,
+    signature: string,
+    platform: Platforms,
+    verify: AccountsVerifer,
+  ) {
     await verify(accountDto);
 
     const invitation = await this.invitationService.findOne(signature);
@@ -157,8 +141,7 @@ export class AccountsService {
     };
   }
 
-  async login(accountDto: any, platform: Platforms) {
-    const verify = this.getVerify(platform);
+  async login(accountDto: any, platform: Platforms, verify: AccountsVerifer) {
     await verify(accountDto);
 
     const userAccountData = {
@@ -180,8 +163,11 @@ export class AccountsService {
     };
   }
 
-  async unbindAccount(accountDto: any, platform: Platforms): Promise<void> {
-    const verify = this.getVerify(platform);
+  async unbindAccount(
+    accountDto: any,
+    platform: Platforms,
+    verify: AccountsVerifer,
+  ): Promise<void> {
     await verify(accountDto);
 
     const userAccountData = {

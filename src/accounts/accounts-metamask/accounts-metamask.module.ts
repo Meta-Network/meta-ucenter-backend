@@ -9,6 +9,9 @@ import { InvitationModule } from 'src/invitation/invitation.module';
 import { VerificationCodeModule } from 'src/verification-code/verification-code.module';
 import { AccountsMetamaskService } from './accounts-metamask.service';
 import { AccountsMetamaskController } from './accounts-metamask.controller';
+import { AccountsManager } from '../accounts.manager';
+import { AccountsService } from '../accounts.service';
+import { AccountsMetaMaskDto } from './dto/accounts-metamask.dto';
 
 @Module({
   imports: [
@@ -19,9 +22,25 @@ import { AccountsMetamaskController } from './accounts-metamask.controller';
     CaptchaModule,
     InvitationModule,
     VerificationCodeModule,
-    forwardRef(() => AccountsModule),
+    AccountsModule,
   ],
-  providers: [AccountsMetamaskService],
+  providers: [
+    AccountsMetamaskService,
+    {
+      provide: AccountsManager,
+      useFactory: (
+        accountsService: AccountsService,
+        accountsMetaMaskService: AccountsMetamaskService,
+      ) =>
+        new AccountsManager(
+          accountsService,
+          'email',
+          (accountsMetamaskDto: AccountsMetaMaskDto) =>
+            accountsMetaMaskService.verify(accountsMetamaskDto),
+        ),
+      inject: [AccountsService, AccountsMetamaskService],
+    },
+  ],
   controllers: [AccountsMetamaskController],
   exports: [AccountsMetamaskService],
 })

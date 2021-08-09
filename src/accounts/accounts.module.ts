@@ -1,4 +1,4 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { Account } from '../entities/Account.entity';
 import { AuthModule } from '../auth/auth.module';
 import { UsersModule } from '../users/users.module';
@@ -6,8 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AccountsService } from './accounts.service';
 import { JWTCookieHelper } from './jwt-cookie-helper';
 import { InvitationModule } from '../invitation/invitation.module';
-import { AccountsEmailModule } from './accounts-email/accounts-email.module';
-import { AccountsMetamaskModule } from './accounts-metamask/accounts-metamask.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -15,8 +14,7 @@ import { AccountsMetamaskModule } from './accounts-metamask/accounts-metamask.mo
     UsersModule,
     InvitationModule,
     TypeOrmModule.forFeature([Account]),
-    forwardRef(() => AccountsEmailModule),
-    forwardRef(() => AccountsMetamaskModule),
+    EventEmitterModule.forRoot(),
   ],
   providers: [AccountsService, JWTCookieHelper],
   exports: [AccountsService, JWTCookieHelper],

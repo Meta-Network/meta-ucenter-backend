@@ -7,6 +7,7 @@ import {
   UseGuards,
   Controller,
   HttpStatus,
+  Logger,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -27,12 +28,14 @@ import { VerifyExistsDto } from '../dto/verify-exists.dto';
 import { AccountsEmailDto } from './dto/accounts-email.dto';
 import { VerificationCodeDto } from 'src/verification-code/dto/verification-code.dto';
 import { Account } from '../../entities/Account.entity';
+import { AccountsManager } from '../accounts.manager';
 
 @ApiTags('Accounts')
 @Controller('accounts/email')
 export class AccountsEmailController {
+  private logger = new Logger(AccountsEmailController.name);
   constructor(
-    private readonly accountsService: AccountsService,
+    private readonly accountsManager: AccountsManager,
     private readonly accountsEmailService: AccountsEmailService,
     private readonly jwtCookieHelper: JWTCookieHelper,
   ) {}
@@ -62,10 +65,9 @@ export class AccountsEmailController {
     @Res({ passthrough: true }) res: Response,
     @Body() accountsEmailDto: AccountsEmailDto,
   ): Promise<{ user: User; account: Account }> {
-    const { user, account, tokens } = await this.accountsService.signup(
+    const { user, account, tokens } = await this.accountsManager.signup(
       accountsEmailDto,
       signature,
-      'email',
     );
 
     await this.jwtCookieHelper.JWTCookieWriter(res, tokens);
@@ -84,9 +86,8 @@ export class AccountsEmailController {
     @Res({ passthrough: true }) res: Response,
     @Body() accountsEmailDto: AccountsEmailDto,
   ): Promise<{ user: User; account: Account }> {
-    const { user, account, tokens } = await this.accountsService.login(
+    const { user, account, tokens } = await this.accountsManager.login(
       accountsEmailDto,
-      'email',
     );
 
     await this.jwtCookieHelper.JWTCookieWriter(res, tokens);
@@ -100,9 +101,8 @@ export class AccountsEmailController {
   async isExists(
     @Body() verifyExistsDto: VerifyExistsDto,
   ): Promise<{ isExists: boolean }> {
-    const isExists: boolean = await this.accountsService.verifyAccountExists(
+    const isExists: boolean = await this.accountsManager.verifyAccountExists(
       verifyExistsDto,
-      'email',
     );
     return { isExists };
   }
@@ -119,7 +119,7 @@ export class AccountsEmailController {
     @CurrentUser() user: User,
     @Body() accountsEmailDto: AccountsEmailDto,
   ): Promise<Account> {
-    return this.accountsService.bindAccount(accountsEmailDto, user.id, 'email');
+    return this.accountsManager.bindAccount(accountsEmailDto, user.id);
   }
 
   @Post('/unbind')
@@ -131,6 +131,6 @@ export class AccountsEmailController {
     description: '当 Cookies 中的 access_token 过期或无效时',
   })
   async unbind(@Body() accountsEmailDto: AccountsEmailDto) {
-    return this.accountsService.unbindAccount(accountsEmailDto, 'email');
+    return this.accountsManager.unbindAccount(accountsEmailDto);
   }
 }
