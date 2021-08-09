@@ -6,20 +6,21 @@ import {
   HttpCode,
   UseGuards,
   Controller,
-  HttpStatus,
   Logger,
+  HttpStatus,
 } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
+  ApiCookieAuth,
   ApiOkResponse,
   ApiCreatedResponse,
   ApiBadRequestResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { CurrentUser } from 'src/users/user.decorator';
 import { Response } from 'express';
 import { User } from 'src/entities/User.entity';
-import { CurrentUser } from 'src/users/user.decorator';
 import { JWTAuthGuard } from 'src/auth/jwt.guard';
 import { JWTCookieHelper } from 'src/accounts/jwt-cookie-helper';
 import { AccountsService } from '../accounts.service';
@@ -108,6 +109,7 @@ export class AccountsEmailController {
   }
 
   @Post('/bind')
+  @ApiCookieAuth()
   @UseGuards(JWTAuthGuard)
   @ApiOperation({ summary: '绑定一个未注册的邮箱账号到本用户' })
   @ApiCreatedResponse({ description: '绑定并返回账号信息' })
@@ -123,6 +125,7 @@ export class AccountsEmailController {
   }
 
   @Post('/unbind')
+  @ApiCookieAuth()
   @UseGuards(JWTAuthGuard)
   @ApiOperation({ summary: '解绑本用户的现有邮箱账户' })
   @ApiCreatedResponse({ description: '完成解绑，不返回 data' })

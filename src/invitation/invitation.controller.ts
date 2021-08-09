@@ -5,12 +5,15 @@ import { InvitationService } from './invitation.service';
 import { CurrentUser } from '../users/user.decorator';
 import {
   ApiOperation,
+  ApiCookieAuth,
   ApiOkResponse,
-  ApiUnauthorizedResponse,
+  ApiUnauthorizedResponse, ApiTags,
 } from '@nestjs/swagger';
 import { Invitation } from '../entities/Invitation.entity';
 import { UpdateInvitationDto } from './dto/update-invitation.dto';
 
+@ApiTags('Invitations')
+@ApiCookieAuth()
 @Controller('invitations')
 export class InvitationController {
   constructor(private readonly invitationService: InvitationService) {}

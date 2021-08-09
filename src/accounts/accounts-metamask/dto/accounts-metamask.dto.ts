@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, MaxLength } from 'class-validator';
+import { IsNotEmpty, Length, MaxLength } from 'class-validator';
 
 export class AccountsMetaMaskDto {
   @ApiProperty({
@@ -13,6 +13,7 @@ export class AccountsMetaMaskDto {
   @ApiProperty({
     description: '前端回传的对 WebMask 的签名校验',
   })
+  @Length(132)
   @IsNotEmpty()
   signature: string;
 

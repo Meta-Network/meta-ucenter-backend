@@ -41,7 +41,7 @@ async function bootstrap() {
     .setTitle('UCenter API')
     .setDescription('UCenter API testing branch')
     .setVersion('1.0')
-    .addCookieAuth()
+    .addCookieAuth('ucenter_access_token')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

@@ -10,11 +10,12 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import {
-  ApiCreatedResponse,
-  ApiOkResponse,
-  ApiOperation,
-  ApiParam,
   ApiTags,
+  ApiParam,
+  ApiOperation,
+  ApiCookieAuth,
+  ApiOkResponse,
+  ApiCreatedResponse,
 } from '@nestjs/swagger';
 import { User } from 'src/entities/User.entity';
 import { JWTAuthGuard } from 'src/auth/jwt.guard';
@@ -23,6 +24,7 @@ import { SocialAuthService } from './social-auth.service';
 import { AuthorizeRequestDto } from './dto/authorize-request.dto';
 // import { AuthorizeCallbackDto } from './dto/authorize-callback.dto';
 
+@ApiCookieAuth()
 @ApiTags('SocialAuth')
 @Controller('social-auth')
 export class SocialAuthController {

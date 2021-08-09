@@ -4,10 +4,9 @@ import {
   ApiOperation,
   ApiCreatedResponse,
   ApiBadRequestResponse,
-  ApiUnauthorizedResponse,
+  ApiUnauthorizedResponse, ApiCookieAuth,
 } from '@nestjs/swagger';
 import { Response } from 'express';
-import { AccountsService } from '../accounts.service';
 import { AccountsMetaMaskDto } from './dto/accounts-metamask.dto';
 import { AccountsMetamaskService } from './accounts-metamask.service';
 import { User } from 'src/entities/User.entity';
@@ -59,6 +58,7 @@ export class AccountsMetamaskController {
   }
 
   @Post('/bind')
+  @ApiCookieAuth()
   @UseGuards(JWTAuthGuard)
   @ApiOperation({ summary: '绑定一个未注册的 MetaMask 账号到本用户' })
   @ApiCreatedResponse({ description: '绑定并返回账号信息' })
@@ -74,6 +74,7 @@ export class AccountsMetamaskController {
   }
 
   @Post('/unbind')
+  @ApiCookieAuth()
   @UseGuards(JWTAuthGuard)
   @ApiOperation({ summary: '解绑本用户的现有 MetaMask 账户' })
   @ApiCreatedResponse({ description: '完成解绑，不返回 data' })

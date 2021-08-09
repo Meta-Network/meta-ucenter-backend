@@ -19,15 +19,16 @@ import {
 } from './dto/bind-two-factor.dto';
 import {
   ApiTags,
+  ApiOperation,
   ApiCookieAuth,
   ApiOkResponse,
-  ApiUnauthorizedResponse,
-  ApiOperation,
   ApiBadRequestResponse,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { User } from 'src/entities/User.entity';
 import { UpdateUsernameDto } from './dto/update-username.dto';
-import { User } from '../entities/User.entity';
 
+@ApiCookieAuth()
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
@@ -77,7 +78,6 @@ export class UsersController {
   }
 
   @UseGuards(JWTAuthGuard)
-  @ApiCookieAuth()
   @Get('me/twoFactor')
   async getMy2FA(@CurrentUser() user: JWTDecodedUser) {
     const res = await this.tfaService.list2FAOf(user.id);
@@ -85,7 +85,6 @@ export class UsersController {
   }
 
   @UseGuards(JWTAuthGuard)
-  @ApiCookieAuth()
   @Post('/twoFactor')
   async bindTwoFactor(
     @CurrentUser() user: JWTDecodedUser,
@@ -96,7 +95,6 @@ export class UsersController {
   }
 
   @UseGuards(JWTAuthGuard)
-  @ApiCookieAuth()
   @Post('/twoFactor/verify')
   async verifyTwoFactor(
     @CurrentUser() user: JWTDecodedUser,
@@ -111,7 +109,6 @@ export class UsersController {
   }
 
   @UseGuards(JWTAuthGuard)
-  @ApiCookieAuth()
   @Post('/twoFactor/enable')
   async enableTwoFactor(
     @CurrentUser() user: JWTDecodedUser,
