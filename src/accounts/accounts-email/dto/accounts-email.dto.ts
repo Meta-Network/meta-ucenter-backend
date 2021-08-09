@@ -12,9 +12,9 @@ export class AccountsEmailDto {
     default: 'someone@example.com',
     description: '登录使用的邮箱。验证码会发送至此邮箱里',
   })
+  @IsEmail()
   @IsNotEmpty()
   @MaxLength(220)
-  @IsEmail()
   account: string;
 
   @ApiProperty({

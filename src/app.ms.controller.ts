@@ -5,12 +5,10 @@ import { EventPattern, MessagePattern } from '@nestjs/microservices';
 
 @Controller()
 export class AppMsController {
-  constructor(
-    private readonly invitationService: InvitationService,
-  ) {}
-  @MessagePattern({ cmd: 'hello' })
-  getHello(): string {
-    return 'Hello World!';
+  constructor(private readonly invitationService: InvitationService) {}
+  @MessagePattern('hello')
+  getNotifications() {
+    return 'This is microservice from ucenter says: Hello World!';
   }
 
   @EventPattern('new_invitation_slot')
