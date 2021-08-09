@@ -28,9 +28,7 @@ export class AccountsMetamaskService {
     );
 
     if (nonce === null) {
-      throw new BadRequestException(
-        'Failed to get verification code from database.',
-      );
+      throw new BadRequestException('Invalid verification code.');
     }
 
     const message = `\x19Ethereum Signed Message:\n${nonce.length}${nonce}`;

@@ -1,10 +1,19 @@
-import { Body, Controller, Logger, Post, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Logger,
+  Param,
+  Post,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
   ApiCreatedResponse,
   ApiBadRequestResponse,
-  ApiUnauthorizedResponse, ApiCookieAuth,
+  ApiUnauthorizedResponse,
+  ApiCookieAuth,
 } from '@nestjs/swagger';
 import { Response } from 'express';
 import { AccountsMetaMaskDto } from './dto/accounts-metamask.dto';
@@ -38,6 +47,28 @@ export class AccountsMetamaskController {
       verifyCode.key,
     );
     return { code };
+  }
+
+  @Post('signup/:signature')
+  @ApiOperation({ summary: '以 MetaMask 钱包注册账号，需要邀请码' })
+  @ApiCreatedResponse({
+    description: '返回登录的用户信息。并在 Cookies 中写入 access_token',
+  })
+  @ApiBadRequestResponse({
+    description: '传入的表单参数不正确或无效',
+  })
+  async signup(
+    @Param('signature') signature: string,
+    @Res({ passthrough: true }) res: Response,
+    @Body() accountsMetaMaskDto: AccountsMetaMaskDto,
+  ): Promise<{ user: User; account: Account }> {
+    const { user, account, tokens } = await this.accountsManager.signup(
+      accountsMetaMaskDto,
+      signature,
+    );
+
+    await this.jwtCookieHelper.JWTCookieWriter(res, tokens);
+    return { user, account };
   }
 
   @Post('login')
