@@ -7,7 +7,6 @@ export class UpdateInvitationDto {
     description: '主体，邀请对象名称',
   })
   @IsOptional()
-  @IsNotEmpty()
   sub?: string;
 
   @ApiProperty({
@@ -15,6 +14,5 @@ export class UpdateInvitationDto {
     description: '邀请信息',
   })
   @IsOptional()
-  @IsNotEmpty()
   message?: string;
 }

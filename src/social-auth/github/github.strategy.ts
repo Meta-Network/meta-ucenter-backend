@@ -10,9 +10,10 @@ import { SocialAuth } from 'src/entities/SocialAuth.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as randomstring from 'randomstring';
 import axios from 'axios';
+import { ISocialAuthStrategy } from '../type/social-auth.strategy';
 
 @Injectable()
-export class GithubStrategy {
+export class GithubStrategy implements ISocialAuthStrategy {
   constructor(
     private configService: ConfigService,
     @InjectRepository(SocialAuth)
