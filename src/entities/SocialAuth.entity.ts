@@ -18,10 +18,13 @@ export class SocialAuth {
   type: 'oauth2';
 
   @Column()
-  platform: 'github' | 'matataki';
+  platform: 'github' | 'gitee' | 'matataki';
 
   @Column()
   access_token: string;
+
+  @Column({ default: '' })
+  refresh_token: string;
 
   @CreateDateColumn()
   created_at: Date;

@@ -7,6 +7,7 @@ import {
   Param,
   UseGuards,
   Controller,
+  Patch,
 } from '@nestjs/common';
 import { Response } from 'express';
 import {
@@ -89,5 +90,21 @@ export class SocialAuthController {
     @CurrentUser() user: User,
   ): Promise<{ token: string }> {
     return { token: await this.socialAuthService.getToken(platform, user) };
+  }
+
+  @Patch(':platform/refresh')
+  @UseGuards(JWTAuthGuard)
+  @ApiOperation({ summary: '对指定平台的 token 刷新有效期' })
+  @ApiParam({
+    name: 'platform',
+    required: true,
+    description: '指定进行认证的平台',
+  })
+  @ApiOkResponse({ description: '不返回任何值（暂时。应改为返回刷新的结果）' })
+  async refreshToken(
+    @Param('platform') platform: string,
+    @CurrentUser() user: User,
+  ): Promise<void> {
+    await this.socialAuthService.refreshToken(platform, user);
   }
 }

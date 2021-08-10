@@ -36,4 +36,8 @@ export class SocialAuthService {
   async getToken(platform: string, user: User): Promise<string> {
     return this.use(platform).getToken(user);
   }
+
+  async refreshToken(platform: string, user: User): Promise<void> {
+    return this.use(platform).refreshToken(user);
+  }
 }
