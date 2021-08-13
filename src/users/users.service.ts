@@ -1,14 +1,17 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/User.entity';
-import { Like, Repository } from 'typeorm';
+import Events from '../events';
+import { Between, Like, Repository } from 'typeorm';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+    private eventEmitter: EventEmitter2,
   ) {}
 
   async findOne(uid: number, options = {}) {
@@ -43,7 +46,10 @@ export class UsersService {
     }
 
     await this.usersRepository.update(uid, { username });
-    return await this.usersRepository.findOne(uid);
+    const updatedUser = await this.usersRepository.findOne(uid);
+
+    this.eventEmitter.emit(Events.UserProfileModified, updatedUser);
+    return updatedUser;
   }
 
   async getUserInfo(uid: number): Promise<User> {
@@ -52,10 +58,17 @@ export class UsersService {
 
   async update(uid: number, updateUserDto: UpdateUserDto): Promise<User> {
     await this.usersRepository.update(uid, updateUserDto);
-    return this.usersRepository.findOne(uid);
+    const updatedUser = await this.usersRepository.findOne(uid);
+
+    this.eventEmitter.emit(Events.UserProfileModified, updatedUser);
+    return updatedUser;
   }
 
   async save(saveParams = {}): Promise<User> {
     return await this.usersRepository.save(saveParams);
+  }
+
+  async fetchUsers(min: number, max: number) {
+    return this.usersRepository.find({ where: { id: Between(min, max) } });
   }
 }
