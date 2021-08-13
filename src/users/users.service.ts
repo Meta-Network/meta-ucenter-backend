@@ -20,7 +20,7 @@ export class UsersService {
     options,
   ): Promise<{ result: User[]; total: number }> {
     const searches = Object.keys(params).map((key) => ({
-      [params[key]]: Like(`%${params[key]}%`),
+      [key]: Like(`%${params[key]}%`),
     }));
     const [result, total] = await this.usersRepository.findAndCount({
       where: searches,
