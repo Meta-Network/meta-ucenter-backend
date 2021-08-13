@@ -27,6 +27,7 @@ import {
 } from '@nestjs/swagger';
 import { User } from 'src/entities/User.entity';
 import { UpdateUsernameDto } from './dto/update-username.dto';
+import { SearchUserDto } from './dto/search-user.dto';
 
 @ApiCookieAuth()
 @ApiTags('Users')
@@ -75,6 +76,16 @@ export class UsersController {
     @Body() body: UpdateUsernameDto,
   ): Promise<User> {
     return this.usersService.updateUsername(user.id, body.username);
+  }
+
+  @Post('search')
+  @ApiOperation({ summary: '通用用户搜索接口，根据条件搜索全部用户' })
+  @ApiOkResponse({ description: '返回符合条件的用户数组' })
+  async search(
+    @Body() searchUserDto: SearchUserDto,
+  ): Promise<{ result: User[]; total: number }> {
+    const { options, ...body } = searchUserDto;
+    return this.usersService.search(body, options);
   }
 
   @UseGuards(JWTAuthGuard)

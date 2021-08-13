@@ -1,6 +1,6 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/User.entity';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { BadRequestException, Injectable } from '@nestjs/common';
 
@@ -13,6 +13,21 @@ export class UsersService {
 
   async findOne(uid: number, options = {}) {
     return await this.usersRepository.findOne(uid, options);
+  }
+
+  async search(
+    params: Partial<User>,
+    options,
+  ): Promise<{ result: User[]; total: number }> {
+    const searches = Object.keys(params).map((key) => ({
+      [params[key]]: Like(`%${params[key]}%`),
+    }));
+    const [result, total] = await this.usersRepository.findAndCount({
+      where: searches,
+      ...options,
+    });
+
+    return { result, total };
   }
 
   async updateUsername(uid: number, username: string): Promise<User> {
