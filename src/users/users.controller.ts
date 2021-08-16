@@ -27,6 +27,7 @@ import {
 } from '@nestjs/swagger';
 import { User } from 'src/entities/User.entity';
 import { SearchUserDto } from './dto/search-user.dto';
+import { UpdateUsernameDto } from './dto/update-username.dto';
 
 @ApiCookieAuth()
 @ApiTags('Users')
@@ -72,7 +73,7 @@ export class UsersController {
   })
   async setMyUsername(
     @CurrentUser() user: JWTDecodedUser,
-    @Body() body: any,
+    @Body() body: UpdateUsernameDto,
   ): Promise<User> {
     return this.usersService.updateUsername(user.id, body.username);
   }

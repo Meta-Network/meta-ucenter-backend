@@ -3,11 +3,12 @@ import { User } from 'src/entities/User.entity';
 import Events from '../events';
 import { Between, Like, Repository } from 'typeorm';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class UsersService {
+  private logger = new Logger(UsersService.name);
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
@@ -59,7 +60,7 @@ export class UsersService {
   async update(uid: number, updateUserDto: UpdateUserDto): Promise<User> {
     await this.usersRepository.update(uid, updateUserDto);
     const updatedUser = await this.usersRepository.findOne(uid);
-
+    this.logger.log('emit Event UserProfileModified', updatedUser);
     this.eventEmitter.emit(Events.UserProfileModified, updatedUser);
     return updatedUser;
   }
