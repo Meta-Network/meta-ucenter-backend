@@ -1,12 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { CreateInvitationDto } from './invitation/dto/create-invitation.dto';
 import { InvitationService } from './invitation/invitation.service';
-import {
-  Payload,
-  EventPattern,
-  MessagePattern,
-} from '@nestjs/microservices';
-import Events from './events';
+import { Payload, EventPattern, MessagePattern } from '@nestjs/microservices';
 import { User } from './entities/User.entity';
 import { UsersService } from './users/users.service';
 
@@ -21,12 +16,16 @@ export class AppMsController {
     return 'This is microservice from ucenter says: Hello World!';
   }
 
-  @MessagePattern(Events.SyncUserProfile)
+  @MessagePattern('syncUserProfile')
   async syncUserProfile(
-    @Payload() query: { min: number; max: number },
-  ): Promise<User[]> {
-    const { min, max } = query;
-    return this.usersService.fetchUsers(min, max);
+    @Payload()
+    queries: {
+      userIdMin?: number;
+      userIdMax?: number;
+      modifiedAfter?: Date;
+    },
+  ): Promise<User[] | string> {
+    return this.usersService.fetchUsers(queries);
   }
 
   @EventPattern('newInvitationSlot')

@@ -9,6 +9,7 @@ import {
   JoinTable,
   AfterInsert,
   AfterUpdate,
+  Index,
 } from 'typeorm';
 import { TwoFactorAuth } from './TwoFactorAuth.entity';
 
@@ -32,6 +33,7 @@ export class User {
   @CreateDateColumn()
   created_at: Date;
 
+  @Index()
   @UpdateDateColumn()
   updated_at: Date;
 
@@ -40,7 +42,7 @@ export class User {
   twoFactors: TwoFactorAuth[];
 
   // it should be computed by the fn below:
-  // by defeault it is false.
+  // by default it is false.
   is2FAEnabled = false;
 
   // update in object when load inserted or update

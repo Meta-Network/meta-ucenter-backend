@@ -1,10 +1,16 @@
-import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/User.entity';
-import Events from '../events';
-import { Between, Like, Repository } from 'typeorm';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Between, Like, MoreThan, Repository } from 'typeorm';
+import {
+  BadRequestException,
+  HttpStatus,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
+import { MetaInternalResult, ServiceCode } from '@metaio/microservice-model';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { UpdateUserDto } from './dto/update-user.dto';
+import Events from '../events';
 
 @Injectable()
 export class UsersService {
@@ -69,7 +75,27 @@ export class UsersService {
     return await this.usersRepository.save(saveParams);
   }
 
-  async fetchUsers(min: number, max: number) {
-    return this.usersRepository.find({ where: { id: Between(min, max) } });
+  async fetchUsers(queries: {
+    userIdMin?: number;
+    userIdMax?: number;
+    modifiedAfter?: Date;
+  }) {
+    const { userIdMin, userIdMax, modifiedAfter } = queries;
+    const result = new MetaInternalResult({ serviceCode: ServiceCode.UCENTER });
+
+    if (userIdMin && userIdMax) {
+      result.data = this.usersRepository.find({
+        where: { id: Between(userIdMin, userIdMax) },
+      });
+    } else if (modifiedAfter) {
+      result.data = this.usersRepository.find({
+        where: { updated_at: MoreThan(modifiedAfter) },
+      });
+    } else {
+      result.statusCode = HttpStatus.BAD_REQUEST;
+      result.message = 'Query conditions not found.';
+    }
+
+    return result;
   }
 }

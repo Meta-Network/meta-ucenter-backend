@@ -5,7 +5,7 @@ import {
   NotFoundException,
   NotImplementedException,
 } from '@nestjs/common';
-import { TwoFactorType } from 'src/type/TwoFactor';
+import { TwoFactorType } from './type';
 import { User } from 'src/entities/User.entity';
 import { TotpStrategy } from './totp.strategy';
 import { Repository } from 'typeorm';

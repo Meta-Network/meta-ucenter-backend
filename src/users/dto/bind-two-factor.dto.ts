@@ -1,6 +1,6 @@
 import { IsEnum, IsNumberString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { TwoFactorType } from 'src/type/TwoFactor';
+import { TwoFactorType } from 'src/two-factor-auth/type';
 
 export class BindTwoFactorDto {
   @ApiProperty({

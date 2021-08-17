@@ -8,15 +8,15 @@ import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Repository } from 'typeorm';
-import { Platforms } from './type';
+import { Platforms, JWTTokens } from './type';
 import { User } from 'src/entities/User.entity';
 import { Account } from 'src/entities/Account.entity';
-import { JWTTokens } from 'src/type/jwt-login-result';
 import { AuthService } from 'src/auth/auth.service';
 import { UsersService } from 'src/users/users.service';
 import { InvitationService } from 'src/invitation/invitation.service';
 import { VerifyExistsDto } from './dto/verify-exists.dto';
 import { AccountsVerifer } from './accounts.verifier';
+import Events from '../events';
 
 @Injectable()
 export class AccountsService {
@@ -67,7 +67,7 @@ export class AccountsService {
       user_id: user.id,
     });
 
-    this.eventEmitter.emit('user.created', user);
+    this.eventEmitter.emit(Events.UserCreated, user);
     return { user, userAccount };
   }
 

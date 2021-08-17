@@ -3,20 +3,21 @@ import { OnEvent } from '@nestjs/event-emitter';
 import { User } from 'src/entities/User.entity';
 import { InvitationService } from 'src/invitation/invitation.service';
 import dayjs from 'dayjs';
+import Events from '../events';
 
 @Injectable()
 export class InvitationHandlerService {
   constructor(private invitationService: InvitationService) {}
   private readonly logger = new Logger(InvitationHandlerService.name);
 
-  @OnEvent('user.created')
+  @OnEvent(Events.UserCreated)
   async handleUserCreated(payload: User) {
     this.logger.log('handleUserCreated', User);
 
     const newInvitationDto = {
       sub: '',
       message: '',
-      cause: 'user.created',
+      cause: Events.UserCreated,
       inviter_user_id: payload.id,
       matataki_user_id: 0,
       expired_at: dayjs().add(2, 'month').toDate(),

@@ -1,4 +1,4 @@
-import { TwoFactorType } from '../type/TwoFactor';
+import { TwoFactorType } from '../two-factor-auth/type';
 import {
   Entity,
   Column,

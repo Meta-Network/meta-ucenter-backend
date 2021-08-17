@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { CookieOptions, Response } from 'express';
-import { JWTTokens } from 'src/type/jwt-login-result';
+import { JWTTokens } from './type';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 import ms from 'ms';
 

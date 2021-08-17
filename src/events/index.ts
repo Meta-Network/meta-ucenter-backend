@@ -1,6 +1,6 @@
 enum Events {
+  UserCreated = 'user.created',
   UserProfileModified = 'user.profile.modified',
-  SyncUserProfile = 'syncUserProfile',
 }
 
 export default Events;
