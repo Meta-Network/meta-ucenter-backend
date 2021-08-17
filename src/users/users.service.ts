@@ -79,7 +79,7 @@ export class UsersService {
     userIdMin?: number;
     userIdMax?: number;
     modifiedAfter?: Date;
-  }) {
+  }): Promise<MetaInternalResult> {
     const { userIdMin, userIdMax, modifiedAfter } = queries;
     const result = new MetaInternalResult({ serviceCode: ServiceCode.UCENTER });
 

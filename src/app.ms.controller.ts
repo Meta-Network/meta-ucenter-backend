@@ -1,9 +1,9 @@
 import { Controller } from '@nestjs/common';
-import { CreateInvitationDto } from './invitation/dto/create-invitation.dto';
 import { InvitationService } from './invitation/invitation.service';
+import { CreateInvitationDto } from './invitation/dto/create-invitation.dto';
 import { Payload, EventPattern, MessagePattern } from '@nestjs/microservices';
-import { User } from './entities/User.entity';
 import { UsersService } from './users/users.service';
+import { MetaInternalResult } from '@metaio/microservice-model';
 
 @Controller()
 export class AppMsController {
@@ -24,7 +24,7 @@ export class AppMsController {
       userIdMax?: number;
       modifiedAfter?: Date;
     },
-  ): Promise<User[] | string> {
+  ): Promise<MetaInternalResult> {
     return this.usersService.fetchUsers(queries);
   }
 
