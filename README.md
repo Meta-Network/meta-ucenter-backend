@@ -47,16 +47,27 @@ $ yarn run test:e2e
 $ yarn run test:cov
 ```
 
-## Support
+## Conventional Commits
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+This project is following [commitlint](https://github.com/conventional-changelog/commitlint) rules and checks the commit message with [husky](https://typicode.github.io/husky/#/?id=features). You can also follow the [Local setup](https://commitlint.js.org/#/guides-local-setup) installation guide to install this lint in your project, like following:
 
-## Stay in touch
+```bash
+# Install and configure if needed
+npm install --save-dev @commitlint/{cli,config-conventional}
+echo "module.exports = { extends: ['@commitlint/config-conventional'] };" > commitlint.config.js
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+# Install Husky v6
+npm install husky --save-dev
+# or
+yarn add husky --dev
 
-## License
+# Active hooks
+npx husky install
+# or
+yarn husky install
 
-Nest is [MIT licensed](LICENSE).
+# Add hook
+npx husky add .husky/commit-msg 'npx --no-install commitlint --edit $1'
+# or
+yarn husky add .husky/commit-msg 'yarn commitlint --edit $1'
+```
