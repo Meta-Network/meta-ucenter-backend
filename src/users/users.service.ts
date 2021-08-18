@@ -85,18 +85,18 @@ export class UsersService {
     const result = new MetaInternalResult({ serviceCode: ServiceCode.UCENTER });
 
     if (userIdMin && userIdMax) {
-      result.data = this.usersRepository.find({
+      result.data = await this.usersRepository.find({
         where: { id: Between(userIdMin, userIdMax) },
       });
     } else if (modifiedAfter) {
-      result.data = this.usersRepository.find({
+      result.data = await this.usersRepository.find({
         where: { updated_at: MoreThan(modifiedAfter) },
       });
     } else {
       result.statusCode = HttpStatus.BAD_REQUEST;
       result.message = 'Query conditions not found.';
     }
-    this.logger.debug('fetchUsers result', JSON.stringify(result));
+    this.logger.debug(`fetchUsers result ${JSON.stringify(result)}`);
     return result;
   }
 }
