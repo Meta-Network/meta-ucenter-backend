@@ -23,6 +23,7 @@ module.exports = {
   password: db.password,
   database: db.database,
   synchronize: false,
+  logging: process.env.NODE_ENV !== 'production',
   entities: ['dist/entities/*.entity.js'],
   migrations: ['migration/*.ts'],
   cli: {

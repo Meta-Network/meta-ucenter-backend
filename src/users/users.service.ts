@@ -80,6 +80,7 @@ export class UsersService {
     userIdMax?: number;
     modifiedAfter?: Date;
   }): Promise<MetaInternalResult> {
+    this.logger.log('fetchUsers', queries);
     const { userIdMin, userIdMax, modifiedAfter } = queries;
     const result = new MetaInternalResult({ serviceCode: ServiceCode.UCENTER });
 
@@ -95,7 +96,7 @@ export class UsersService {
       result.statusCode = HttpStatus.BAD_REQUEST;
       result.message = 'Query conditions not found.';
     }
-
+    this.logger.debug('fetchUsers result', JSON.stringify(result));
     return result;
   }
 }
