@@ -152,7 +152,7 @@ export class AccountsService {
     const { user, userAccount } = await this.getUser(userAccountData);
 
     if (!user || !userAccount) {
-      throw new UnauthorizedException('User account does not exist');
+      throw new UnauthorizedException('User account does not exist.');
     }
 
     const tokens: JWTTokens = await this.authService.signJWT(user, userAccount);

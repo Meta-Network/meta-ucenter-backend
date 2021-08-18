@@ -2,7 +2,6 @@ import { IsAlphanumeric, IsOptional, IsString, Length } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateUsernameDto {
-  // TODO: add validate
   @ApiPropertyOptional({
     default: 'metafan',
     description: '用户名',

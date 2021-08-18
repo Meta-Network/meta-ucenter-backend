@@ -5,19 +5,38 @@ import {
   UpdateDateColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity()
 export class Account {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @ApiProperty({
+    description: '账号对应的用户 id',
+  })
+  @Column({
+    nullable: false,
+    comment: '账号对应的用户 id',
+  })
   user_id: number;
 
-  @Column()
+  @ApiProperty({
+    description: '账号名称，例如邮箱',
+  })
+  @Column({
+    nullable: false,
+    comment: '账号名称，例如邮箱',
+  })
   account_id: string;
 
-  @Column()
+  @ApiProperty({
+    description: '账户的登录方式',
+  })
+  @Column({
+    nullable: false,
+    comment: '账户的登录方式',
+  })
   platform: 'email' | string;
 
   @CreateDateColumn()

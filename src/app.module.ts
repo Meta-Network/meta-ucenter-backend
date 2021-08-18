@@ -19,6 +19,7 @@ import * as winston from 'winston';
 import * as ormconfig from './config/ormconfig';
 import { ClientProviderOptions, ClientsModule } from '@nestjs/microservices';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { AccountsWebauthnModule } from './accounts/accounts-webauthn/accounts-webauthn.module';
 
 const { migrations, ...appOrmConfig } = ormconfig as Record<string, any>;
 const { combine, timestamp, printf, metadata, label } = winston.format;
@@ -76,6 +77,7 @@ const logFormat = printf((info) => {
     TwoFactorAuthModule,
     AccountsEmailModule,
     AccountsTokenModule,
+    AccountsWebauthnModule,
     AccountsMetamaskModule,
     InvitationHandlerModule,
   ],
