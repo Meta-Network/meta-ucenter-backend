@@ -59,6 +59,7 @@ export class AccountsWebauthnService {
     return generateAssertionOptions({
       // Require users to use a previously-registered authenticator
       challenge: (await this.generateWebauthnChallenge(username)).challenge,
+      rpID: this.configService.get<string>('webauthn.rp.id'),
       userVerification: 'preferred',
       allowCredentials: userAuthenticators.map((authenticator) => ({
         id: base64url.toBuffer(authenticator.credential_id),
