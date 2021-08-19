@@ -45,7 +45,7 @@ export class AccountsWebauthnService {
       rpName: this.configService.get<string>('webauthn.rp.name'),
       userID: randomstring(16),
       userName: username,
-      attestationType: 'indirect',
+      attestationType: 'none',
       authenticatorSelection: {
         requireResidentKey: false,
         residentKey: 'discouraged',
