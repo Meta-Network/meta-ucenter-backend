@@ -47,6 +47,7 @@ export class AccountsWebauthnService {
       userName: username,
       attestationType: 'indirect',
       authenticatorSelection: {
+        requireResidentKey: false,
         residentKey: 'discouraged',
         userVerification: 'discouraged',
         authenticatorAttachment: 'platform',
