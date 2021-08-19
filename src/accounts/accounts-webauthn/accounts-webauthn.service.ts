@@ -82,14 +82,20 @@ export class AccountsWebauthnService {
       'webauthn-login',
       account,
     );
-    const verification = await verifyAttestationResponse({
-      credential,
-      expectedChallenge: base64url.encode(
-        Buffer.from(Uint8Array.from(challenge, (c) => c.charCodeAt(0))),
-      ),
-      expectedRPID: this.configService.get<string>('webauthn.rp.id'),
-      expectedOrigin: this.configService.get<string>('webauthn.rp.origin'),
-    });
+    let verification;
+    try {
+      verification = await verifyAttestationResponse({
+        credential,
+        expectedChallenge: base64url.encode(
+          Buffer.from(Uint8Array.from(challenge, (c) => c.charCodeAt(0))),
+        ),
+        expectedRPID: this.configService.get<string>('webauthn.rp.id'),
+        expectedOrigin: this.configService.get<string>('webauthn.rp.origin'),
+      });
+    } catch (error) {
+      console.error(error);
+      throw new BadRequestException(error.message);
+    }
     const { verified, attestationInfo } = verification;
 
     if (!verified) {
@@ -115,21 +121,28 @@ export class AccountsWebauthnService {
       where: { username: accountsWebAuthNDto.account },
     });
 
-    const verification = verifyAssertionResponse({
-      credential,
-      expectedChallenge: base64url.encode(
-        Buffer.from(Uint8Array.from(challenge, (c) => c.charCodeAt(0))),
-      ),
-      authenticator: {
-        counter: 0,
-        credentialID: base64url.toBuffer(account.credential_id),
-        credentialPublicKey: base64url.toBuffer(account.public_key),
-      },
-      expectedRPID: this.configService.get<string>('webauthn.rp.id'),
-      expectedOrigin: this.configService.get<string>('webauthn.rp.origin'),
-    });
-
+    let verification;
+    try {
+      verification = verifyAssertionResponse({
+        credential,
+        expectedChallenge: base64url.encode(
+          Buffer.from(Uint8Array.from(challenge, (c) => c.charCodeAt(0))),
+        ),
+        authenticator: {
+          // TODO: should verify this counter is larger than last request:
+          counter: 0,
+          credentialID: base64url.toBuffer(account.credential_id),
+          credentialPublicKey: base64url.toBuffer(account.public_key),
+        },
+        expectedRPID: this.configService.get<string>('webauthn.rp.id'),
+        expectedOrigin: this.configService.get<string>('webauthn.rp.origin'),
+      });
+    } catch (error) {
+      console.error(error);
+      throw new BadRequestException(error.message);
+    }
     const { verified, assertionInfo } = verification;
+
     if (!verified) {
       throw new BadRequestException('Login Web Authentication failed.');
     }
