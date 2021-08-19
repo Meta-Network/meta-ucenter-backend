@@ -64,7 +64,10 @@ export class AccountsTokenController {
   @Delete()
   @ApiOperation({ summary: '清除登录的 Tokens' })
   @ApiOkResponse({ description: '删除相关 Cookies，不返回 data' })
-  async delete(@Req() req: Request, @Res({ passthrough: true }) res: Response): Promise<void> {
+  async delete(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<void> {
     await this.jwtCookieHelper.JWTCookieDeleter(res);
   }
 }

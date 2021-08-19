@@ -110,7 +110,10 @@ export class AccountsWebauthnController {
     @CurrentUser() user: User,
     @Body() accountsWebauthnDto: AccountsWebAuthNDto,
   ): Promise<Account> {
-    return this.accountsWebauthnService.bindAccount(accountsWebauthnDto, user.id);
+    return this.accountsWebauthnService.bindAccount(
+      accountsWebauthnDto,
+      user.id,
+    );
   }
 
   @Post('/unbind')

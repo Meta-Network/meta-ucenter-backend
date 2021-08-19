@@ -13,6 +13,7 @@ import {
   generateAttestationOptions,
   generateAssertionOptions,
 } from '@simplewebauthn/server';
+import * as randomstring from 'randomstring';
 import { Account } from '../../entities/Account.entity';
 
 @Injectable()
@@ -42,11 +43,11 @@ export class AccountsWebauthnService {
       challenge: (await this.generateWebauthnChallenge(username)).challenge,
       rpID: this.configService.get<string>('webauthn.rp.id'),
       rpName: this.configService.get<string>('webauthn.rp.name'),
-      // TODO: change next line
-      userID: 'user_id_here',
+      userID: randomstring(16),
       userName: username,
       attestationType: 'indirect',
       authenticatorSelection: {
+        residentKey: 'discouraged',
         userVerification: 'discouraged',
         authenticatorAttachment: 'platform',
       },
@@ -61,7 +62,7 @@ export class AccountsWebauthnService {
       // Require users to use a previously-registered authenticator
       challenge: (await this.generateWebauthnChallenge(username)).challenge,
       rpID: this.configService.get<string>('webauthn.rp.id'),
-      userVerification: 'preferred',
+      userVerification: 'discouraged',
       allowCredentials: userAuthenticators.map((authenticator) => ({
         id: base64url.toBuffer(authenticator.credential_id),
         type: 'public-key',
