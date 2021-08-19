@@ -43,7 +43,7 @@ export class AccountsWebauthnService {
       challenge: (await this.generateWebauthnChallenge(username)).challenge,
       rpID: this.configService.get<string>('webauthn.rp.id'),
       rpName: this.configService.get<string>('webauthn.rp.name'),
-      userID: randomstring(16),
+      userID: randomstring.generate(16),
       userName: username,
       attestationType: 'none',
       authenticatorSelection: {
