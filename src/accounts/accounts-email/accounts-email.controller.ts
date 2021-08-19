@@ -23,7 +23,6 @@ import { Response } from 'express';
 import { User } from 'src/entities/User.entity';
 import { JWTAuthGuard } from 'src/auth/jwt.guard';
 import { JWTCookieHelper } from 'src/accounts/jwt-cookie-helper';
-import { AccountsService } from '../accounts.service';
 import { AccountsEmailService } from './accounts-email.service';
 import { VerifyExistsDto } from '../dto/verify-exists.dto';
 import { AccountsEmailDto } from './dto/accounts-email.dto';
@@ -31,7 +30,7 @@ import { VerificationCodeDto } from 'src/verification-code/dto/verification-code
 import { Account } from '../../entities/Account.entity';
 import { AccountsManager } from '../accounts.manager';
 
-@ApiTags('Accounts')
+@ApiTags('Accounts Email')
 @Controller('accounts/email')
 export class AccountsEmailController {
   private logger = new Logger(AccountsEmailController.name);

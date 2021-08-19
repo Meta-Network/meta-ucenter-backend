@@ -25,7 +25,7 @@ import { VerificationCodeDto } from 'src/verification-code/dto/verification-code
 import { CurrentUser } from 'src/users/user.decorator';
 import { Account } from '../../entities/Account.entity';
 
-@ApiTags('Accounts')
+@ApiTags('Accounts WebAuthN')
 @Controller('accounts/webauthn')
 export class AccountsWebauthnController {
   private logger = new Logger(AccountsWebauthnController.name);
@@ -54,18 +54,6 @@ export class AccountsWebauthnController {
     @Body() verifyCodeDto: VerificationCodeDto,
   ) {
     return await this.accountsWebauthnService.generateWebauthnAssertionOptions(
-      verifyCodeDto.key,
-    );
-  }
-
-  @Post('/verification-code')
-  @ApiOperation({ summary: '返回一段随机数供前端 API 进行签名，用于登录校验' })
-  @ApiCreatedResponse({ description: '在缓存中保存并回传校验码' })
-  @ApiBadRequestResponse({ description: '传入的表单参数不正确或无效' })
-  async generateVerificationCodeForWebauthn(
-    @Body() verifyCodeDto: VerificationCodeDto,
-  ) {
-    return await this.accountsWebauthnService.generateWebauthnChallenge(
       verifyCodeDto.key,
     );
   }
@@ -108,7 +96,7 @@ export class AccountsWebauthnController {
     await this.jwtCookieHelper.JWTCookieWriter(res, tokens);
     return { user, account };
   }
-  /*
+
   @Post('/bind')
   @ApiCookieAuth()
   @UseGuards(JWTAuthGuard)
@@ -122,7 +110,7 @@ export class AccountsWebauthnController {
     @CurrentUser() user: User,
     @Body() accountsWebauthnDto: AccountsWebAuthNDto,
   ): Promise<Account> {
-    return this.accountsManager.bindAccount(accountsWebauthnDto, user.id);
+    return this.accountsWebauthnService.bindAccount(accountsWebauthnDto, user.id);
   }
 
   @Post('/unbind')
@@ -135,7 +123,6 @@ export class AccountsWebauthnController {
     description: 'Cookies 中的 access_token 过期或无效',
   })
   async unbind(@Body() accountsWebauthnDto: AccountsWebAuthNDto) {
-    return this.accountsManager.unbindAccount(accountsWebauthnDto);
+    return this.accountsWebauthnService.unbindAccount(accountsWebauthnDto);
   }
-  */
 }

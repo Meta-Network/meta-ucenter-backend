@@ -26,7 +26,7 @@ import { AuthorizeRequestDto } from './dto/authorize-request.dto';
 // import { AuthorizeCallbackDto } from './dto/authorize-callback.dto';
 
 @ApiCookieAuth()
-@ApiTags('SocialAuth')
+@ApiTags('Social Auth')
 @Controller('social-auth')
 export class SocialAuthController {
   constructor(private readonly socialAuthService: SocialAuthService) {}

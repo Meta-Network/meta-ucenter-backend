@@ -175,19 +175,17 @@ export class AccountsService {
       platform,
     };
 
-    const thisAccount = await this.findOne(userAccountData);
-    if (!thisAccount) {
+    const account = await this.findOne(userAccountData);
+    if (!account) {
       throw new BadRequestException('This account does not exist.');
     }
 
-    const accounts = await this.find({ user_id: thisAccount.user_id });
+    const accounts = await this.find({ user_id: account.user_id });
     if (accounts.length < 2) {
       throw new BadRequestException(
         'The user has only this one account, which cannot be unbound.',
       );
     }
-
-    const account = await this.findOne(userAccountData);
     await this.delete(account.id);
   }
 

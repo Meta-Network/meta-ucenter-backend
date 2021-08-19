@@ -21,7 +21,7 @@ import { JWTCookieHelper } from 'src/accounts/jwt-cookie-helper';
 import { AccountsTokenService } from './accounts-token.service';
 import { User } from '../../entities/User.entity';
 
-@ApiTags('AccountsToken')
+@ApiTags('Accounts Token')
 @Controller('accounts/tokens')
 export class AccountsTokenController {
   constructor(

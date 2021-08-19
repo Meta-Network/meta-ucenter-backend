@@ -26,7 +26,7 @@ import { CurrentUser } from 'src/users/user.decorator';
 import { Account } from '../../entities/Account.entity';
 import { AccountsManager } from '../accounts.manager';
 
-@ApiTags('Accounts')
+@ApiTags('Accounts MetaMask')
 @Controller('accounts/metamask')
 export class AccountsMetamaskController {
   private logger = new Logger(AccountsMetamaskController.name);
