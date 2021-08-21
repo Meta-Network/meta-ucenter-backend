@@ -1,5 +1,6 @@
 import { Module, CacheModule } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from 'src/config/config.module';
+import { ConfigService } from 'src/config/config.service';
 import { VcodeCacheService } from './vcode-cache.service';
 import * as redisStore from 'cache-manager-redis-store';
 
