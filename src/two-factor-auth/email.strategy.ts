@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { VerificationCodeService } from '../verification-code/verification-code.service';
 import { EmailService } from '../email/email.service';
-import { ConfigService } from '@nestjs/config';
+import { ConfigService } from 'src/config/config.service';
 
 @Injectable()
 export class EmailStrategy {

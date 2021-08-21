@@ -1,6 +1,6 @@
 import { serialize } from 'v8';
 import crypto, { createHash } from 'crypto';
-import { ConfigService } from '@nestjs/config';
+import { ConfigService } from 'src/config/config.service';
 import { ForbiddenException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';

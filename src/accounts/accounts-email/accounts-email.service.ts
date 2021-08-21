@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { EmailService } from 'src/email/email.service';
-import { ConfigService } from '@nestjs/config';
+import { ConfigService } from 'src/config/config.service';
 import { CaptchaService } from 'src/captcha/captcha.service';
 import { AccountsEmailDto } from './dto/accounts-email.dto';
 import { VerificationCodeService } from 'src/verification-code/verification-code.service';

@@ -1,5 +1,5 @@
 import { Repository } from 'typeorm';
-import { ConfigService } from '@nestjs/config';
+import { ConfigService } from 'src/config/config.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { VerificationCodeService } from 'src/verification-code/verification-code.service';

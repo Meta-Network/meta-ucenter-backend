@@ -14,7 +14,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
+import { ConfigService } from 'src/config/config.service';
 import { Request, Response } from 'express';
 import { JWTTokenPayload } from 'src/type/jwt-payload';
 import { JWTCookieHelper } from 'src/accounts/jwt-cookie-helper';

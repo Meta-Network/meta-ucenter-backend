@@ -3,10 +3,8 @@ import configuration from './config/configuration';
 import { AppService } from './app.service';
 import { AppController } from './app.controller';
 import { AppMsController } from './app.ms.controller';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
-import { WinstonModule } from 'nest-winston';
 import { AccountsModule } from './accounts/accounts.module';
 import { SocialAuthModule } from './social-auth/social-auth.module';
 import { InvitationModule } from './invitation/invitation.module';
@@ -15,48 +13,16 @@ import { AccountsEmailModule } from './accounts/accounts-email/accounts-email.mo
 import { TwoFactorAuthModule } from './two-factor-auth/two-factor-auth.module';
 import { AccountsMetamaskModule } from './accounts/accounts-metamask/accounts-metamask.module';
 import { InvitationHandlerModule } from './invitation-handler/invitation-handler.module';
-import * as winston from 'winston';
-import * as ormconfig from './config/ormconfig';
 import { ClientProviderOptions, ClientsModule } from '@nestjs/microservices';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { AccountsWebauthnModule } from './accounts/accounts-webauthn/accounts-webauthn.module';
-
-const { migrations, ...appOrmConfig } = ormconfig as Record<string, any>;
-const { combine, timestamp, printf, metadata, label } = winston.format;
-
-const logFormat = printf((info) => {
-  return `${info.timestamp} ${info.level} [${info.label}]: ${info.message}`;
-});
+import { ConfigModule } from './config/config.module';
+import { ConfigService } from './config/config.service';
+import * as fs from 'fs';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-      load: [configuration],
-    }),
-    WinstonModule.forRoot({
-      level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
-      format: combine(
-        label({ label: 'UCenter' }),
-        timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-        metadata({ fillExcept: ['message', 'level', 'timestamp', 'label'] }),
-      ),
-      transports: [
-        new winston.transports.Console({
-          format: combine(winston.format.colorize(), logFormat),
-        }),
-        new winston.transports.File({
-          filename: '/var/log/ucenter/app.log',
-          format: combine(
-            // Render in one line in your log file.
-            // If you use prettyPrint() here it will be really
-            // difficult to exploit your logs files afterwards.
-            winston.format.json(),
-          ),
-        }),
-      ],
-      exitOnError: false,
-    }),
+    ConfigModule.forRoot(configuration),
     EventEmitterModule.forRoot(),
     ClientsModule.registerAsync([
       {
@@ -69,7 +35,26 @@ const logFormat = printf((info) => {
         inject: [ConfigService],
       },
     ]),
-    TypeOrmModule.forRoot(appOrmConfig),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        type: 'mysql',
+        host: configService.get<string>('db.host'),
+        ssl: {
+          ca: fs.readFileSync('./rds-ca-2019-root.pem', 'utf8').toString(),
+        },
+        port: configService.get<number>('db.port', 3306),
+        connectTimeout: 60 * 60 * 1000,
+        acquireTimeout: 60 * 60 * 1000,
+        username: configService.get<string>('db.username'),
+        password: configService.get<string>('db.password'),
+        database: configService.get<string>('db.database'),
+        autoLoadEntities: true,
+        entities: ['dist/entities/*.entity.js'],
+        synchronize: false,
+      }),
+    }),
     UsersModule,
     AccountsModule,
     InvitationModule,
@@ -80,6 +65,7 @@ const logFormat = printf((info) => {
     AccountsWebauthnModule,
     AccountsMetamaskModule,
     InvitationHandlerModule,
+    ConfigModule,
   ],
   controllers: [AppController, AppMsController],
   providers: [AppService],

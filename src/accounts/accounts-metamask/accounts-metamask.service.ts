@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ConfigService } from 'src/config/config.service';
 import { CaptchaService } from 'src/captcha/captcha.service';
 import { VerificationCodeService } from 'src/verification-code/verification-code.service';
 import { AccountsMetaMaskDto } from './dto/accounts-metamask.dto';

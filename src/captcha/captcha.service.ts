@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { verify as hcaptchaVerify } from 'hcaptcha';
-import { ConfigService } from '@nestjs/config';
+import { ConfigService } from 'src/config/config.service';
 
 @Injectable()
 export class CaptchaService {

@@ -1,17 +1,13 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from 'src/config/config.service';
 import { IEmailSender } from './email-sender.interface';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { Logger } from 'winston';
 import axios from 'axios';
 import * as querystring from 'querystring';
 
 @Injectable()
 export class SendcloudProvider implements IEmailSender {
-  constructor(
-    private readonly configService: ConfigService,
-    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
-  ) {}
+  constructor(private readonly configService: ConfigService) {}
 
   async send({ from, fromName, to, templateInvokeName }, placeholders) {
     const API_USER = this.configService.get<string>('sendcloud.user');
@@ -44,9 +40,6 @@ export class SendcloudProvider implements IEmailSender {
       });
     }
 
-    this.logger.info(JSON.stringify({ request: xSmtpapi, response: result }), {
-      label: 'SendCloud',
-    });
     return result;
   }
 }

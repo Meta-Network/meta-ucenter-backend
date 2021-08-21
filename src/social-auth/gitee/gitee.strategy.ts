@@ -2,7 +2,7 @@ import { Response } from 'express';
 import { platform } from 'os';
 import { Repository } from 'typeorm';
 import { User } from 'src/entities/User.entity';
-import { ConfigService } from '@nestjs/config';
+import { ConfigService } from 'src/config/config.service';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { AuthorizeRequestDto } from '../dto/authorize-request.dto';
 import { AuthorizeCallbackDto } from '../dto/authorize-callback.dto';

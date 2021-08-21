@@ -1,16 +1,17 @@
-import * as yaml from 'js-yaml';
 import { join } from 'path';
-import { readFileSync } from 'fs';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+const YAML_BIZ_CONFIG_FILENAME =
+  process.env.NODE_ENV === 'production'
+    ? 'config.biz.production.yaml'
+    : 'config.biz.development.yaml';
+
 const YAML_CONFIG_FILENAME =
   process.env.NODE_ENV === 'production'
     ? 'config.production.yaml'
     : 'config.development.yaml';
 
-export default () => {
-  return yaml.load(
-    // '__dirname/../..' refers to project root folder
-    readFileSync(join(__dirname, '..', '..', YAML_CONFIG_FILENAME), 'utf8'),
-  ) as Record<string, any>;
+// '__dirname/../..' refers to the project root folder
+export default {
+  filePath: join(__dirname, '..', '..', YAML_CONFIG_FILENAME),
+  bizFilePath: join(__dirname, '..', '..', YAML_BIZ_CONFIG_FILENAME),
 };

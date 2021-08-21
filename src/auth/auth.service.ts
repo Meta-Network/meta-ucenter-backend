@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { JWTTokenPayload } from 'src/type/jwt-payload';
-import { ConfigService } from '@nestjs/config';
+import { ConfigService } from 'src/config/config.service';
 import { Account } from '../entities/Account.entity';
 import { User } from '../entities/User.entity';
 

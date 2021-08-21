@@ -4,7 +4,7 @@ import {
   UnauthorizedException,
   Logger,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ConfigService } from 'src/config/config.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Repository } from 'typeorm';
