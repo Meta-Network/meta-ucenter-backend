@@ -17,5 +17,6 @@ import { VcodeCacheModule } from '../vcode-cache/vcode-cache.module';
     SocialAuthService,
     SocialAuthStrategyFactory,
   ],
+  exports: [SocialAuthService],
 })
 export class SocialAuthModule {}

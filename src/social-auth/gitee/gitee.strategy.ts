@@ -120,9 +120,11 @@ export class GiteeStrategy implements ISocialAuthStrategy {
     return res.redirect(authorizeCallbackDto.redirect_url);
   }
 
-  async getToken(user: User): Promise<string> {
+  async getToken(userId: number): Promise<string> {
+    await this.refreshToken(userId);
+
     const auth = await this.socialAuthRepository.findOne({
-      user_id: user.id,
+      user_id: userId,
       type: 'oauth2',
       platform: 'gitee',
     });
@@ -136,9 +138,9 @@ export class GiteeStrategy implements ISocialAuthStrategy {
     return auth.access_token;
   }
 
-  async refreshToken(user: User): Promise<void> {
+  async refreshToken(userId: number): Promise<void> {
     const auth = await this.socialAuthRepository.findOne({
-      user_id: user.id,
+      user_id: userId,
       type: 'oauth2',
       platform: 'gitee',
     });

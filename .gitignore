@@ -36,9 +36,9 @@ lerna-debug.log*
 
 # Environment file
 .env.*
-/config.*
-!config.example.yaml
+/config/config.*
+!/config/config.example.yaml
 
 # JWT keys
-JWT_PRIVATE_KEY.pem
-JWT_PUBLIC_KEY.pub
+/config/JWT_PRIVATE_KEY.pem
+/config/JWT_PUBLIC_KEY.pub

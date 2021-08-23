@@ -109,13 +109,13 @@ export class GithubStrategy implements ISocialAuthStrategy {
     return res.redirect(authorizeCallbackDto.redirect_url);
   }
 
-  async getToken(user: User): Promise<string> {
-    const auth = await this.socialAuthRepository.findOne({ user_id: user.id });
+  async getToken(userId: number): Promise<string> {
+    const auth = await this.socialAuthRepository.findOne({ user_id: userId });
     return auth.access_token;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async refreshToken(user: User): Promise<void> {
+  async refreshToken(userId: number): Promise<void> {
     throw new BadRequestException('Github OAuth does not have refresh token.');
   }
 }

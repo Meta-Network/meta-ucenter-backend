@@ -19,6 +19,9 @@ import { AccountsWebauthnModule } from './accounts/accounts-webauthn/accounts-we
 import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
 import * as fs from 'fs';
+import { join } from 'path';
+
+const configPath = process.env.CONFIG_PATH || join(__dirname, '..', 'config');
 
 @Module({
   imports: [
@@ -42,7 +45,9 @@ import * as fs from 'fs';
         type: 'mysql',
         host: configService.get<string>('db.host'),
         ssl: {
-          ca: fs.readFileSync('./rds-ca-2019-root.pem', 'utf8').toString(),
+          ca: fs
+            .readFileSync(join(configPath, 'rds-ca-2019-root.pem'), 'utf8')
+            .toString(),
         },
         port: configService.get<number>('db.port', 3306),
         connectTimeout: 60 * 60 * 1000,

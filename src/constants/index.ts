@@ -1,11 +1,12 @@
 import fs from 'fs';
 import path from 'path';
 
+const configPath =
+  process.env.CONFIG_PATH || path.join(__dirname, '..', '..', 'config');
+
 export const JWT_KEY = {
-  privateKey: fs.readFileSync(
-    path.join(__dirname, '../../JWT_PRIVATE_KEY.pem'),
-  ),
-  publicKey: fs.readFileSync(path.join(__dirname, '../../JWT_PUBLIC_KEY.pub')),
+  privateKey: fs.readFileSync(path.join(configPath, 'JWT_PRIVATE_KEY.pem')),
+  publicKey: fs.readFileSync(path.join(configPath, 'JWT_PUBLIC_KEY.pub')),
 };
 
 export const APP_NAME_ON_AUTHENTICATOR = 'Meta Auth Dev';

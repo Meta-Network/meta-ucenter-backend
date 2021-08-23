@@ -89,7 +89,7 @@ export class SocialAuthController {
     @Param('platform') platform: string,
     @CurrentUser() user: User,
   ): Promise<{ token: string }> {
-    return { token: await this.socialAuthService.getToken(platform, user) };
+    return { token: await this.socialAuthService.getToken(platform, user.id) };
   }
 
   @Patch(':platform/refresh')
@@ -105,6 +105,6 @@ export class SocialAuthController {
     @Param('platform') platform: string,
     @CurrentUser() user: User,
   ): Promise<void> {
-    await this.socialAuthService.refreshToken(platform, user);
+    await this.socialAuthService.refreshToken(platform, user.id);
   }
 }

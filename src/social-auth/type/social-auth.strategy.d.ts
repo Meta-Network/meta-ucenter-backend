@@ -12,6 +12,6 @@ export interface ISocialAuthStrategy {
     user: User,
     res: Response,
   ): Promise<void>;
-  getToken(user: User): Promise<string>;
-  refreshToken(user: User): Promise<void>;
+  getToken(userId: number): Promise<string>;
+  refreshToken(userId: number): Promise<void>;
 }

@@ -33,11 +33,11 @@ export class SocialAuthService {
     );
   }
 
-  async getToken(platform: string, user: User): Promise<string> {
-    return this.use(platform).getToken(user);
+  async getToken(platform: string, userId: number): Promise<string> {
+    return this.use(platform).getToken(userId);
   }
 
-  async refreshToken(platform: string, user: User): Promise<void> {
-    return this.use(platform).refreshToken(user);
+  async refreshToken(platform: string, userId: number): Promise<void> {
+    return this.use(platform).refreshToken(userId);
   }
 }
