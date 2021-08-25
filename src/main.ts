@@ -39,7 +39,10 @@ async function bootstrap() {
   });
 
   app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
+    res.header(
+      'Access-Control-Allow-Origin',
+      configService.get<string[]>('cors.origins'),
+    );
     res.header(
       'Access-Control-Allow-Methods',
       'POST, GET, OPTIONS, DELETE, PATCH, HEAD',
