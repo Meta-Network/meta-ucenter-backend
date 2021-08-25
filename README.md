@@ -12,12 +12,33 @@ $ yarn install
 
 ## Running the app (choose one)
 
+First you have to setup the config files, include following:
+
+```
+config
+|____config.production.yaml   # for production mode
+|____config.biz.production.yaml  # as well as above
+|____config.development.yaml  # for development mode
+|____config.biz.development.yaml  # as well as above
+|____rds-ca-2019-root.pem
+|____JWT_PUBLIC_KEY.pub
+|____JWT_PRIVATE_KEY.pem
+```
+
+If you're running in **docker-compose**, you need to setup these files within docker config path, default as:
+
+```
+/var/docker/meta-ucenter/config
+```
+
+Here's how to generate JWT key files:
+
 ```bash
 # Generate RSA Key for JWT signing
-$ openssl genrsa -out JWT_PRIVATE_KEY.pem 1024
+$ openssl genrsa -out ./config/JWT_PRIVATE_KEY.pem 1024
 
 # Get RSA Public Key from the private key
-$ openssl rsa -in JWT_PRIVATE_KEY.pem -pubout > JWT_PUBLIC_KEY.pub
+$ openssl rsa -in ./config/JWT_PRIVATE_KEY.pem -pubout > ./config/JWT_PUBLIC_KEY.pub
 
 # development
 $ yarn run start
@@ -27,6 +48,21 @@ $ yarn run start:dev
 
 # production mode
 $ yarn run start:prod
+```
+
+## Docker
+
+You can build a [Docker](https://www.docker.com/) image with `docker build` command as following:
+
+```bash
+yarn build # or npm run build
+docker build -t metaio/ucenter:latest .
+```
+
+Then to start up the image, you can use [Docker compose](https://docs.docker.com/compose/), with simply:
+
+```bash
+docker-compose up
 ```
 
 ## Test

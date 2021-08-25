@@ -25,7 +25,7 @@ export class AppMsController {
       platform: string;
       userId: number;
     },
-  ) {
+  ): Promise<{ token: string }> {
     return {
       token: await this.socialAuthService.getToken(
         payload.platform,
