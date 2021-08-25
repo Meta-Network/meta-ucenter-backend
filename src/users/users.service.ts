@@ -68,6 +68,13 @@ export class UsersService {
     const name = request.headers['file-name'];
     const file = await rawbody(request);
 
+    console.log({
+      apiKey: this.configService.get<string>('fleek.api_key'),
+      apiSecret: this.configService.get<string>('fleek.api_secret'),
+      key: name as string,
+      data: file,
+    });
+
     const uploadResult = await fleekStorage.upload({
       apiKey: this.configService.get<string>('fleek.api_key'),
       apiSecret: this.configService.get<string>('fleek.api_secret'),
