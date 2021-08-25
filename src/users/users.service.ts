@@ -68,13 +68,6 @@ export class UsersService {
     const name = request.headers['file-name'];
     const file = await rawbody(request);
 
-    console.log({
-      apiKey: this.configService.get<string>('fleek.api_key'),
-      apiSecret: this.configService.get<string>('fleek.api_secret'),
-      key: name as string,
-      data: file,
-    });
-
     const uploadResult = await fleekStorage.upload({
       apiKey: this.configService.get<string>('fleek.api_key'),
       apiSecret: this.configService.get<string>('fleek.api_secret'),
@@ -82,9 +75,12 @@ export class UsersService {
       data: file,
     });
 
-    const updatedUser = await this.usersRepository.update(uid, {
+    await this.usersRepository.update(uid, {
       avatar: uploadResult.publicUrl,
     });
+
+    const updatedUser = await this.findOne(uid);
+
     this.logger.log('emit Event UserProfileModified', updatedUser);
     this.eventEmitter.emit(Events.UserProfileModified, updatedUser);
 
