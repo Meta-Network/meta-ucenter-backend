@@ -33,7 +33,7 @@ async function bootstrap() {
 
   app.useGlobalInterceptors(new TransformInterceptor());
   app.enableCors({
-    methods: 'POST, GET, OPTIONS, DELETE, PATCH, HEAD',
+    methods: 'POST, PUT, GET, OPTIONS, DELETE, PATCH, HEAD',
     origin: configService.get<string[]>('cors.origins'),
     credentials: true,
   });
@@ -41,7 +41,7 @@ async function bootstrap() {
   app.use((req, res, next) => {
     res.header(
       'Access-Control-Allow-Methods',
-      'POST, GET, OPTIONS, DELETE, PATCH, HEAD',
+      'POST, PUT, GET, OPTIONS, DELETE, PATCH, HEAD',
     );
     next();
   });

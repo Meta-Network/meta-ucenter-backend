@@ -1,4 +1,6 @@
 import {
+  Res,
+  Req,
   Get,
   Put,
   Post,
@@ -7,6 +9,7 @@ import {
   UseGuards,
   Controller,
 } from '@nestjs/common';
+import { Response, Request } from 'express';
 import { CurrentUser } from './user.decorator';
 import { UsersService } from './users.service';
 import { JWTAuthGuard } from 'src/auth/jwt.guard';
@@ -76,6 +79,26 @@ export class UsersController {
     @Body() body: UpdateUsernameDto,
   ): Promise<User> {
     return this.usersService.updateUsername(user.id, body.username);
+  }
+
+  @Put('me/avatar')
+  @UseGuards(JWTAuthGuard)
+  @ApiOperation({ summary: '上传新的头像并更新' })
+  @ApiOkResponse({ description: '返回提交的结果。' })
+  @ApiBadRequestResponse({ description: '请求失败' })
+  @ApiUnauthorizedResponse({
+    description: 'Cookies 中的 access_token 过期或无效',
+  })
+  async uploadAvatar(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+    @CurrentUser() user: JWTDecodedUser,
+  ): Promise<any> {
+    res.set({
+      Accept: 'application/octet-stream',
+      'Access-Control-Allow-Headers': '*',
+    });
+    return await this.usersService.uploadAvatar(user.id, req);
   }
 
   @Post('search')

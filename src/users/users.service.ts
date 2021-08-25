@@ -1,16 +1,20 @@
+import { Request } from 'express';
 import { User } from 'src/entities/User.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, Like, MoreThan, Repository } from 'typeorm';
 import {
-  BadRequestException,
-  HttpStatus,
   Injectable,
   Logger,
+  HttpStatus,
+  BadRequestException,
 } from '@nestjs/common';
+import Events from '../events';
 import { MetaInternalResult, ServiceCode } from '@metaio/microservice-model';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { UpdateUserDto } from './dto/update-user.dto';
-import Events from '../events';
+import { ConfigService } from '../config/config.service';
+import rawbody from 'raw-body';
+import fleekStorage from '@fleekhq/fleek-storage-js';
 
 @Injectable()
 export class UsersService {
@@ -18,6 +22,7 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+    private configService: ConfigService,
     private eventEmitter: EventEmitter2,
   ) {}
 
@@ -56,6 +61,26 @@ export class UsersService {
     const updatedUser = await this.usersRepository.findOne(uid);
 
     this.eventEmitter.emit(Events.UserProfileModified, updatedUser);
+    return updatedUser;
+  }
+
+  async uploadAvatar(uid: number, request: Request): Promise<any> {
+    const name = request.headers['file-name'];
+    const file = await rawbody(request);
+
+    const uploadResult = await fleekStorage.upload({
+      apiKey: this.configService.get<string>('fleek.api_key'),
+      apiSecret: this.configService.get<string>('fleek.api_secret'),
+      key: name as string,
+      data: file,
+    });
+
+    const updatedUser = await this.usersRepository.update(uid, {
+      avatar: uploadResult.publicUrl,
+    });
+    this.logger.log('emit Event UserProfileModified', updatedUser);
+    this.eventEmitter.emit(Events.UserProfileModified, updatedUser);
+
     return updatedUser;
   }
 
