@@ -33,9 +33,16 @@ async function bootstrap() {
 
   app.useGlobalInterceptors(new TransformInterceptor());
   app.enableCors({
-    methods: '*',
+    methods: 'POST, GET, OPTIONS, DELETE, PATCH',
     origin: configService.get<string[]>('cors.origins'),
     credentials: true,
+  });
+
+  app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Accept');
+    next();
   });
 
   const config = new DocumentBuilder()
