@@ -54,6 +54,7 @@ export class GithubStrategy implements ISocialAuthStrategy {
       this.configService.get<string>('github.client_id'),
     );
     result.searchParams.append('state', state);
+    result.searchParams.append('scope', 'repo');
     result.searchParams.append('redirect_uri', origin.toString());
     return result.toString();
   }
