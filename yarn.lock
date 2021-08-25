@@ -5420,10 +5420,10 @@ neo-async@^2.6.2:
   resolved "https://registry.npmjs.org/neo-async/-/neo-async-2.6.2.tgz"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
 
-nestjs-general-interceptor@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.nlark.com/nestjs-general-interceptor/download/nestjs-general-interceptor-1.0.0.tgz"
-  integrity sha1-JCrhCzbcfpgx75hGhBjVGtZRJXI=
+nestjs-general-interceptor@1.0.3:
+  version "1.0.3"
+  resolved "https://registry.nlark.com/nestjs-general-interceptor/download/nestjs-general-interceptor-1.0.3.tgz#a0a9e91dceedba73fd98c65661730f070e5f658e"
+  integrity sha1-oKnpHc7tunP9mMZWYXMPBw5fZY4=
   dependencies:
     "@nestjs/common" "^8.0.4"
     rxjs "^7.2.0"
