@@ -14,7 +14,9 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ConfigService } from '../config/config.service';
 import rawbody from 'raw-body';
+import crypto from 'crypto';
 import fleekStorage from '@fleekhq/fleek-storage-js';
+import path from 'path';
 
 @Injectable()
 export class UsersService {
@@ -65,13 +67,19 @@ export class UsersService {
   }
 
   async uploadAvatar(uid: number, request: Request): Promise<any> {
-    const name = request.headers['file-name'];
+    const name = request.headers['file-name'] as string;
     const file = await rawbody(request);
+
+    const hashSum = crypto.createHash('sha256');
+    hashSum.update(file);
+
+    const hexName = hashSum.digest('hex');
+    const fileName = hexName + path.parse(name).ext;
 
     const uploadResult = await fleekStorage.upload({
       apiKey: this.configService.get<string>('fleek.api_key'),
       apiSecret: this.configService.get<string>('fleek.api_secret'),
-      key: name as string,
+      key: fileName,
       data: file,
     });
 
