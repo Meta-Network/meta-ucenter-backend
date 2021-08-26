@@ -1,4 +1,4 @@
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { platform } from 'os';
 import { Repository } from 'typeorm';
 import { User } from 'src/entities/User.entity';
@@ -24,6 +24,7 @@ export class GiteeStrategy implements ISocialAuthStrategy {
   async authorizeRequest(
     authorizeRequestDto: AuthorizeRequestDto,
     user: User,
+    request: Request,
   ): Promise<string> {
     const whitelist = this.configService.get<string[]>('cors.origins');
 
@@ -42,7 +43,7 @@ export class GiteeStrategy implements ISocialAuthStrategy {
       state,
     );
 
-    const origin = new URL(this.configService.get<string>('app.domain'));
+    const origin = new URL(request.headers.origin);
     origin.pathname = '/social-auth/gitee/authorize-callback';
     origin.searchParams.append(
       'redirect_url',
@@ -52,7 +53,7 @@ export class GiteeStrategy implements ISocialAuthStrategy {
     const result = new URL('https://gitee.com/oauth/authorize');
     result.searchParams.append(
       'client_id',
-      this.configService.get<string>('gitee.client_id'),
+      this.configService.getBiz<string>('gitee.client_id'),
     );
     result.searchParams.append('state', state);
     result.searchParams.append('response_type', 'code');
@@ -64,6 +65,7 @@ export class GiteeStrategy implements ISocialAuthStrategy {
     authorizeCallbackDto: AuthorizeCallbackDto,
     user: User,
     res: Response,
+    request: Request,
   ): Promise<void> {
     const state = await this.vcodeCacheService.get<string>(
       `gitee_authorize_request_state_by_user_${user.id}`,
@@ -79,7 +81,7 @@ export class GiteeStrategy implements ISocialAuthStrategy {
       `gitee_authorize_request_state_by_user_${user.id}`,
     );
 
-    const origin = new URL(this.configService.get<string>('app.domain'));
+    const origin = new URL(request.headers.origin);
     origin.pathname = '/social-auth/gitee/authorize-callback';
     origin.searchParams.append(
       'redirect_url',
@@ -89,8 +91,8 @@ export class GiteeStrategy implements ISocialAuthStrategy {
     const form = {
       redirect_uri: origin.toString(),
       grant_type: 'authorization_code',
-      client_id: this.configService.get<string>('gitee.client_id'),
-      client_secret: this.configService.get<string>('gitee.client_secret'),
+      client_id: this.configService.getBiz<string>('gitee.client_id'),
+      client_secret: this.configService.getBiz<string>('gitee.client_secret'),
       code: authorizeCallbackDto.code,
     };
     const result = (
@@ -130,9 +132,7 @@ export class GiteeStrategy implements ISocialAuthStrategy {
     });
 
     if (!auth) {
-      throw new BadRequestException(
-        `This user has no access token saved for ${platform}.`,
-      );
+      throw new BadRequestException('User Gitee OAuth token not found.');
     }
 
     return auth.access_token;

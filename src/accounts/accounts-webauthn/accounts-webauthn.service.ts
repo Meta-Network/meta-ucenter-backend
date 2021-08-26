@@ -41,8 +41,8 @@ export class AccountsWebauthnService {
   async generateWebauthnAttestationOptions(username: string) {
     return generateAttestationOptions({
       challenge: (await this.generateWebauthnChallenge(username)).challenge,
-      rpID: this.configService.get<string>('webauthn.rp.id'),
-      rpName: this.configService.get<string>('webauthn.rp.name'),
+      rpID: this.configService.getBiz<string>('webauthn.rp.id'),
+      rpName: this.configService.getBiz<string>('webauthn.rp.name'),
       userID: randomstring.generate(16),
       userName: username,
       attestationType: 'none',
@@ -62,7 +62,7 @@ export class AccountsWebauthnService {
     return generateAssertionOptions({
       // Require users to use a previously-registered authenticator
       challenge: (await this.generateWebauthnChallenge(username)).challenge,
-      rpID: this.configService.get<string>('webauthn.rp.id'),
+      rpID: this.configService.getBiz<string>('webauthn.rp.id'),
       userVerification: 'discouraged',
       allowCredentials: userAuthenticators.map((authenticator) => ({
         id: base64url.toBuffer(authenticator.credential_id),
@@ -89,8 +89,8 @@ export class AccountsWebauthnService {
         expectedChallenge: base64url.encode(
           Buffer.from(Uint8Array.from(challenge, (c) => c.charCodeAt(0))),
         ),
-        expectedRPID: this.configService.get<string>('webauthn.rp.id'),
-        expectedOrigin: this.configService.get<string>('webauthn.rp.origin'),
+        expectedRPID: this.configService.getBiz<string>('webauthn.rp.id'),
+        expectedOrigin: this.configService.getBiz<string>('webauthn.rp.origin'),
       });
     } catch (error) {
       console.error(error);
@@ -134,8 +134,8 @@ export class AccountsWebauthnService {
           credentialID: base64url.toBuffer(account.credential_id),
           credentialPublicKey: base64url.toBuffer(account.public_key),
         },
-        expectedRPID: this.configService.get<string>('webauthn.rp.id'),
-        expectedOrigin: this.configService.get<string>('webauthn.rp.origin'),
+        expectedRPID: this.configService.getBiz<string>('webauthn.rp.id'),
+        expectedOrigin: this.configService.getBiz<string>('webauthn.rp.origin'),
       });
     } catch (error) {
       console.error(error);

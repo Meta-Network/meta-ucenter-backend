@@ -1,0 +1,32 @@
+# config.biz.development.yaml
+email:
+  from:
+  from_name:
+  template_invoke_name_vcode:
+
+hcaptcha:
+  enabled: false
+  secret:
+
+dingding_bot:
+  enabled: false
+  api:
+
+# SocialAuth
+github:
+  client_id:
+  client_secret:
+
+gitee:
+  client_id:
+  client_secret:
+
+fleek:
+  api_key:
+  api_secret:
+
+webauthn:
+  rp:
+    id: 'localhost'
+    origin: 'http://localhost:8000'
+    name:

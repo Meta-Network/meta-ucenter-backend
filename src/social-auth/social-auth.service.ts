@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Request, Response } from 'express';
 import { User } from 'src/entities/User.entity';
 import { AuthorizeRequestDto } from './dto/authorize-request.dto';
 import { SocialAuthStrategyFactory } from './social-auth.strategy.factory';
@@ -16,20 +17,27 @@ export class SocialAuthService {
     platform: string,
     authorizeRequestDto: AuthorizeRequestDto,
     user: User,
+    request: Request,
   ) {
-    return this.use(platform).authorizeRequest(authorizeRequestDto, user);
+    return this.use(platform).authorizeRequest(
+      authorizeRequestDto,
+      user,
+      request,
+    );
   }
 
   async authorizeCallback(
     platform: string,
     authorizeCallbackDto: AuthorizeCallbackDto,
     user: User,
-    res,
+    response: Response,
+    request: Request,
   ) {
     return this.use(platform).authorizeCallback(
       authorizeCallbackDto,
       user,
-      res,
+      response,
+      request,
     );
   }
 

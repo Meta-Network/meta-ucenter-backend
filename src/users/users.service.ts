@@ -77,8 +77,8 @@ export class UsersService {
     const fileName = hexName + path.parse(name).ext;
 
     const uploadResult = await fleekStorage.upload({
-      apiKey: this.configService.get<string>('fleek.api_key'),
-      apiSecret: this.configService.get<string>('fleek.api_secret'),
+      apiKey: this.configService.getBiz<string>('fleek.api_key'),
+      apiSecret: this.configService.getBiz<string>('fleek.api_secret'),
       key: fileName,
       data: file,
     });

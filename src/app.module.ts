@@ -49,7 +49,7 @@ const configPath = process.env.CONFIG_PATH || join(__dirname, '..', 'config');
             .readFileSync(join(configPath, 'rds-ca-2019-root.pem'), 'utf8')
             .toString(),
         },
-        port: configService.get<number>('db.port', 3306),
+        port: configService.get<number>('db.port'),
         connectTimeout: 60 * 60 * 1000,
         acquireTimeout: 60 * 60 * 1000,
         username: configService.get<string>('db.username'),

@@ -25,7 +25,7 @@ export class EmailStrategy {
       'email_from',
       'EMAIL_FROM_NAME',
       'EMAIL_TEMPLATE_INVOKE_NAME_VCODE',
-    ].map((key) => this.configService.get<string>(key));
+    ].map((key) => this.configService.getBiz<string>(key));
 
     this.emailService.send(
       {

@@ -12,21 +12,29 @@ export class ConfigService {
     @Inject('CONFIG_OPTIONS')
     private options: { bizFilePath: string; filePath: string },
   ) {
-    if (options.filePath) {
-      watch(options.filePath, 'utf-8', () => {
-        this.logger.log('Config file changed');
-        this.loadFile();
-      });
+    watch(options.filePath, 'utf-8', () => {
+      this.logger.log('Config file changed');
       this.loadFile();
-    }
+    });
+    this.loadFile();
 
-    if (options.bizFilePath) {
-      watch(options.bizFilePath, 'utf-8', () => {
-        this.logger.log('Biz Config file changed');
-        this.loadBizFile();
-      });
-
+    watch(options.bizFilePath, 'utf-8', () => {
+      this.logger.log('Biz Config file changed');
       this.loadBizFile();
+    });
+
+    this.loadBizFile();
+  }
+
+  private getValue<T = any>(configType, propertyPath): T | undefined {
+    try {
+      return propertyPath.split('.').reduce((o, i) => o[i], configType);
+    } catch (error) {
+      throw new ReferenceError(
+        `Accessing to property "${propertyPath}" from ${
+          configType === this.configBiz ? 'Biz Config' : 'Config'
+        } doesn't exist.`,
+      );
     }
   }
 
@@ -34,26 +42,18 @@ export class ConfigService {
    * Get a configuration value (either custom configuration or process environment variable)
    * based on property path (you can use dot notation to traverse nested object, e.g. "database.host").
    * @param propertyPath
-   * @param defaultValue
    */
-  public get<T = any>(propertyPath, defaultValue?): T | undefined {
-    return (
-      propertyPath.split('.').reduce((o, i) => o[i], this.config) ||
-      defaultValue
-    );
+  public get<T = any>(propertyPath): T {
+    return this.getValue(this.config, propertyPath);
   }
 
   /**
    * Get a biz configuration value (either custom configuration or process environment variable)
    * based on property path (you can use dot notation to traverse nested object, e.g. "database.host").
    * @param propertyPath
-   * @param defaultValue
    */
-  public getBiz<T = any>(propertyPath, defaultValue?): T | undefined {
-    return (
-      propertyPath.split('.').reduce((o, i) => o[i], this.configBiz) ||
-      defaultValue
-    );
+  public getBiz<T = any>(propertyPath): T {
+    return this.getValue(this.configBiz, propertyPath);
   }
 
   private loadFile() {

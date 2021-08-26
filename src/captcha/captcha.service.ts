@@ -6,10 +6,10 @@ import { ConfigService } from 'src/config/config.service';
 export class CaptchaService {
   constructor(private configService: ConfigService) {}
   async verify(token): Promise<boolean> {
-    if (!this.configService.get<boolean>('hcaptcha.is_enabled')) {
+    if (!this.configService.getBiz<boolean>('hcaptcha.enabled')) {
       return true;
     }
-    const secret = this.configService.get<string>('hcaptcha.secret');
+    const secret = this.configService.getBiz<string>('hcaptcha.secret');
     return (await hcaptchaVerify(secret, token)).success;
   }
 }

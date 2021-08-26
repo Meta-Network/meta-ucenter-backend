@@ -13,7 +13,7 @@ export class AppService {
   ) {}
 
   getHello() {
-    return this.configService.get<string>('test.hello') || 'Hello World!';
+    return 'Hello World!';
   }
 
   @OnEvent(Events.UserProfileModified)

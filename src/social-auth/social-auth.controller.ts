@@ -8,8 +8,9 @@ import {
   UseGuards,
   Controller,
   Patch,
+  Req,
 } from '@nestjs/common';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import {
   ApiTags,
   ApiParam,
@@ -44,11 +45,13 @@ export class SocialAuthController {
     @Param('platform') platform: string,
     @Body() authorizeRequestDto: AuthorizeRequestDto,
     @CurrentUser() user: User,
+    @Req() request: Request,
   ) {
     return await this.socialAuthService.authorizeRequest(
       platform,
       authorizeRequestDto,
       user,
+      request,
     );
   }
 
@@ -66,13 +69,15 @@ export class SocialAuthController {
     // DTO is not working here
     @Query() authorizeCallbackDto: any, // AuthorizeCallbackDto,
     @CurrentUser() user: User,
-    @Res() res: Response,
+    @Res() response: Response,
+    @Req() request: Request,
   ): Promise<void> {
     await this.socialAuthService.authorizeCallback(
       platform,
       authorizeCallbackDto,
       user,
-      res,
+      response,
+      request,
     );
   }
 

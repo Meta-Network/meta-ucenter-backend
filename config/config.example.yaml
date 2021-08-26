@@ -1,14 +1,10 @@
-# config.example.yaml
-test:
-  hello: 'hello config'
-
+# config.development.yaml
 app:
   port: 3000
-  domain: 'http://127.0.0.1:3000'
 
 microservice:
   options:
-    transport: 2 # NATS
+    transport: 2
     options:
       servers: ['nats://localhost:4222']
   clients:
@@ -24,17 +20,16 @@ db:
   database:
 
 jwt:
-  access_token_name: 'ucenter_access_token'
-  refresh_token_name: 'ucenter_refresh_token'
+  access_token_name:
+  refresh_token_name:
   access_token_expires: '20m'
   refresh_token_expires: '30d'
-  issuer: 'https://127.0.0.1:3000/'
+  issuer:
   aud:
 
 cors:
   origins:
     - 'http://127.0.0.1:8000'
-    - 'http://localhost:8000'
 
 cookies:
   access_domain: '127.0.0.1'
@@ -42,18 +37,9 @@ cookies:
   refresh_domain: '127.0.0.1'
   refresh_path: '/accounts/tokens'
 
-email:
-  from:
-  from_name:
-  template_invoke_name_vcode:
-
 sendcloud:
   user:
   key:
-
-hcaptcha:
-  is_enabled: false
-  secret:
 
 redis:
   host: '127.0.0.1'
@@ -61,21 +47,3 @@ redis:
   pass:
   vcode_ttl: 600
   vcode_max_items: 100000
-
-github:
-  client_id:
-  client_secret:
-
-gitee:
-  client_id:
-  client_secret:
-
-dingding_bot:
-  on: true
-  api:
-
-webauthn:
-  rp:
-    id:
-    origin:
-    name:

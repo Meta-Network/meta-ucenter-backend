@@ -1,4 +1,4 @@
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { Repository } from 'typeorm';
 import { User } from 'src/entities/User.entity';
 import { ConfigService } from 'src/config/config.service';
@@ -7,10 +7,10 @@ import { AuthorizeRequestDto } from '../dto/authorize-request.dto';
 import { AuthorizeCallbackDto } from '../dto/authorize-callback.dto';
 import { VcodeCacheService } from 'src/vcode-cache/vcode-cache.service';
 import { SocialAuth } from 'src/entities/SocialAuth.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import * as randomstring from 'randomstring';
-import axios from 'axios';
 import { ISocialAuthStrategy } from '../type/social-auth.strategy';
+import axios from 'axios';
+import * as randomstring from 'randomstring';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class GithubStrategy implements ISocialAuthStrategy {
@@ -23,6 +23,7 @@ export class GithubStrategy implements ISocialAuthStrategy {
   async authorizeRequest(
     authorizeRequestDto: AuthorizeRequestDto,
     user: User,
+    request: Request,
   ): Promise<string> {
     const whitelist = this.configService.get<string[]>('cors.origins');
 
@@ -41,7 +42,7 @@ export class GithubStrategy implements ISocialAuthStrategy {
       state,
     );
 
-    const origin = new URL(this.configService.get<string>('app.domain'));
+    const origin = new URL(request.headers.origin);
     origin.pathname = '/social-auth/github/authorize-callback';
     origin.searchParams.append(
       'redirect_url',
@@ -51,7 +52,7 @@ export class GithubStrategy implements ISocialAuthStrategy {
     const result = new URL('https://github.com/login/oauth/authorize');
     result.searchParams.append(
       'client_id',
-      this.configService.get<string>('github.client_id'),
+      this.configService.getBiz<string>('github.client_id'),
     );
     result.searchParams.append('state', state);
     result.searchParams.append('scope', 'repo');
@@ -62,7 +63,8 @@ export class GithubStrategy implements ISocialAuthStrategy {
   async authorizeCallback(
     authorizeCallbackDto: AuthorizeCallbackDto,
     user: User,
-    res: Response,
+    response: Response,
+    request: Request, // eslint-disable-line @typescript-eslint/no-unused-vars
   ): Promise<void> {
     const state = await this.vcodeCacheService.get<string>(
       `github_authorize_request_state_by_user_${user.id}`,
@@ -79,8 +81,8 @@ export class GithubStrategy implements ISocialAuthStrategy {
     );
 
     const form = {
-      client_id: this.configService.get<string>('github.client_id'),
-      client_secret: this.configService.get<string>('github.client_secret'),
+      client_id: this.configService.getBiz<string>('github.client_id'),
+      client_secret: this.configService.getBiz<string>('github.client_secret'),
       code: authorizeCallbackDto.code,
     };
 
@@ -107,11 +109,14 @@ export class GithubStrategy implements ISocialAuthStrategy {
       });
     }
 
-    return res.redirect(authorizeCallbackDto.redirect_url);
+    return response.redirect(authorizeCallbackDto.redirect_url);
   }
 
   async getToken(userId: number): Promise<string> {
     const auth = await this.socialAuthRepository.findOne({ user_id: userId });
+    if (!auth) {
+      throw new BadRequestException('User Github OAuth token not found.');
+    }
     return auth.access_token;
   }
 
