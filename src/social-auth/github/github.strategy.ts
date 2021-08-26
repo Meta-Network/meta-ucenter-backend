@@ -42,7 +42,7 @@ export class GithubStrategy implements ISocialAuthStrategy {
       state,
     );
 
-    const origin = new URL(request.headers.origin);
+    const origin = new URL(request.protocol + '://' + request.get('host'));
     origin.pathname = '/social-auth/github/authorize-callback';
     origin.searchParams.append(
       'redirect_url',

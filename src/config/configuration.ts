@@ -1,7 +1,5 @@
 import { join } from 'path';
-
-const configPath =
-  process.env.CONFIG_PATH || join(__dirname, '..', '..', 'config');
+import { configPath } from '../constants';
 
 const YAML_BIZ_CONFIG_FILENAME =
   process.env.NODE_ENV === 'production'

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-const configPath =
+export const configPath =
   process.env.CONFIG_PATH || path.join(__dirname, '..', '..', 'config');
 
 export const JWT_KEY = {

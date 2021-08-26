@@ -20,8 +20,7 @@ import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
 import * as fs from 'fs';
 import { join } from 'path';
-
-const configPath = process.env.CONFIG_PATH || join(__dirname, '..', 'config');
+import { configPath } from './constants';
 
 @Module({
   imports: [

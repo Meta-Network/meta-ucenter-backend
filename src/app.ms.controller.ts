@@ -1,9 +1,9 @@
-import { Controller } from '@nestjs/common';
-import { Payload, EventPattern, MessagePattern } from '@nestjs/microservices';
+import { Controller, HttpStatus } from '@nestjs/common';
+import { EventPattern, MessagePattern, Payload } from '@nestjs/microservices';
 import { UsersService } from './users/users.service';
 import { InvitationService } from './invitation/invitation.service';
 import { SocialAuthService } from './social-auth/social-auth.service';
-import { MetaInternalResult } from '@metaio/microservice-model';
+import { MetaInternalResult, ServiceCode } from '@metaio/microservice-model';
 import { CreateInvitationDto } from './invitation/dto/create-invitation.dto';
 
 @Controller()
@@ -25,13 +25,22 @@ export class AppMsController {
       platform: string;
       userId: number;
     },
-  ): Promise<{ token: string }> {
-    return {
-      token: await this.socialAuthService.getToken(
+  ): Promise<MetaInternalResult> {
+    const result = new MetaInternalResult({
+      serviceCode: ServiceCode.UCENTER,
+    });
+
+    try {
+      result.data = await this.socialAuthService.getToken(
         payload.platform,
         payload.userId,
-      ),
-    };
+      );
+    } catch (error) {
+      result.statusCode = HttpStatus.BAD_REQUEST;
+      result.message = error.message;
+    }
+
+    return result;
   }
 
   @MessagePattern('syncUserProfile')
