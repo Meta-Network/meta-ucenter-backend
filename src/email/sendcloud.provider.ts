@@ -31,8 +31,8 @@ export class SendcloudProvider implements IEmailSender {
     const url = `https://api.sendcloud.net/apiv2/mail/sendtemplate?${querystringParams}`;
     const result = (await axios.post(url)).data;
 
-    if (this.configService.get<boolean>('dingding_bot.on') === true) {
-      axios.post(this.configService.get<string>('dingding_bot.api'), {
+    if (this.configService.getBiz<boolean>('dingding_bot.on') === true) {
+      axios.post(this.configService.getBiz<string>('dingding_bot.api'), {
         msgtype: 'text',
         text: {
           content: `提醒：[UCenter SendCloud] 验证码上报：邮箱(${xSmtpapi.to[0]}) 验证码(${xSmtpapi.sub['%code%'][0]})`,
