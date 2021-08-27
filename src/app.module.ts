@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { AppController } from './app.controller';
 import { AppMsController } from './app.ms.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { StorageModule } from './storage/storage.module';
 import { UsersModule } from './users/users.module';
 import { AccountsModule } from './accounts/accounts.module';
 import { SocialAuthModule } from './social-auth/social-auth.module';
@@ -60,6 +61,8 @@ import { configPath } from './constants';
       }),
     }),
     UsersModule,
+    ConfigModule,
+    StorageModule,
     AccountsModule,
     InvitationModule,
     SocialAuthModule,
@@ -69,7 +72,6 @@ import { configPath } from './constants';
     AccountsWebauthnModule,
     AccountsMetamaskModule,
     InvitationHandlerModule,
-    ConfigModule,
   ],
   controllers: [AppController, AppMsController],
   providers: [AppService],

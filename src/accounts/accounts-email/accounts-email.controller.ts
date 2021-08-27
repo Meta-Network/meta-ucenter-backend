@@ -40,7 +40,7 @@ export class AccountsEmailController {
     private readonly jwtCookieHelper: JWTCookieHelper,
   ) {}
 
-  @Post('/verification-code')
+  @Post('verification-code')
   @ApiOperation({ summary: '往传入的邮箱地址发送一个验证码，用于登录校验' })
   @ApiCreatedResponse({ description: '发送验证码，不返回 data' })
   @ApiBadRequestResponse({ description: '传入的表单参数不正确或无效' })
@@ -107,7 +107,7 @@ export class AccountsEmailController {
     return { isExists };
   }
 
-  @Post('/bind')
+  @Post('bind')
   @ApiCookieAuth()
   @UseGuards(JWTAuthGuard)
   @ApiOperation({ summary: '绑定一个未注册的邮箱账号到本用户' })
@@ -123,7 +123,7 @@ export class AccountsEmailController {
     return this.accountsManager.bindAccount(accountsEmailDto, user.id);
   }
 
-  @Post('/unbind')
+  @Post('unbind')
   @ApiCookieAuth()
   @UseGuards(JWTAuthGuard)
   @ApiOperation({ summary: '解绑本用户的现有邮箱账户' })

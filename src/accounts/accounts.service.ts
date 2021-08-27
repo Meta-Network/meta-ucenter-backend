@@ -133,7 +133,10 @@ export class AccountsService {
     invitation.invitee_user_id = user.id;
     await this.invitationService.update(invitation);
 
-    const tokens: JWTTokens = await this.authService.signJWT(user, userAccount);
+    const tokens: JWTTokens = await this.authService.signLoginJWT(
+      user,
+      userAccount,
+    );
     return {
       user,
       tokens,
@@ -155,7 +158,10 @@ export class AccountsService {
       throw new UnauthorizedException('User account does not exist.');
     }
 
-    const tokens: JWTTokens = await this.authService.signJWT(user, userAccount);
+    const tokens: JWTTokens = await this.authService.signLoginJWT(
+      user,
+      userAccount,
+    );
     return {
       user,
       tokens,

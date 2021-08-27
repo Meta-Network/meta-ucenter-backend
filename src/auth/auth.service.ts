@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
+import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { JWTTokenPayload } from 'src/type/jwt-payload';
 import { ConfigService } from 'src/config/config.service';
 import { Account } from '../entities/Account.entity';
@@ -13,7 +13,11 @@ export class AuthService {
     private configService: ConfigService,
   ) {}
 
-  async signJWT(user: User, account: Account) {
+  async signAny(payload: any, options: JwtSignOptions) {
+    return this.jwtService.sign(payload, options);
+  }
+
+  async signLoginJWT(user: User, account: Account) {
     const basePayload = {
       sub: user.id,
       bio: user.bio,

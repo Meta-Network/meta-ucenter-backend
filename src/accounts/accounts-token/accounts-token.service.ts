@@ -16,6 +16,6 @@ export class AccountsTokenService {
   async refresh(uid: number, accountId: number) {
     const user: User = await this.usersService.findOne(uid);
     const account: Account = await this.accountsService.findOne(accountId);
-    return { user, tokens: await this.authService.signJWT(user, account) };
+    return { user, tokens: await this.authService.signLoginJWT(user, account) };
   }
 }
