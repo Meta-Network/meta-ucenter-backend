@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { NotAcceptableException, ValidationPipe } from '@nestjs/common';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { TransformInterceptor } from 'nestjs-general-interceptor';
 import { MicroserviceOptions } from '@nestjs/microservices';
@@ -10,7 +11,7 @@ import helmet from 'helmet';
 import formCors from 'form-cors';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const configService = app.get<ConfigService>(ConfigService);
   const microserviceOptions = configService.get<MicroserviceOptions>(
     'microservice.options',
@@ -21,6 +22,10 @@ async function bootstrap() {
       whitelist: true,
     }),
   );
+
+  // with this option, we could know is protocol https or http'
+  // for 'social-auth' callback method
+  app.set('trust proxy');
 
   app.use(helmet());
   app.use(cookieParser());
