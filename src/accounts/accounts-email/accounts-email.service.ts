@@ -31,7 +31,7 @@ export class AccountsEmailService {
       'email.from',
       'email.from_name',
       'email.template_invoke_name_vcode',
-    ].map((key) => this.configService.get<string>(key));
+    ].map((key) => this.configService.getBiz<string>(key));
 
     await this.emailService.send(
       {
