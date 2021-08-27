@@ -42,12 +42,8 @@ export class GithubStrategy implements ISocialAuthStrategy {
       state,
     );
 
-    console.log({
-      secure: request.secure,
-      protocol: request.protocol,
-      headers: request.headers['x-forwarded-proto'],
-    });
-    const origin = new URL(request.protocol + '://' + request.get('host'));
+    const protocol = request.headers['x-forwarded-proto'] || 'http';
+    const origin = new URL(protocol + '://' + request.get('host'));
 
     origin.pathname = '/social-auth/github/authorize-callback';
     origin.searchParams.append(
