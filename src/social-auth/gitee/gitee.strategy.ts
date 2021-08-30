@@ -81,7 +81,9 @@ export class GiteeStrategy implements ISocialAuthStrategy {
       `gitee_authorize_request_state_by_user_${user.id}`,
     );
 
-    const origin = new URL(request.protocol + '://' + request.get('host'));
+    const protocol = request.headers['x-forwarded-proto'] || 'http';
+    const origin = new URL(protocol + '://' + request.get('host'));
+
     origin.pathname = '/social-auth/gitee/authorize-callback';
     origin.searchParams.append(
       'redirect_url',
