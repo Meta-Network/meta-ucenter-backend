@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { platform } from 'os';
 import { Repository } from 'typeorm';
 import { User } from 'src/entities/User.entity';
 import { ConfigService } from 'src/config/config.service';
@@ -115,7 +116,11 @@ export class GithubStrategy implements ISocialAuthStrategy {
   }
 
   async getToken(userId: number): Promise<string> {
-    const auth = await this.socialAuthRepository.findOne({ user_id: userId });
+    const auth = await this.socialAuthRepository.findOne({
+      user_id: userId,
+      type: 'oauth2',
+      platform: 'github',
+    });
     if (!auth) {
       throw new BadRequestException('User Github OAuth token not found.');
     }

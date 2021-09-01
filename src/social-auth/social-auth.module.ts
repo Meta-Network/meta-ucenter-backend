@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SocialAuth } from 'src/entities/SocialAuth.entity';
 import { GiteeStrategy } from './gitee/gitee.strategy';
+import { MatatakiStrategy } from './matataki/matataki.strategy';
 import { SocialAuthService } from './social-auth.service';
 import { SocialAuthController } from './social-auth.controller';
 import { SocialAuthStrategyFactory } from './social-auth.strategy.factory';
@@ -14,6 +15,7 @@ import { VcodeCacheModule } from '../vcode-cache/vcode-cache.module';
   providers: [
     GiteeStrategy,
     GithubStrategy,
+    MatatakiStrategy,
     SocialAuthService,
     SocialAuthStrategyFactory,
   ],
