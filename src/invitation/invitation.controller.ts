@@ -1,4 +1,14 @@
-import { Get, Controller, UseGuards, Patch, Param, Body } from '@nestjs/common';
+import {
+  Get,
+  Post,
+  Patch,
+  Body,
+  Param,
+  UseGuards,
+  Controller,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { JWTDecodedUser } from '../type';
 import { JWTAuthGuard } from '../auth/jwt.guard';
 import { InvitationService } from './invitation.service';
@@ -12,6 +22,7 @@ import {
 } from '@nestjs/swagger';
 import { Invitation } from '../entities/Invitation.entity';
 import { UpdateInvitationDto } from './dto/update-invitation.dto';
+import { ValidateInvitationDto } from './dto/validate-invitation.dto';
 
 @ApiTags('Invitations')
 @ApiCookieAuth()
@@ -49,5 +60,15 @@ export class InvitationController {
       signature,
       updateInvitationDto,
     );
+  }
+
+  @Post('validate')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: '校验邀请码的可用性' })
+  @ApiOkResponse({ description: '返回的邀请码存在和可用信息' })
+  async validateInvitation(
+    @Body() validateInvitationDto: ValidateInvitationDto,
+  ): Promise<{ exists: boolean; available: boolean }> {
+    return this.invitationService.validateInvitation(validateInvitationDto);
   }
 }

@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { Invitation } from 'src/entities/Invitation.entity';
 import { CreateInvitationDto } from './dto/create-invitation.dto';
 import { UpdateInvitationDto } from './dto/update-invitation.dto';
+import { ValidateInvitationDto } from './dto/validate-invitation.dto';
 
 @Injectable()
 export class InvitationService {
@@ -73,5 +74,28 @@ export class InvitationService {
     }
 
     return await this.update(Object.assign(invitation, updateInvitationDto));
+  }
+
+  async validateInvitation(
+    validateInvitationDto: ValidateInvitationDto,
+  ): Promise<{ exists: boolean; available: boolean }> {
+    let available = false;
+    let exists = false;
+
+    const invitation = await this.invitationRepository.findOne({
+      signature: validateInvitationDto.invitation,
+    });
+
+    if (!invitation) {
+      return { available, exists };
+    } else {
+      exists = true;
+    }
+
+    if (!invitation.invitee_user_id) {
+      available = true;
+    }
+
+    return { available, exists };
   }
 }
