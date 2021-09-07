@@ -25,13 +25,13 @@ import { UpdateInvitationDto } from './dto/update-invitation.dto';
 import { ValidateInvitationDto } from './dto/validate-invitation.dto';
 
 @ApiTags('Invitations')
-@ApiCookieAuth()
 @Controller('invitations')
 export class InvitationController {
   constructor(private readonly invitationService: InvitationService) {}
 
   @Get('mine')
   @UseGuards(JWTAuthGuard)
+  @ApiCookieAuth()
   @ApiOperation({ summary: '获取当前用户拥有的邀请码' })
   @ApiOkResponse({ description: '返回邀请码数据结构的数组' })
   @ApiUnauthorizedResponse({
@@ -45,6 +45,7 @@ export class InvitationController {
 
   @Patch(':signature/message')
   @UseGuards(JWTAuthGuard)
+  @ApiCookieAuth()
   @ApiOperation({ summary: '修改该用户所拥有的邀请码的邀请信息' })
   @ApiOkResponse({ description: '返回修改后的邀请信息' })
   @ApiUnauthorizedResponse({
