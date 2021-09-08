@@ -1,4 +1,4 @@
-import { IsOptional } from 'class-validator';
+import { IsOptional, IsUrl } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateUserDto {
@@ -14,6 +14,7 @@ export class UpdateUserDto {
     default: 'https://i.loli.net/2021/05/13/CiEFPgWJzuk5prZ.png',
     description: '用户头像',
   })
+  @IsUrl()
   @IsOptional()
   avatar?: string;
 

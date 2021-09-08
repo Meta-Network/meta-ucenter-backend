@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { platform } from 'os';
 import { Repository } from 'typeorm';
 import { User } from 'src/entities/User.entity';
 import { ConfigService } from 'src/config/config.service';
@@ -43,7 +42,9 @@ export class GiteeStrategy implements ISocialAuthStrategy {
       state,
     );
 
-    const origin = new URL(request.protocol + '://' + request.get('host'));
+    const protocol = request.headers['x-forwarded-proto'] || 'http';
+    const origin = new URL(protocol + '://' + request.get('host'));
+
     origin.pathname = '/social-auth/gitee/authorize-callback';
     origin.searchParams.append(
       'redirect_url',
@@ -149,7 +150,7 @@ export class GiteeStrategy implements ISocialAuthStrategy {
 
     if (!auth) {
       throw new BadRequestException(
-        `This user has no refresh token saved for ${platform}.`,
+        `This user has no refresh token saved for Gitee.`,
       );
     }
 

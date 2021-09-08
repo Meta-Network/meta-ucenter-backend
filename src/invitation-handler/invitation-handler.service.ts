@@ -1,13 +1,17 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { User } from 'src/entities/User.entity';
+import { ConfigService } from '../config/config.service';
 import { InvitationService } from 'src/invitation/invitation.service';
 import dayjs from 'dayjs';
 import Events from '../events';
 
 @Injectable()
 export class InvitationHandlerService {
-  constructor(private invitationService: InvitationService) {}
+  constructor(
+    private invitationService: InvitationService,
+    private configService: ConfigService,
+  ) {}
   private readonly logger = new Logger(InvitationHandlerService.name);
 
   @OnEvent(Events.UserCreated)
@@ -23,8 +27,9 @@ export class InvitationHandlerService {
       expired_at: dayjs().add(2, 'month').toDate(),
     };
 
-    // TODO: make this configurable
-    const newInvitations = 3;
+    const newInvitations = this.configService.getBiz(
+      'user.invitation_when_created',
+    );
 
     for (let i = 0; i < newInvitations; i++) {
       await this.invitationService.createInvitation(newInvitationDto);
