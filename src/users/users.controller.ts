@@ -8,6 +8,8 @@ import {
   Body,
   UseGuards,
   Controller,
+  HttpStatus,
+  HttpCode,
 } from '@nestjs/common';
 import { Response, Request } from 'express';
 import { CurrentUser } from './user.decorator';
@@ -30,6 +32,7 @@ import {
 } from '@nestjs/swagger';
 import { User } from 'src/entities/User.entity';
 import { SearchUserDto } from './dto/search-user.dto';
+import { ValidateUsernameDto } from './dto/validate-username.dto';
 import { UpdateUsernameDto } from './dto/update-username.dto';
 
 @ApiCookieAuth()
@@ -79,6 +82,16 @@ export class UsersController {
     @Body() body: UpdateUsernameDto,
   ): Promise<User> {
     return this.usersService.updateUsername(user.id, body.username);
+  }
+
+  @Post('username/validate')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: '验证用户的用户名是否可用' })
+  @ApiOkResponse({ description: '返回验证结果' })
+  async validateUsername(
+    @Body() body: ValidateUsernameDto,
+  ): Promise<{ isExists: boolean }> {
+    return this.usersService.validateUsername(body.username);
   }
 
   @Put('me/avatar')
