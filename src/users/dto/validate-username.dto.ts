@@ -6,7 +6,7 @@ export class ValidateUsernameDto {
     default: 'metafan',
     description: '用户名',
   })
+  @Length(3, 15)
   @IsAlphanumeric()
-  @Length(3, 32)
   username: string;
 }

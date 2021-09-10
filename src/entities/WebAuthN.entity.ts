@@ -1,5 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsAlphanumeric, Length } from 'class-validator';
 
 @Entity()
 export class WebAuthN {
@@ -12,6 +13,8 @@ export class WebAuthN {
     nullable: false,
     comment: '对应的用户名作为id',
   })
+  @Length(3, 15)
+  @IsAlphanumeric()
   @Column()
   username: string;
 

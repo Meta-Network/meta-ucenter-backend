@@ -7,6 +7,6 @@ export class UpdateUsernameDto {
     description: '用户名',
   })
   @IsAlphanumeric()
-  @Length(3, 32)
+  @Length(3, 15)
   username: string;
 }
