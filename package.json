@@ -25,7 +25,6 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "@fleekhq/fleek-storage-js": "^1.0.17",
     "@metaio/microservice-model": "^1.0.0",
     "@nestjs/axios": "^0.0.1",
     "@nestjs/common": "^8.0.0",

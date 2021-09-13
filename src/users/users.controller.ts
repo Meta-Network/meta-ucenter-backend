@@ -94,26 +94,6 @@ export class UsersController {
     return this.usersService.validateUsername(body.username);
   }
 
-  @Put('me/avatar')
-  @UseGuards(JWTAuthGuard)
-  @ApiOperation({ summary: '上传新的头像并更新' })
-  @ApiOkResponse({ description: '返回提交的结果。' })
-  @ApiBadRequestResponse({ description: '请求失败' })
-  @ApiUnauthorizedResponse({
-    description: 'Cookies 中的 access_token 过期或无效',
-  })
-  async uploadAvatar(
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
-    @CurrentUser() user: JWTDecodedUser,
-  ): Promise<any> {
-    res.set({
-      Accept: 'application/octet-stream',
-      'Access-Control-Allow-Headers': '*',
-    });
-    return await this.usersService.uploadAvatar(user.id, req);
-  }
-
   @Post('search')
   @ApiOperation({ summary: '通用用户搜索接口，根据条件搜索全部用户' })
   @ApiOkResponse({ description: '返回符合条件的用户数组' })

@@ -48,8 +48,8 @@ export class InvitationService {
     return signature;
   }
 
-  async findOne(signature: string): Promise<Invitation> {
-    return await this.invitationRepository.findOne({ signature });
+  async findOneBy(conditions: any): Promise<Invitation> {
+    return await this.invitationRepository.findOne(conditions);
   }
 
   async findByInviterId(inviter_user_id: number): Promise<Invitation[]> {

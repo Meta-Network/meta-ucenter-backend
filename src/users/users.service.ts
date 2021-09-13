@@ -1,4 +1,3 @@
-import { Request } from 'express';
 import { User } from 'src/entities/User.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, Like, MoreThan, Repository } from 'typeorm';
@@ -10,13 +9,10 @@ import {
 } from '@nestjs/common';
 import Events from '../events';
 import { MetaInternalResult, ServiceCode } from '@metaio/microservice-model';
+import { InvitationService } from '../invitation/invitation.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ConfigService } from '../config/config.service';
-import rawbody from 'raw-body';
-import crypto from 'crypto';
-import fleekStorage from '@fleekhq/fleek-storage-js';
-import path from 'path';
 
 @Injectable()
 export class UsersService {
@@ -25,6 +21,7 @@ export class UsersService {
     @InjectRepository(User)
     private usersRepository: Repository<User>,
     private configService: ConfigService,
+    private invitationService: InvitationService,
     private eventEmitter: EventEmitter2,
   ) {}
 
@@ -77,35 +74,6 @@ export class UsersService {
     return updatedUser;
   }
 
-  async uploadAvatar(uid: number, request: Request): Promise<any> {
-    const name = request.headers['file-name'] as string;
-    const file = await rawbody(request);
-
-    const hashSum = crypto.createHash('sha256');
-    hashSum.update(file);
-
-    const hexName = hashSum.digest('hex');
-    const fileName = hexName + path.parse(name).ext;
-
-    const uploadResult = await fleekStorage.upload({
-      apiKey: this.configService.getBiz<string>('fleek.api_key'),
-      apiSecret: this.configService.getBiz<string>('fleek.api_secret'),
-      key: fileName,
-      data: file,
-    });
-
-    await this.usersRepository.update(uid, {
-      avatar: uploadResult.publicUrl,
-    });
-
-    const updatedUser = await this.findOne(uid);
-
-    this.logger.log('emit Event UserProfileModified', updatedUser);
-    this.eventEmitter.emit(Events.UserProfileModified, updatedUser);
-
-    return updatedUser;
-  }
-
   async getUserInfo(uid: number): Promise<User> {
     return await this.usersRepository.findOne(uid);
   }
@@ -143,6 +111,17 @@ export class UsersService {
       result.statusCode = HttpStatus.BAD_REQUEST;
       result.message = 'Query conditions not found.';
     }
+
+    if (result.data) {
+      result.data = result.data.map(async (user) => {
+        const invitation = await this.invitationService.findOneBy({
+          invitee_user_id: user.id,
+        });
+
+        return { ...user, inviter_user_id: invitation.inviter_user_id };
+      });
+    }
+
     this.logger.debug(`fetchUsers result ${JSON.stringify(result)}`);
     return result;
   }
