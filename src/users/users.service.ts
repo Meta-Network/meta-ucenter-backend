@@ -70,7 +70,14 @@ export class UsersService {
     await this.usersRepository.update(uid, { username });
     const updatedUser = await this.usersRepository.findOne(uid);
 
-    this.eventEmitter.emit(Events.UserProfileModified, updatedUser);
+    const invitation = await this.invitationService.findOneBy({
+      invitee_user_id: uid,
+    });
+
+    this.eventEmitter.emit(Events.UserProfileModified, {
+      ...updatedUser,
+      inviter_user_id: invitation.inviter_user_id,
+    });
     return updatedUser;
   }
 
@@ -82,7 +89,15 @@ export class UsersService {
     await this.usersRepository.update(uid, updateUserDto);
     const updatedUser = await this.usersRepository.findOne(uid);
     this.logger.log('emit Event UserProfileModified', updatedUser);
-    this.eventEmitter.emit(Events.UserProfileModified, updatedUser);
+    const invitation = await this.invitationService.findOneBy({
+      invitee_user_id: uid,
+    });
+
+    this.eventEmitter.emit(Events.UserProfileModified, {
+      ...updatedUser,
+      inviter_user_id: invitation.inviter_user_id,
+    });
+
     return updatedUser;
   }
 
@@ -113,13 +128,15 @@ export class UsersService {
     }
 
     if (result.data) {
-      result.data = result.data.map(async (user) => {
-        const invitation = await this.invitationService.findOneBy({
-          invitee_user_id: user.id,
-        });
+      result.data = await Promise.all(
+        result.data.map(async (user) => {
+          const invitation = await this.invitationService.findOneBy({
+            invitee_user_id: user.id,
+          });
 
-        return { ...user, inviter_user_id: invitation.inviter_user_id };
-      });
+          return { ...user, inviter_user_id: invitation.inviter_user_id };
+        }),
+      );
     }
 
     this.logger.debug(`fetchUsers result ${JSON.stringify(result)}`);
