@@ -4,11 +4,14 @@ import {
   Req,
   Post,
   Patch,
+  Delete,
   Body,
   Query,
   Param,
   UseGuards,
   Controller,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import {
@@ -24,7 +27,7 @@ import { JWTAuthGuard } from 'src/auth/jwt.guard';
 import { CurrentUser } from 'src/users/user.decorator';
 import { SocialAuthService } from './social-auth.service';
 import { AuthorizeRequestDto } from './dto/authorize-request.dto';
-// import { AuthorizeCallbackDto } from './dto/authorize-callback.dto';
+import { AuthorizeCallbackDto } from './dto/authorize-callback.dto';
 
 @ApiCookieAuth()
 @ApiTags('Social Auth')
@@ -66,8 +69,7 @@ export class SocialAuthController {
   @ApiOkResponse({ description: '保存对应的 token，不返回 data' })
   async authorizeCallback(
     @Param('platform') platform: string,
-    // DTO is not working here
-    @Query() authorizeCallbackDto: any, // AuthorizeCallbackDto,
+    @Query() authorizeCallbackDto: AuthorizeCallbackDto,
     @CurrentUser() user: User,
     @Res() response: Response,
     @Req() request: Request,
@@ -97,8 +99,26 @@ export class SocialAuthController {
     return { token: await this.socialAuthService.getToken(platform, user.id) };
   }
 
+  @Delete(':platform/token')
+  @UseGuards(JWTAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: '删除对指定平台的 token （解绑服务）' })
+  @ApiParam({
+    name: 'platform',
+    required: true,
+    description: '指定进行认证的平台',
+  })
+  @ApiOkResponse({ description: '不返回任何值' })
+  async deleteToken(
+    @Param('platform') platform: string,
+    @CurrentUser() user: User,
+  ): Promise<void> {
+    await this.socialAuthService.deleteToken(platform, user.id);
+  }
+
   @Patch(':platform/refresh')
   @UseGuards(JWTAuthGuard)
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '对指定平台的 token 刷新有效期' })
   @ApiParam({
     name: 'platform',

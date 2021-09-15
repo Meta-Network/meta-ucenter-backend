@@ -73,4 +73,12 @@ export class MatatakiStrategy {
       'Matataki OAuth does not have refresh token.',
     );
   }
+
+  async deleteToken(userId: number): Promise<void> {
+    await this.socialAuthRepository.delete({
+      user_id: userId,
+      type: 'oauth2',
+      platform: 'matataki',
+    });
+  }
 }

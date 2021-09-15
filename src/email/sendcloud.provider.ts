@@ -31,7 +31,7 @@ export class SendcloudProvider implements IEmailSender {
     const url = `https://api.sendcloud.net/apiv2/mail/sendtemplate?${querystringParams}`;
     const result = (await axios.post(url)).data;
 
-    if (this.configService.getBiz<boolean>('dingding_bot.on') === true) {
+    if (this.configService.getBiz<boolean>('dingding_bot.enabled') === true) {
       axios.post(this.configService.getBiz<string>('dingding_bot.api'), {
         msgtype: 'text',
         text: {

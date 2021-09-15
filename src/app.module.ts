@@ -37,6 +37,13 @@ import { configPath } from './constants';
           ),
         inject: [ConfigService],
       },
+      {
+        name: 'CMS_MS_CLIENT',
+        imports: [ConfigModule],
+        useFactory: async (configService: ConfigService) =>
+          configService.get<ClientProviderOptions>('microservice.clients.cms'),
+        inject: [ConfigService],
+      },
     ]),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],

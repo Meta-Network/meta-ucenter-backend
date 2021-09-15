@@ -164,4 +164,12 @@ export class GiteeStrategy implements ISocialAuthStrategy {
       headers: { Accept: 'application/json' },
     });
   }
+
+  async deleteToken(userId: number): Promise<void> {
+    await this.socialAuthRepository.delete({
+      user_id: userId,
+      type: 'oauth2',
+      platform: 'gitee',
+    });
+  }
 }
