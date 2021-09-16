@@ -134,7 +134,7 @@ export class UsersService {
             invitee_user_id: user.id,
           });
 
-          return { ...user, inviter_user_id: invitation.inviter_user_id };
+          return { ...user, inviter_user_id: invitation?.inviter_user_id || 0 };
         }),
       );
     }
