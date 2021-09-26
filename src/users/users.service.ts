@@ -95,7 +95,7 @@ export class UsersService {
 
     this.eventEmitter.emit(Events.UserProfileModified, {
       ...updatedUser,
-      inviter_user_id: invitation.inviter_user_id,
+      inviter_user_id: invitation?.inviter_user_id ?? 0,
     });
 
     return updatedUser;
@@ -134,7 +134,7 @@ export class UsersService {
             invitee_user_id: user.id,
           });
 
-          return { ...user, inviter_user_id: invitation?.inviter_user_id || 0 };
+          return { ...user, inviter_user_id: invitation?.inviter_user_id ?? 0 };
         }),
       );
     }
