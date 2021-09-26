@@ -16,7 +16,7 @@
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js --config ./ormconfig.js",
-    "keygen": "openssl genrsa -out JWT_PRIVATE_KEY.pemm 1024 && openssl rsa -in JWT_PRIVATE_KEY.pemm -pubout > JWT_PUBLIC_KEY.pubb",
+    "keygen": "openssl genrsa -out config/JWT_PRIVATE_KEY.pem 1024 && openssl rsa -in config/JWT_PRIVATE_KEY.pem -pubout > config/JWT_PUBLIC_KEY.pub",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
