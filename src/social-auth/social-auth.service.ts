@@ -3,7 +3,6 @@ import { Request, Response } from 'express';
 import { User } from 'src/entities/User.entity';
 import { AuthorizeRequestDto } from './dto/authorize-request.dto';
 import { SocialAuthStrategyFactory } from './social-auth.strategy.factory';
-import { AuthorizeCallbackDto } from './dto/authorize-callback.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import Events from '../events';
 
@@ -33,7 +32,7 @@ export class SocialAuthService {
 
   async authorizeCallback(
     platform: string,
-    authorizeCallbackDto: AuthorizeCallbackDto,
+    authorizeCallbackDto: any,
     user: User,
     response: Response,
     request: Request,
@@ -44,9 +43,10 @@ export class SocialAuthService {
       response,
       request,
     );
-    const token = await this.getToken(platform, user.id);
 
-    this.eventEmitter.emit(Events.UserUnboundSocialAuth, {
+    // Emit bound social auth to meta cms
+    const token = await this.getToken(platform, user.id);
+    this.eventEmitter.emit(Events.UserBoundSocialAuth, {
       userId: user.id,
       platform,
       token,

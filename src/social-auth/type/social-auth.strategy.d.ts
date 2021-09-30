@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { User } from 'src/entities/User.entity';
 import { AuthorizeRequestDto } from 'src/social-auth/dto/authorize-request.dto';
-import { AuthorizeCallbackDto } from 'src/social-auth/dto/authorize-callback.dto';
 export interface ISocialAuthStrategy {
   authorizeRequest(
     authorizeRequestDto: AuthorizeRequestDto,
@@ -9,7 +8,7 @@ export interface ISocialAuthStrategy {
     request: Request,
   ): Promise<string>;
   authorizeCallback(
-    authorizeCallbackDto: AuthorizeCallbackDto,
+    authorizeCallbackDto: any,
     user: User,
     response: Response,
     request: Request,

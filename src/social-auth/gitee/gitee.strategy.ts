@@ -4,7 +4,6 @@ import { User } from 'src/entities/User.entity';
 import { ConfigService } from 'src/config/config.service';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { AuthorizeRequestDto } from '../dto/authorize-request.dto';
-import { AuthorizeCallbackDto } from '../dto/authorize-callback.dto';
 import { VcodeCacheService } from 'src/vcode-cache/vcode-cache.service';
 import { SocialAuth } from 'src/entities/SocialAuth.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -63,7 +62,7 @@ export class GiteeStrategy implements ISocialAuthStrategy {
   }
 
   async authorizeCallback(
-    authorizeCallbackDto: AuthorizeCallbackDto,
+    authorizeCallbackDto: any,
     user: User,
     res: Response,
     request: Request,

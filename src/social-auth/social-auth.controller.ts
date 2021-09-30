@@ -27,7 +27,6 @@ import { JWTAuthGuard } from 'src/auth/jwt.guard';
 import { CurrentUser } from 'src/users/user.decorator';
 import { SocialAuthService } from './social-auth.service';
 import { AuthorizeRequestDto } from './dto/authorize-request.dto';
-import { AuthorizeCallbackDto } from './dto/authorize-callback.dto';
 
 @ApiCookieAuth()
 @ApiTags('Social Auth')
@@ -69,7 +68,7 @@ export class SocialAuthController {
   @ApiOkResponse({ description: '保存对应的 token，不返回 data' })
   async authorizeCallback(
     @Param('platform') platform: string,
-    @Query() authorizeCallbackDto: AuthorizeCallbackDto,
+    @Query() authorizeCallbackDto: any,
     @CurrentUser() user: User,
     @Res() response: Response,
     @Req() request: Request,
