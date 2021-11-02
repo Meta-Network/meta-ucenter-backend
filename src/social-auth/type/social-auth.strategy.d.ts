@@ -12,7 +12,7 @@ export interface ISocialAuthStrategy {
     user: User,
     response: Response,
     request: Request,
-  ): Promise<void>;
+  ): Promise<string>;
   getToken(userId: number): Promise<string>;
   refreshToken(userId: number): Promise<void>;
 }

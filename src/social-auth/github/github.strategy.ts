@@ -66,7 +66,7 @@ export class GithubStrategy implements ISocialAuthStrategy {
     user: User,
     response: Response,
     request: Request, // eslint-disable-line @typescript-eslint/no-unused-vars
-  ): Promise<void> {
+  ): Promise<string> {
     const state = await this.vcodeCacheService.get<string>(
       `github_authorize_request_state_by_user_${user.id}`,
     );
@@ -100,7 +100,10 @@ export class GithubStrategy implements ISocialAuthStrategy {
     });
 
     if (exists) {
-      await this.socialAuthRepository.save({ id: exists.id, ...result });
+      await this.socialAuthRepository.save({
+        id: exists.id,
+        access_token: result.access_token,
+      });
     } else {
       await this.socialAuthRepository.save({
         user_id: user.id,
@@ -110,7 +113,8 @@ export class GithubStrategy implements ISocialAuthStrategy {
       });
     }
 
-    return response.redirect(authorizeCallbackDto.redirect_url);
+    response.redirect(authorizeCallbackDto.redirect_url);
+    return result.access_token;
   }
 
   async getToken(userId: number): Promise<string> {

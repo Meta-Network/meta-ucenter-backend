@@ -1,20 +1,28 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { User } from 'src/entities/User.entity';
 import { AuthorizeRequestDto } from './dto/authorize-request.dto';
 import { SocialAuthStrategyFactory } from './social-auth.strategy.factory';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import Events from '../events';
+import { ConfigService } from '../config/config.service';
 
 @Injectable()
 export class SocialAuthService {
   constructor(
     private strategyFactory: SocialAuthStrategyFactory,
     private eventEmitter: EventEmitter2,
+    private configService: ConfigService,
   ) {}
 
   private use(platform: string) {
-    return this.strategyFactory.getService(platform);
+    try {
+      return this.strategyFactory.getService(platform);
+    } catch (err) {
+      throw new BadRequestException(
+        'This platform is not supported or does not exist.',
+      );
+    }
   }
 
   async authorizeRequest(
@@ -36,23 +44,32 @@ export class SocialAuthService {
     user: User,
     response: Response,
     request: Request,
-  ) {
-    const result = await this.use(platform).authorizeCallback(
+  ): Promise<string> {
+    const token = await this.use(platform).authorizeCallback(
       authorizeCallbackDto,
       user,
       response,
       request,
     );
 
-    // Emit bound social auth to meta cms
-    const token = await this.getToken(platform, user.id);
-    this.eventEmitter.emit(Events.UserBoundSocialAuth, {
-      userId: user.id,
-      platform,
-      token,
-    });
+    if (
+      this.configService
+        .getBiz<string[]>('spider_platform_allowlist')
+        .includes(platform)
+    ) {
+      // Emit bound social auth to meta cms
+      this.eventEmitter.emit(Events.UserBoundSocialAuth, {
+        userId: user.id,
+        platform,
+        token,
+      });
+    }
 
-    return result;
+    console.log(
+      this.configService.getBiz<string[]>('spider_platform_allowlist'),
+    );
+
+    return token;
   }
 
   async getToken(platform: string, userId: number): Promise<string> {

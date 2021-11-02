@@ -14,10 +14,10 @@ import { ISocialAuthStrategy } from '../type/social-auth.strategy';
 @Injectable()
 export class GiteeStrategy implements ISocialAuthStrategy {
   constructor(
-    private configService: ConfigService,
     @InjectRepository(SocialAuth)
     private socialAuthRepository: Repository<SocialAuth>,
     private readonly vcodeCacheService: VcodeCacheService,
+    private configService: ConfigService,
   ) {}
   async authorizeRequest(
     authorizeRequestDto: AuthorizeRequestDto,
@@ -66,7 +66,7 @@ export class GiteeStrategy implements ISocialAuthStrategy {
     user: User,
     res: Response,
     request: Request,
-  ): Promise<void> {
+  ): Promise<string> {
     const state = await this.vcodeCacheService.get<string>(
       `gitee_authorize_request_state_by_user_${user.id}`,
     );
@@ -110,7 +110,11 @@ export class GiteeStrategy implements ISocialAuthStrategy {
     });
 
     if (exists) {
-      await this.socialAuthRepository.save({ id: exists.id, ...result });
+      await this.socialAuthRepository.save({
+        id: exists.id,
+        access_token: result.access_token,
+        refresh_token: result.refresh_token,
+      });
     } else {
       await this.socialAuthRepository.save({
         user_id: user.id,
@@ -121,7 +125,8 @@ export class GiteeStrategy implements ISocialAuthStrategy {
       });
     }
 
-    return res.redirect(authorizeCallbackDto.redirect_url);
+    res.redirect(authorizeCallbackDto.redirect_url);
+    return result.access_token;
   }
 
   async getToken(userId: number): Promise<string> {
@@ -153,14 +158,23 @@ export class GiteeStrategy implements ISocialAuthStrategy {
       );
     }
 
-    const form = {
-      grant_type: 'refresh_token',
-      refresh_token: auth.refresh_token,
-    };
+    const result = (
+      await axios.post(
+        'https://gitee.com/oauth/token',
+        {
+          grant_type: 'refresh_token',
+          refresh_token: auth.refresh_token,
+        },
+        {
+          headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+        },
+      )
+    ).data;
 
-    // TODO: return status of this request
-    await axios.post('https://gitee.com/oauth/token', form, {
-      headers: { Accept: 'application/json' },
+    await this.socialAuthRepository.save({
+      id: auth.id,
+      access_token: result.access_token,
+      refresh_token: result.refresh_token,
     });
   }
 

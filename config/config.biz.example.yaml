@@ -31,5 +31,8 @@ webauthn:
     origin: 'http://localhost:8000'
     name:
 
+spider_platform_allowlist:
+  - 'matataki'
+
 user:
   invitation_when_created: 3

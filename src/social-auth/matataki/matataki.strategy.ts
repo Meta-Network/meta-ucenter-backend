@@ -5,9 +5,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { SocialAuth } from '../../entities/SocialAuth.entity';
 import { AuthorizeRequestDto } from '../dto/authorize-request.dto';
+import { ISocialAuthStrategy } from '../type/social-auth.strategy';
 
 @Injectable()
-export class MatatakiStrategy {
+export class MatatakiStrategy implements ISocialAuthStrategy {
   constructor(
     @InjectRepository(SocialAuth)
     private socialAuthRepository: Repository<SocialAuth>,
@@ -28,7 +29,7 @@ export class MatatakiStrategy {
     user: User,
     response: Response,
     request: Request, // eslint-disable-line @typescript-eslint/no-unused-vars
-  ): Promise<void> {
+  ): Promise<string> {
     const token = authorizeCallbackDto.token;
 
     const exists = await this.socialAuthRepository.findOne({
@@ -50,7 +51,9 @@ export class MatatakiStrategy {
         access_token: token,
       });
     }
-    return response.redirect(authorizeCallbackDto.redirect_url);
+
+    response.redirect(authorizeCallbackDto.redirect_url);
+    return token;
   }
 
   async getToken(userId: number): Promise<string> {
