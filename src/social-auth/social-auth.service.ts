@@ -65,10 +65,6 @@ export class SocialAuthService {
       });
     }
 
-    console.log(
-      this.configService.getBiz<string[]>('spider_platform_allowlist'),
-    );
-
     return token;
   }
 
