@@ -106,7 +106,7 @@ export class AccountsService {
   ) {
     await verify(accountDto);
 
-    const invitation = await this.invitationService.findOneBy({ signature });
+    const invitation = await this.invitationService.findOne({ signature });
     if (!invitation) {
       throw new BadRequestException('Invitation does not exist.');
     }

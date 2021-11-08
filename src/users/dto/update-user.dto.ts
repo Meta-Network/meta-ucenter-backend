@@ -1,12 +1,12 @@
-import { IsOptional, IsUrl } from 'class-validator';
+import { IsOptional, IsUrl, Length } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateUserDto {
-  // TODO: add validate
   @ApiPropertyOptional({
     default: 'Brendan Eich',
     description: '用户昵称',
   })
+  @Length(1, 32)
   @IsOptional()
   nickname?: string;
 
@@ -22,6 +22,7 @@ export class UpdateUserDto {
     default: 'some description of this user',
     description: '个人简介',
   })
+  @Length(1, 200)
   @IsOptional()
   bio?: string;
 }

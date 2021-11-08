@@ -12,6 +12,7 @@ import {
   Index,
 } from 'typeorm';
 import { TwoFactorAuth } from './TwoFactorAuth.entity';
+import { IsOptional, IsUrl, Length, Matches } from 'class-validator';
 
 @Entity()
 export class User {
@@ -19,15 +20,20 @@ export class User {
   id: number;
 
   @Column({ default: '' })
+  @Matches(/[a-z0-9-]+/)
+  @Length(3, 15)
   username: string;
 
   @Column({ default: '' })
+  @Length(1, 32)
   nickname: string;
 
   @Column({ default: '' })
+  @Length(1, 200)
   bio: string;
 
   @Column({ default: 'https://i.loli.net/2021/05/13/CiEFPgWJzuk5prZ.png' })
+  @IsUrl()
   avatar: string;
 
   @CreateDateColumn()
@@ -50,6 +56,7 @@ export class User {
   @AfterLoad()
   @AfterInsert()
   @AfterUpdate()
+  @IsOptional()
   keepingTrackOf2FAStatus(): void {
     if (this.twoFactors) this.is2FAEnabled = this.twoFactors.length > 0;
   }

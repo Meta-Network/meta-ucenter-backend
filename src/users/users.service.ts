@@ -70,7 +70,7 @@ export class UsersService {
     await this.usersRepository.update(uid, { username });
     const updatedUser = await this.usersRepository.findOne(uid);
 
-    const invitation = await this.invitationService.findOneBy({
+    const invitation = await this.invitationService.findOne({
       invitee_user_id: uid,
     });
 
@@ -89,7 +89,7 @@ export class UsersService {
     await this.usersRepository.update(uid, updateUserDto);
     const updatedUser = await this.usersRepository.findOne(uid);
     this.logger.log('emit Event UserProfileModified', updatedUser);
-    const invitation = await this.invitationService.findOneBy({
+    const invitation = await this.invitationService.findOne({
       invitee_user_id: uid,
     });
 
@@ -109,10 +109,12 @@ export class UsersService {
     userIdMin?: number;
     userIdMax?: number;
     modifiedAfter?: Date;
-  }): Promise<MetaInternalResult> {
+  }): Promise<MetaInternalResult<(User & { inviter_user_id: string })[]>> {
     this.logger.log('fetchUsers', queries);
     const { userIdMin, userIdMax, modifiedAfter } = queries;
-    const result = new MetaInternalResult({ serviceCode: ServiceCode.UCENTER });
+    const result = new MetaInternalResult<User[]>({
+      serviceCode: ServiceCode.UCENTER,
+    });
 
     if (userIdMin && userIdMax) {
       result.data = await this.usersRepository.find({
@@ -128,9 +130,11 @@ export class UsersService {
     }
 
     if (result.data) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       result.data = await Promise.all(
         result.data.map(async (user) => {
-          const invitation = await this.invitationService.findOneBy({
+          const invitation = await this.invitationService.findOne({
             invitee_user_id: user.id,
           });
 
@@ -140,6 +144,6 @@ export class UsersService {
     }
 
     this.logger.debug(`fetchUsers result ${JSON.stringify(result)}`);
-    return result;
+    return result as MetaInternalResult<(User & { inviter_user_id: string })[]>;
   }
 }

@@ -32,7 +32,7 @@ export class InvitationHandlerService {
     );
 
     for (let i = 0; i < newInvitations; i++) {
-      await this.invitationService.createInvitation(newInvitationDto);
+      await this.invitationService.create(newInvitationDto);
     }
   }
 }

@@ -40,7 +40,7 @@ export class InvitationController {
   async findMyInvitations(
     @CurrentUser() user: JWTDecodedUser,
   ): Promise<Invitation[]> {
-    return this.invitationService.findByInviterId(user.id);
+    return this.invitationService.find({ inviter_user_id: user.id });
   }
 
   @Patch(':signature/message')
