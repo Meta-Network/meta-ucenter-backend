@@ -81,10 +81,9 @@ export class InvitationService {
       .set(updateInvitationDto)
       .where({ id: In(ids) })
       .execute();
-    return await getConnection()
-      .createQueryBuilder()
-      .where({ id: In(ids) })
-      .execute();
+    return await this.invitationRepository.find({
+      where: { id: In(ids) },
+    });
   }
 
   async updateMyInvitationMessage(
