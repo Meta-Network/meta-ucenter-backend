@@ -6,7 +6,7 @@ import {
   ApiCreatedResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { CurrentUser } from '../users/user.decorator';
+import { CurrentUser } from '../utils/user.decorator';
 import { JWTAuthGuard } from '../auth/jwt.guard';
 import { JWTDecodedUser } from '../type';
 import { StorageService } from './storage.service';

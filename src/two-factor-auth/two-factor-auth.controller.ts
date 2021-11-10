@@ -3,7 +3,7 @@ import { ApiCookieAuth } from '@nestjs/swagger';
 import { JWTAuthGuard } from 'src/auth/jwt.guard';
 import { JWTDecodedUser } from 'src/type';
 import { TwoFactorType } from './type';
-import { CurrentUser } from 'src/users/user.decorator';
+import { CurrentUser } from 'src/utils/user.decorator';
 import { TwoFactorAuthService } from './two-factor-auth.service';
 
 @Controller('2fa')

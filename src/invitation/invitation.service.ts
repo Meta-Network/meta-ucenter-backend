@@ -3,7 +3,7 @@ import crypto, { createHash } from 'crypto';
 import { ConfigService } from 'src/config/config.service';
 import { ForbiddenException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { getConnection, In, Repository, UpdateResult } from 'typeorm';
+import { getConnection, In, Repository } from 'typeorm';
 import { Invitation } from 'src/entities/Invitation.entity';
 import { CreateInvitationDto } from './dto/create-invitation.dto';
 import { UpdateInvitationDto } from './dto/update-invitation.dto';
@@ -19,7 +19,7 @@ export class InvitationService {
 
   private readonly logger = new Logger(InvitationService.name);
 
-  async create(invitationDto: CreateInvitationDto): Promise<string> {
+  async create(invitationDto: CreateInvitationDto): Promise<Invitation> {
     this.logger.log('handleNewInvitation', invitationDto);
     const now = new Date();
 
@@ -44,16 +44,19 @@ export class InvitationService {
       .update(serialize(payload))
       .digest('hex');
 
-    await this.invitationRepository.save({ ...invitation, signature });
-    return signature;
+    return await this.invitationRepository.save({ ...invitation, signature });
   }
 
   async createMultiple(
     numbers: number,
     invitationDto: CreateInvitationDto,
-  ): Promise<void> {
+  ): Promise<Invitation[]> {
     this.logger.log('handleCreateMultipleInvitations', numbers, invitationDto);
-    for (let i = 0; i < numbers; i++) await this.create(invitationDto);
+    const invitations: Invitation[] = [];
+    for (let i = 0; i < numbers; i++) {
+      invitations.push(await this.create(invitationDto));
+    }
+    return invitations;
   }
 
   async find(conditions: any): Promise<Invitation[]> {
@@ -71,11 +74,15 @@ export class InvitationService {
   async updateMultiple(
     ids: number[],
     updateInvitationDto: UpdateInvitationDto,
-  ): Promise<UpdateResult> {
-    return await getConnection()
+  ): Promise<Invitation[]> {
+    await getConnection()
       .createQueryBuilder()
       .update(Invitation)
       .set(updateInvitationDto)
+      .where({ id: In(ids) })
+      .execute();
+    return await getConnection()
+      .createQueryBuilder()
       .where({ id: In(ids) })
       .execute();
   }

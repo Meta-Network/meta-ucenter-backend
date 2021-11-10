@@ -24,7 +24,7 @@ import {
 } from '@nestjs/swagger';
 import { User } from 'src/entities/User.entity';
 import { JWTAuthGuard } from 'src/auth/jwt.guard';
-import { CurrentUser } from 'src/users/user.decorator';
+import { CurrentUser } from 'src/utils/user.decorator';
 import { SocialAuthService } from './social-auth.service';
 import { AuthorizeRequestDto } from './dto/authorize-request.dto';
 

@@ -14,7 +14,8 @@ export class InvitationHandlerService {
   ) {}
   private readonly logger = new Logger(InvitationHandlerService.name);
 
-  @OnEvent(Events.UserCreated)
+  // TODO: when user finished the tasks
+  // @OnEvent(Events.UserCreated)
   async handleUserCreated(payload: User) {
     this.logger.log('handleUserCreated', User);
 

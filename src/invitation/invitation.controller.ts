@@ -12,7 +12,6 @@ import {
 import { JWTDecodedUser } from '../type';
 import { JWTAuthGuard } from '../auth/jwt.guard';
 import { InvitationService } from './invitation.service';
-import { CurrentUser } from '../users/user.decorator';
 import {
   ApiTags,
   ApiOperation,
@@ -20,6 +19,7 @@ import {
   ApiOkResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { CurrentUser } from '../utils/user.decorator';
 import { Invitation } from '../entities/Invitation.entity';
 import { UpdateInvitationDto } from './dto/update-invitation.dto';
 import { ValidateInvitationDto } from './dto/validate-invitation.dto';

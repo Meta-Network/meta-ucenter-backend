@@ -22,7 +22,7 @@ import { User } from 'src/entities/User.entity';
 import { JWTAuthGuard } from 'src/auth/jwt.guard';
 import { JWTCookieHelper } from 'src/accounts/jwt-cookie-helper';
 import { VerificationCodeDto } from 'src/verification-code/dto/verification-code.dto';
-import { CurrentUser } from 'src/users/user.decorator';
+import { CurrentUser } from 'src/utils/user.decorator';
 import { Account } from '../../entities/Account.entity';
 
 @ApiTags('Accounts WebAuthN')

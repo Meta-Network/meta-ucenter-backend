@@ -18,7 +18,7 @@ export class CreateInvitationDto {
 
   @ApiProperty({
     default: 0,
-    description: '邀请者用户 id，无特定用户可填0',
+    description: '邀请者用户 id，无特定用户（发布身份为系统）可填0',
   })
   @IsNotEmpty()
   inviter_user_id: number;

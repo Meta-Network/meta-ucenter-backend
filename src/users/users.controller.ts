@@ -12,7 +12,7 @@ import {
   HttpCode,
 } from '@nestjs/common';
 import { Response, Request } from 'express';
-import { CurrentUser } from './user.decorator';
+import { CurrentUser } from '../utils/user.decorator';
 import { UsersService } from './users.service';
 import { JWTAuthGuard } from 'src/auth/jwt.guard';
 import { JWTDecodedUser } from '../type';

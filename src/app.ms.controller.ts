@@ -79,13 +79,13 @@ export class AppMsController {
       numbers: number;
       invitationDto: CreateInvitationDto;
     },
-  ): Promise<MetaInternalResult<void>> {
-    const result = new MetaInternalResult<void>({
+  ): Promise<MetaInternalResult<Invitation[]>> {
+    const result = new MetaInternalResult<Invitation[]>({
       serviceCode: ServiceCode.UCENTER,
     });
 
     try {
-      await this.invitationService.createMultiple(
+      result.data = await this.invitationService.createMultiple(
         payload.numbers,
         payload.invitationDto,
       );

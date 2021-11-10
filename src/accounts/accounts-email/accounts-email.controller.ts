@@ -18,7 +18,7 @@ import {
   ApiBadRequestResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { CurrentUser } from 'src/users/user.decorator';
+import { CurrentUser } from 'src/utils/user.decorator';
 import { Response } from 'express';
 import { User } from 'src/entities/User.entity';
 import { JWTAuthGuard } from 'src/auth/jwt.guard';
