@@ -1,4 +1,4 @@
-import { Controller, HttpStatus } from '@nestjs/common';
+import { Controller, HttpStatus, Logger } from '@nestjs/common';
 import { EventPattern, MessagePattern, Payload } from '@nestjs/microservices';
 import { UsersService } from './users/users.service';
 import { InvitationService } from './invitation/invitation.service';
@@ -12,6 +12,7 @@ import { UpdateResult } from 'typeorm';
 
 @Controller()
 export class AppMsController {
+  private readonly logger = new Logger(AppMsController.name);
   constructor(
     private readonly usersService: UsersService,
     private readonly invitationService: InvitationService,
@@ -67,7 +68,6 @@ export class AppMsController {
     const result = new MetaInternalResult<Invitation[]>({
       serviceCode: ServiceCode.UCENTER,
     });
-
     result.data = await this.invitationService.find(conditions);
     return result;
   }
@@ -91,7 +91,8 @@ export class AppMsController {
       );
     } catch (e) {
       result.statusCode = 500;
-      console.log(e);
+      result.message = e;
+      this.logger.error('createMultipleInvitations', e);
     }
     return result;
   }
@@ -114,7 +115,8 @@ export class AppMsController {
       );
     } catch (e) {
       result.statusCode = 500;
-      console.log(e);
+      result.message = e;
+      this.logger.error('updateMultipleInvitations', e);
     }
     return result;
   }

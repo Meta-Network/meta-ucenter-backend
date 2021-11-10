@@ -20,7 +20,7 @@ export class User {
   id: number;
 
   @Column({ default: '' })
-  @Matches(/[a-z0-9-]+/)
+  @Matches(/^[a-z0-9-]+$/)
   @Length(3, 15)
   username: string;
 
