@@ -8,7 +8,6 @@ import { Invitation } from './entities/Invitation.entity';
 import { User } from './entities/User.entity';
 import { CreateInvitationDto } from './invitation/dto/create-invitation.dto';
 import { UpdateInvitationDto } from './invitation/dto/update-invitation.dto';
-import { UpdateResult } from 'typeorm';
 
 @Controller()
 export class AppMsController {
@@ -104,8 +103,8 @@ export class AppMsController {
       ids: number[];
       updateInvitationDto: UpdateInvitationDto;
     },
-  ): Promise<MetaInternalResult<UpdateResult>> {
-    const result = new MetaInternalResult<UpdateResult>({
+  ): Promise<MetaInternalResult<Invitation[]>> {
+    const result = new MetaInternalResult<Invitation[]>({
       serviceCode: ServiceCode.UCENTER,
     });
     try {
