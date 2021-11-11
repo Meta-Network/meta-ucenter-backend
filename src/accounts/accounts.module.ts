@@ -7,6 +7,7 @@ import { AccountsService } from './accounts.service';
 import { JWTCookieHelper } from './jwt-cookie-helper';
 import { InvitationModule } from '../invitation/invitation.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { AccountsController } from './accounts.controller';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     TypeOrmModule.forFeature([Account]),
     EventEmitterModule.forRoot(),
   ],
+  controllers: [AccountsController],
   providers: [AccountsService, JWTCookieHelper],
   exports: [AccountsService, JWTCookieHelper],
 })

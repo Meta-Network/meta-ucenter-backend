@@ -31,7 +31,7 @@ export class AccountsService {
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
-  async find(searchParams: any) {
+  async find(searchParams: any): Promise<Account[]> {
     return await this.accountsRepository.find(searchParams);
   }
   async findOne(searchParams: any, options = {}): Promise<Account> {

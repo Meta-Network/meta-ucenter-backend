@@ -1,22 +1,18 @@
 import {
-  Res,
-  Req,
   Get,
   Put,
   Post,
   Patch,
   Body,
+  HttpCode,
   UseGuards,
   Controller,
   HttpStatus,
-  HttpCode,
 } from '@nestjs/common';
-import { Response, Request } from 'express';
 import { CurrentUser } from '../utils/user.decorator';
 import { UsersService } from './users.service';
 import { JWTAuthGuard } from 'src/auth/jwt.guard';
 import { JWTDecodedUser } from '../type';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { TwoFactorAuthService } from 'src/two-factor-auth/two-factor-auth.service';
 import {
   BindTwoFactorDto,
@@ -32,8 +28,9 @@ import {
 } from '@nestjs/swagger';
 import { User } from 'src/entities/User.entity';
 import { SearchUserDto } from './dto/search-user.dto';
-import { ValidateUsernameDto } from './dto/validate-username.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdateUsernameDto } from './dto/update-username.dto';
+import { ValidateUsernameDto } from './dto/validate-username.dto';
 
 @ApiCookieAuth()
 @ApiTags('Users')
@@ -63,8 +60,8 @@ export class UsersController {
     description: 'Cookies 中的 access_token 过期或无效',
   })
   async updateMyInfo(
-    @CurrentUser() user: JWTDecodedUser,
     @Body() updateUserDto: UpdateUserDto,
+    @CurrentUser() user: JWTDecodedUser,
   ): Promise<User> {
     return this.usersService.update(user.id, updateUserDto);
   }
@@ -107,8 +104,7 @@ export class UsersController {
   @UseGuards(JWTAuthGuard)
   @Get('me/twoFactor')
   async getMy2FA(@CurrentUser() user: JWTDecodedUser) {
-    const res = await this.tfaService.list2FAOf(user.id);
-    return res;
+    return await this.tfaService.list2FAOf(user.id);
   }
 
   @UseGuards(JWTAuthGuard)
@@ -117,8 +113,7 @@ export class UsersController {
     @CurrentUser() user: JWTDecodedUser,
     @Body() body: BindTwoFactorDto,
   ) {
-    const res = await this.tfaService.bind2FA(body.type, { id: user.id });
-    return res;
+    return await this.tfaService.bind2FA(body.type, { id: user.id });
   }
 
   @UseGuards(JWTAuthGuard)
