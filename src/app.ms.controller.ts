@@ -8,6 +8,7 @@ import { Invitation } from './entities/Invitation.entity';
 import { User } from './entities/User.entity';
 import { CreateInvitationDto } from './invitation/dto/create-invitation.dto';
 import { UpdateInvitationDto } from './invitation/dto/update-invitation.dto';
+import { In } from 'typeorm';
 
 @Controller()
 export class AppMsController {
@@ -62,12 +63,16 @@ export class AppMsController {
   @MessagePattern('findInvitations')
   async findInvitations(
     @Payload()
-    conditions: any,
+    payload: {
+      ids: number[];
+    },
   ): Promise<MetaInternalResult<Invitation[]>> {
     const result = new MetaInternalResult<Invitation[]>({
       serviceCode: ServiceCode.UCENTER,
     });
-    result.data = await this.invitationService.find(conditions);
+    result.data = await this.invitationService.find({
+      where: { id: In(payload.ids) },
+    });
     return result;
   }
 
