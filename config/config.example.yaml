@@ -47,3 +47,6 @@ redis:
   pass:
   vcode_ttl: 600
   vcode_max_items: 100000
+
+swagger:
+  enabled: false

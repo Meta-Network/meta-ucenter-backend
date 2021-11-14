@@ -51,16 +51,18 @@ async function bootstrap() {
     next();
   });
 
-  const config = new DocumentBuilder()
-    .setTitle('UCenter API')
-    .setDescription('UCenter API testing branch')
-    .setVersion('1.0')
-    .addCookieAuth('ucenter_access_token')
-    .build();
+  const swaggerEnabled = configService.get<boolean>('swagger.enabled');
+  if (swaggerEnabled) {
+    const config = new DocumentBuilder()
+      .setTitle('UCenter API')
+      .setDescription('UCenter API testing branch')
+      .setVersion('1.0')
+      .addCookieAuth('ucenter_access_token')
+      .build();
 
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
-
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api', app, document);
+  }
   await app.startAllMicroservices();
   await app.listen(configService.get<string>('app.port'));
 }
