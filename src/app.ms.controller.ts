@@ -9,6 +9,9 @@ import { User } from './entities/User.entity';
 import { CreateInvitationDto } from './invitation/dto/create-invitation.dto';
 import { UpdateInvitationDto } from './invitation/dto/update-invitation.dto';
 import { In } from 'typeorm';
+import { ConfigService } from './config/config.service';
+import Events from './events';
+import dayjs from 'dayjs';
 
 @Controller()
 export class AppMsController {
@@ -16,7 +19,8 @@ export class AppMsController {
   constructor(
     private readonly usersService: UsersService,
     private readonly invitationService: InvitationService,
-    private socialAuthService: SocialAuthService,
+    private readonly socialAuthService: SocialAuthService,
+    private readonly configService: ConfigService,
   ) {}
   @MessagePattern('hello')
   getNotifications() {
@@ -127,6 +131,15 @@ export class AppMsController {
 
   @EventPattern('newInvitationSlot')
   async handleNewInvitation(newInvitationDto: CreateInvitationDto) {
-    await this.invitationService.create(newInvitationDto);
+    const newInvitations =
+      this.configService.getBiz('invitation.new_when_occupied_hex_grids') || 0;
+
+    if (!newInvitations) {
+      return;
+    }
+
+    for (let i = 0; i < newInvitations; i++) {
+      await this.invitationService.create(newInvitationDto);
+    }
   }
 }

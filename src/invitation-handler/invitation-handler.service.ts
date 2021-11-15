@@ -19,7 +19,7 @@ export class InvitationHandlerService {
     this.logger.log('handleUserCreated', User);
 
     const newInvitations =
-      this.configService.getBiz('user.invitation_when_created') || 0;
+      this.configService.getBiz('invitation.new_when_created_user') || 0;
 
     if (!newInvitations) {
       return;
