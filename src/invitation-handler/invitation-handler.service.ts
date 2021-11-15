@@ -34,7 +34,7 @@ export class InvitationHandlerService {
       expired_at: dayjs().add(2, 'month').toDate(),
     };
 
-    for (let i = newInvitations; i < newInvitations; i++) {
+    for (let i = 0; i < newInvitations; i++) {
       await this.invitationService.create(newInvitationDto);
     }
   }
