@@ -18,6 +18,13 @@ export class InvitationHandlerService {
   async handleUserCreated(payload: User) {
     this.logger.log('handleUserCreated', User);
 
+    const newInvitations =
+      this.configService.getBiz('user.invitation_when_created') || 0;
+
+    if (!newInvitations) {
+      return;
+    }
+
     const newInvitationDto = {
       sub: '',
       message: '',
@@ -27,15 +34,7 @@ export class InvitationHandlerService {
       expired_at: dayjs().add(2, 'month').toDate(),
     };
 
-    const newInvitations = this.configService.getBiz(
-      'user.invitation_when_created',
-    );
-
-    for (
-      let i = this.configService.getBiz('user.invitation_when_created') || 0;
-      i < newInvitations;
-      i++
-    ) {
+    for (let i = newInvitations; i < newInvitations; i++) {
       await this.invitationService.create(newInvitationDto);
     }
   }
