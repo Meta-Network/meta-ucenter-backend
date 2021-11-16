@@ -62,6 +62,7 @@ import { configPath } from './constants';
         username: configService.get<string>('db.username'),
         password: configService.get<string>('db.password'),
         database: configService.get<string>('db.database'),
+        charset: configService.get<string>('db.charset') || 'utf8mb4',
         autoLoadEntities: true,
         entities: ['dist/entities/*.entity.js'],
         synchronize: false,

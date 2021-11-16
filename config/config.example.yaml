@@ -18,6 +18,7 @@ db:
   username:
   password:
   database:
+  charset:
 
 jwt:
   access_token_name:

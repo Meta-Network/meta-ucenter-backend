@@ -9,7 +9,7 @@ const YAML_CONFIG_FILENAME =
     : 'config.development.yaml';
 
 const config = yaml.load(
-    readFileSync(join(__dirname, 'config', YAML_CONFIG_FILENAME), 'utf8'),
+  readFileSync(join(__dirname, 'config', YAML_CONFIG_FILENAME), 'utf8'),
 );
 
 module.exports = {
@@ -24,6 +24,7 @@ module.exports = {
   username: config.db.username,
   password: config.db.password,
   database: config.db.database,
+  charset: config.db.charset || 'utf8mb4',
   synchronize: false,
   entities: ['src/entities/**/*.ts'],
   migrations: ['migration/**/*.ts'],
