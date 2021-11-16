@@ -132,7 +132,9 @@ export class AppMsController {
   @EventPattern('newInvitationSlot')
   async handleNewInvitation(newInvitationDto: CreateInvitationDto) {
     const newInvitations =
-      this.configService.getBiz('invitation.new_when_occupied_hex_grids') || 0;
+      this.configService.getBiz<number>(
+        'invitation.new_when_occupied_hex_grids',
+      ) || 0;
 
     if (!newInvitations) {
       return;

@@ -1,26 +1,13 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { IEmailSender } from './email-sender.interface';
-import { SendcloudProvider } from './sendcloud.provider';
+import { EmailProviderFactory } from './email.provider.factory';
 
 @Injectable()
 export class EmailService implements IEmailSender {
-  constructor(
-    // @Inject('SendcloudProvider')
-    // private readonly emailSender: IEmailSender,
-    private readonly emailSender: SendcloudProvider,
-  ) {}
-  async send(
-    {
-      from,
-      fromName,
-      to,
-      templateInvokeName,
-    }: { from: any; fromName: any; to: any; templateInvokeName: any },
-    placeholders: any,
-  ) {
-    await this.emailSender.send(
-      { from, fromName, to, templateInvokeName },
-      placeholders,
-    );
+  constructor(private readonly emailFactory: EmailProviderFactory) {}
+  emailProvider = this.emailFactory.getService();
+
+  async send(to: string, placeholders: { [key: string]: string }) {
+    await this.emailProvider.send(to, placeholders);
   }
 }

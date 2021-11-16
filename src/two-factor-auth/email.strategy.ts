@@ -21,29 +21,14 @@ export class EmailStrategy {
   }
 
   private async sendVerificationCodeEmail(email: string, code: string) {
-    const [from, fromName, templateInvokeName] = [
-      'email.from',
-      'email.from_name',
-      'email.template_invoke_name_vcode',
-    ].map((key) => this.configService.getBiz<string>(key));
-
-    this.emailService.send(
-      {
-        from,
-        fromName,
-        to: email,
-        templateInvokeName,
-      },
-      { code },
-    );
+    this.emailService.send(email, { code });
   }
 
   async verify(email: string, verifyCode: string): Promise<boolean> {
-    const isEmailVerified = await this.verificationCodeService.verify(
+    return await this.verificationCodeService.verify(
       'email-login',
       email,
       verifyCode,
     );
-    return isEmailVerified;
   }
 }

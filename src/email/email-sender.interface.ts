@@ -1,3 +1,3 @@
 export interface IEmailSender {
-  send({ from, fromName, to, templateInvokeName }, placeholders);
+  send(to: string, placeholders: { [key: string]: string });
 }
