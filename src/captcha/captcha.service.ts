@@ -5,7 +5,7 @@ import { ConfigService } from 'src/config/config.service';
 @Injectable()
 export class CaptchaService {
   constructor(private configService: ConfigService) {}
-  async verify(token): Promise<boolean> {
+  async verify(token: string): Promise<boolean> {
     if (!this.configService.getBiz<boolean>('hcaptcha.enabled')) {
       return true;
     }

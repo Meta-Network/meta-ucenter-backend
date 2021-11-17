@@ -51,12 +51,5 @@ export class AccountsEmailService {
     if (!isEmailVerified) {
       throw new BadRequestException('Email authentication is not verified.');
     }
-
-    const isCaptchaVerified = await this.captchaService.verify(
-      accountsEmailDto.hcaptchaToken,
-    );
-    if (!isCaptchaVerified) {
-      throw new BadRequestException('Captcha authentication is not verified.');
-    }
   }
 }
