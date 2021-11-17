@@ -45,10 +45,10 @@ export class AccountsEmailController {
   @ApiCreatedResponse({ description: '发送验证码，不返回 data' })
   @ApiBadRequestResponse({ description: '传入的表单参数不正确或无效' })
   async generateVerificationCodeForEmail(
-    @Body() verifyCode: VerificationCodeDto,
+    @Body() verificationCodeDto: VerificationCodeDto,
   ): Promise<void> {
     await this.accountsEmailService.generateVerificationCodeForEmail(
-      verifyCode.key,
+      verificationCodeDto,
     );
   }
 

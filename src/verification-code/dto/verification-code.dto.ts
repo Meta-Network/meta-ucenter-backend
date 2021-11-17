@@ -7,4 +7,11 @@ export class VerificationCodeDto {
   })
   @IsNotEmpty()
   key: string;
+
+  @ApiProperty({
+    default: 'hcaptcha_token_here',
+    description: '由 hCaptcha 生成的人机验证 Token，从前端获得',
+  })
+  @IsNotEmpty()
+  hcaptchaToken: string;
 }

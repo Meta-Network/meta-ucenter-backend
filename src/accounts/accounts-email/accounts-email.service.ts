@@ -5,6 +5,7 @@ import { CaptchaService } from 'src/captcha/captcha.service';
 import { AccountsEmailDto } from './dto/accounts-email.dto';
 import { VerificationCodeService } from 'src/verification-code/verification-code.service';
 import { AccountsService } from '../accounts.service';
+import { VerificationCodeDto } from '../../verification-code/dto/verification-code.dto';
 
 @Injectable()
 export class AccountsEmailService {
@@ -16,7 +17,18 @@ export class AccountsEmailService {
     private readonly verificationCodeService: VerificationCodeService,
   ) {}
 
-  async generateVerificationCodeForEmail(email: string): Promise<string> {
+  async generateVerificationCodeForEmail(
+    verificationCodeDto: VerificationCodeDto,
+  ): Promise<string> {
+    const email = verificationCodeDto.key;
+
+    const isCaptchaVerified = await this.captchaService.verify(
+      verificationCodeDto.hcaptchaToken,
+    );
+    if (!isCaptchaVerified) {
+      throw new BadRequestException('Captcha authentication is not verified.');
+    }
+
     const code = await this.verificationCodeService.generateVcode(
       'email-login',
       email,
