@@ -8,6 +8,10 @@ microservice:
     options:
       servers: ['nats://localhost:4222']
   clients:
+    cms:
+      transport: 2 # NATS
+      options:
+        servers: ['nats://localhost:4222']
     network:
       transport: 2 # NATS
       options:
@@ -46,8 +50,13 @@ redis:
   host: '127.0.0.1'
   port: 6379
   pass:
-  vcode_ttl: 600
+  vcode_ttl: 300
   vcode_max_items: 100000
+
+storage:
+  sub:
+  issuer:
+  expires: '5m'
 
 swagger:
   enabled: false

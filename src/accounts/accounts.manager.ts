@@ -1,6 +1,6 @@
 import { Account } from 'src/entities/Account.entity';
 import { AccountsService } from './accounts.service';
-import { AccountsVerifer } from './accounts.verifier';
+import { AccountsVerifier } from './accounts.verifier';
 import { VerifyExistsDto } from './dto/verify-exists.dto';
 import { Platforms } from './type';
 
@@ -8,7 +8,7 @@ export class AccountsManager {
   constructor(
     private readonly accountsService: AccountsService,
     private readonly platform: Platforms,
-    private readonly verify: AccountsVerifer,
+    private readonly verify: AccountsVerifier,
   ) {}
 
   async signup(accountDto: any, signature: string) {

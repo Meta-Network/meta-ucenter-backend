@@ -1,8 +1,9 @@
 # config.biz.development.yaml
 email:
-  from:
-  from_name:
-  template_invoke_name_vcode:
+  # currently support ['mailgun', 'sendcloud']
+  service: 'mailgun'
+  from_name: 'Meta Network Team'
+  from_email:
 
 hcaptcha:
   enabled: false
@@ -34,5 +35,13 @@ webauthn:
 spider_platform_allowlist:
   - 'matataki'
 
+invitation:
+  new_when_created_user: 3
+  new_when_occupied_hex_grids: 3
+
 user:
-  invitation_when_created: 3
+  get_vcode_times_limit_enabled: true
+  get_vcode_times_ttl: 7200
+  get_vcode_times_cool_down_time: 300
+  get_vcode_times_limit: 5
+  try_vcode_attempts_limit: 10

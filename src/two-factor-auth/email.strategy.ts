@@ -16,12 +16,12 @@ export class EmailStrategy {
       'email-login',
       email,
     );
-    //  用邮件服务发送生成的验证码
+    // 用邮件服务发送生成的验证码
     await this.sendVerificationCodeEmail(email, code);
   }
 
   private async sendVerificationCodeEmail(email: string, code: string) {
-    this.emailService.send(email, { code });
+    await this.emailService.send(email, { code });
   }
 
   async verify(email: string, verifyCode: string): Promise<boolean> {

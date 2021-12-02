@@ -4,7 +4,7 @@ import {
   MaxLength,
   IsEmail,
   IsNotEmpty,
-  IsNumberString,
+  IsAlphanumeric,
 } from 'class-validator';
 
 export class AccountsEmailDto {
@@ -22,7 +22,7 @@ export class AccountsEmailDto {
     description: '生成后发送至登录者邮箱的，与邮箱绑定的验证码',
   })
   @IsNotEmpty()
-  @Length(6)
-  @IsNumberString()
+  @Length(8)
+  @IsAlphanumeric()
   verifyCode: string;
 }

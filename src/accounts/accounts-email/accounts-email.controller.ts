@@ -8,6 +8,7 @@ import {
   Controller,
   Logger,
   HttpStatus,
+  ForbiddenException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -18,6 +19,7 @@ import {
   ApiBadRequestResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { RealIP } from 'nestjs-real-ip';
 import { CurrentUser } from 'src/utils/user.decorator';
 import { Response } from 'express';
 import { User } from 'src/entities/User.entity';
@@ -45,8 +47,27 @@ export class AccountsEmailController {
   @ApiCreatedResponse({ description: '发送验证码，不返回 data' })
   @ApiBadRequestResponse({ description: '传入的表单参数不正确或无效' })
   async generateVerificationCodeForEmail(
+    @RealIP() requestIp: string,
     @Body() verificationCodeDto: VerificationCodeDto,
   ): Promise<void> {
+    this.logger.log(
+      `用户 ${requestIp} 发送验证码到 ${verificationCodeDto.key}`,
+    );
+    const hasCoolDown = await this.accountsEmailService.getIPInCoolDown(
+      requestIp,
+    );
+    if (hasCoolDown && hasCoolDown > Date.now()) {
+      const timeLeft = Math.ceil((hasCoolDown - Date.now()) / 1000);
+      this.logger.log(
+        `用户 ${requestIp} 发送验证码失败，还需等待 ${timeLeft} 秒`,
+      );
+      throw new ForbiddenException(
+        `Too many times get the verification code, please try again after ${timeLeft} seconds`,
+        hasCoolDown.toString(),
+      );
+    }
+    const n = await this.accountsEmailService.increaseGetVcodeCount(requestIp);
+    this.logger.log(`用户 ${requestIp} 获取验证码次数 ${n}`);
     await this.accountsEmailService.generateVerificationCodeForEmail(
       verificationCodeDto,
     );
@@ -83,15 +104,34 @@ export class AccountsEmailController {
   @ApiUnauthorizedResponse({ description: '用户不存在' })
   @HttpCode(HttpStatus.OK)
   async login(
-    @Res({ passthrough: true }) res: Response,
     @Body() accountsEmailDto: AccountsEmailDto,
+    @Res({ passthrough: true }) res: Response,
   ): Promise<{ user: User; account: Account }> {
-    const { user, account, tokens } = await this.accountsManager.login(
-      accountsEmailDto,
-    );
-
-    await this.jwtCookieHelper.JWTCookieWriter(res, tokens);
-    return { user, account };
+    try {
+      const result = await this.accountsManager.login(accountsEmailDto);
+      const { user, account, tokens } = result;
+      await this.jwtCookieHelper.JWTCookieWriter(res, tokens);
+      return { user, account };
+    } catch (e) {
+      let outError = e;
+      if (e.response.error !== 'UserNotFound') {
+        try {
+          const failedCount =
+            await this.accountsEmailService.increaseLoginFailedCount(
+              accountsEmailDto.account,
+            );
+          this.logger.log(
+            `用户 ${accountsEmailDto.account} 登录失败，失败次数 ${failedCount}`,
+          );
+        } catch (innerError) {
+          outError = innerError;
+          this.logger.log(
+            `用户 ${accountsEmailDto.account} 登录失败次数过多，验证码已被重置`,
+          );
+        }
+      }
+      throw outError;
+    }
   }
 
   @Post('is-exists')

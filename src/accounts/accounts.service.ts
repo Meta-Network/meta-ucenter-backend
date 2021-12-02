@@ -15,7 +15,7 @@ import { AuthService } from 'src/auth/auth.service';
 import { UsersService } from 'src/users/users.service';
 import { InvitationService } from 'src/invitation/invitation.service';
 import { VerifyExistsDto } from './dto/verify-exists.dto';
-import { AccountsVerifer } from './accounts.verifier';
+import { AccountsVerifier } from './accounts.verifier';
 import Events from '../events';
 
 @Injectable()
@@ -75,7 +75,7 @@ export class AccountsService {
     accountDto: any,
     userId: number,
     platform: Platforms,
-    verify: AccountsVerifer,
+    verify: AccountsVerifier,
   ): Promise<Account> {
     await verify(accountDto);
 
@@ -102,7 +102,7 @@ export class AccountsService {
     accountDto: any,
     signature: string,
     platform: Platforms,
-    verify: AccountsVerifer,
+    verify: AccountsVerifier,
   ) {
     await verify(accountDto);
 
@@ -144,7 +144,7 @@ export class AccountsService {
     };
   }
 
-  async login(accountDto: any, platform: Platforms, verify: AccountsVerifer) {
+  async login(accountDto: any, platform: Platforms, verify: AccountsVerifier) {
     await verify(accountDto);
 
     const userAccountData = {
@@ -155,7 +155,10 @@ export class AccountsService {
     const { user, userAccount } = await this.getUser(userAccountData);
 
     if (!user || !userAccount) {
-      throw new UnauthorizedException('User account does not exist.');
+      throw new UnauthorizedException(
+        'User account does not exist.',
+        'UserNotFound',
+      );
     }
 
     const tokens: JWTTokens = await this.authService.signLoginJWT(
@@ -172,7 +175,7 @@ export class AccountsService {
   async unbindAccount(
     accountDto: any,
     platform: Platforms,
-    verify: AccountsVerifer,
+    verify: AccountsVerifier,
   ): Promise<void> {
     await verify(accountDto);
 
