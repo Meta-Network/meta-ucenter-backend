@@ -143,7 +143,6 @@ export class UsersService {
       );
     }
 
-    this.logger.debug(`fetchUsers result ${JSON.stringify(result)}`);
     return result as MetaInternalResult<(User & { inviter_user_id: string })[]>;
   }
 }

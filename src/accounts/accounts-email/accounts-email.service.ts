@@ -40,7 +40,6 @@ export class AccountsEmailService {
       email,
     );
 
-    this.logger.debug(`用户 ${email} 申请验证码为：${code}`);
     // 用邮件服务发送生成的验证码
     await this.emailService.send(email, { code });
     return code;
