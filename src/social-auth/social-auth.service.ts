@@ -51,7 +51,6 @@ export class SocialAuthService {
       response,
       request,
     );
-
     if (
       this.configService
         .getBiz<string[]>('spider_platform_allowlist')
@@ -64,7 +63,6 @@ export class SocialAuthService {
         token,
       });
     }
-
     return token;
   }
 

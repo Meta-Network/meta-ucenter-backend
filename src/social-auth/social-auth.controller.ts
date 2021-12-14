@@ -72,8 +72,8 @@ export class SocialAuthController {
     @CurrentUser() user: User,
     @Res() response: Response,
     @Req() request: Request,
-  ): Promise<void> {
-    await this.socialAuthService.authorizeCallback(
+  ): Promise<string> {
+    return await this.socialAuthService.authorizeCallback(
       platform,
       authorizeCallbackDto,
       user,
@@ -112,7 +112,7 @@ export class SocialAuthController {
     @Param('platform') platform: string,
     @CurrentUser() user: User,
   ): Promise<void> {
-    await this.socialAuthService.deleteToken(platform, user.id);
+    return await this.socialAuthService.deleteToken(platform, user.id);
   }
 
   @Patch(':platform/refresh')
@@ -129,6 +129,6 @@ export class SocialAuthController {
     @Param('platform') platform: string,
     @CurrentUser() user: User,
   ): Promise<void> {
-    await this.socialAuthService.refreshToken(platform, user.id);
+    return await this.socialAuthService.refreshToken(platform, user.id);
   }
 }
