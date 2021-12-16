@@ -51,7 +51,6 @@ export class MatatakiStrategy implements ISocialAuthStrategy {
         access_token: token,
       });
     }
-
     response.redirect(authorizeCallbackDto.redirect_url);
     return token;
   }

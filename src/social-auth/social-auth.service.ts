@@ -6,6 +6,7 @@ import { SocialAuthStrategyFactory } from './social-auth.strategy.factory';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import Events from '../events';
 import { ConfigService } from '../config/config.service';
+import matatakiGetUsername from './matataki/matataki.get-username';
 
 @Injectable()
 export class SocialAuthService {
@@ -56,10 +57,15 @@ export class SocialAuthService {
         .getBiz<string[]>('spider_platform_allowlist')
         .includes(platform)
     ) {
-      // Emit bound social auth to meta cms
+      let username: string;
+      if (platform === 'matataki') {
+        username = await matatakiGetUsername(token);
+      }
+      // Emit bound social-auth event to meta cms
       this.eventEmitter.emit(Events.UserBoundSocialAuth, {
         userId: user.id,
         platform,
+        username,
         token,
       });
     }
