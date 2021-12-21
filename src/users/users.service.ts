@@ -88,15 +88,20 @@ export class UsersService {
   async update(uid: number, updateUserDto: UpdateUserDto): Promise<User> {
     await this.usersRepository.update(uid, updateUserDto);
     const updatedUser = await this.usersRepository.findOne(uid);
-    this.logger.log('emit Event UserProfileModified', updatedUser);
+
     const invitation = await this.invitationService.findOne({
       invitee_user_id: uid,
     });
-
-    this.eventEmitter.emit(Events.UserProfileModified, {
+    const userProfileModified = {
       ...updatedUser,
       inviter_user_id: invitation?.inviter_user_id ?? 0,
-    });
+    };
+    this.logger.log(
+      'emit Event UserProfileModified',
+      JSON.stringify(updatedUser),
+    );
+
+    this.eventEmitter.emit(Events.UserProfileModified, userProfileModified);
 
     return updatedUser;
   }
