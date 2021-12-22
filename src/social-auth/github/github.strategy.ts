@@ -93,11 +93,28 @@ export class GithubStrategy implements ISocialAuthStrategy {
       })
     ).data;
 
+    const res = await axios.get<{ login: string }>(
+      'https://api.github.com/user',
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `token ${result.access_token}`,
+        },
+      },
+    );
+
+    const username = res.data.login;
+
     const exists = await this.socialAuthRepository.findOne({
-      user_id: user.id,
+      username,
       type: 'oauth2',
       platform: 'github',
     });
+
+    if (exists && exists.user_id !== user.id) {
+      response.redirect(authorizeCallbackDto.redirect_url + '?error=duplicate');
+      return '';
+    }
 
     if (exists) {
       await this.socialAuthRepository.save({
@@ -109,6 +126,7 @@ export class GithubStrategy implements ISocialAuthStrategy {
         user_id: user.id,
         type: 'oauth2',
         platform: 'github',
+        username,
         access_token: result.access_token,
       });
     }

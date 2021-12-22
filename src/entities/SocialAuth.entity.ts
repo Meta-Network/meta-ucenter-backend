@@ -21,6 +21,9 @@ export class SocialAuth {
   platform: 'github' | 'gitee' | 'matataki';
 
   @Column()
+  username: string;
+
+  @Column()
   access_token: string;
 
   @Column({ default: '' })

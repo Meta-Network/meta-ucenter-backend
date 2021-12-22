@@ -21,6 +21,8 @@ export class AppService {
 
   @OnEvent(Events.UserProfileModified)
   async handleUserProfileModified(payload: User & { inviter_user_id }) {
+    this.logger.log(`UserProfileModified event sent.`);
+    console.log(payload);
     return this.networkClient.emit<void>(Events.UserProfileModified, payload);
   }
 

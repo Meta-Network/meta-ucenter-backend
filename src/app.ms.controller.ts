@@ -5,12 +5,11 @@ import { InvitationService } from './invitation/invitation.service';
 import { SocialAuthService } from './social-auth/social-auth.service';
 import { MetaInternalResult, ServiceCode } from '@metaio/microservice-model';
 import { Invitation } from './entities/Invitation.entity';
+import { ConfigService } from './config/config.service';
 import { User } from './entities/User.entity';
 import { CreateInvitationDto } from './invitation/dto/create-invitation.dto';
 import { UpdateInvitationDto } from './invitation/dto/update-invitation.dto';
 import { In } from 'typeorm';
-import { ConfigService } from './config/config.service';
-import Events from './events';
 import dayjs from 'dayjs';
 
 @Controller()
@@ -136,12 +135,35 @@ export class AppMsController {
         'invitation.new_when_occupied_hex_grids',
       ) || 0;
 
-    if (!newInvitations) {
+    if (newInvitations === 0) {
       return;
     }
 
     for (let i = 0; i < newInvitations; i++) {
       await this.invitationService.create(newInvitationDto);
+    }
+  }
+
+  @EventPattern('meta.space.site.created')
+  async handleMetaSpaceCreated(siteInfo: { userId: number }) {
+    const newInvitations =
+      this.configService.getBiz<number>(
+        'invitation.new_when_created_meta_space',
+      ) || 0;
+
+    if (newInvitations === 0) {
+      return;
+    }
+
+    for (let i = 0; i < newInvitations; i++) {
+      await this.invitationService.create({
+        sub: '',
+        message: '',
+        inviter_user_id: siteInfo.userId,
+        cause: 'created.metaspace',
+        matataki_user_id: 0,
+        expired_at: dayjs().add(1, 'month').toDate(),
+      });
     }
   }
 }
