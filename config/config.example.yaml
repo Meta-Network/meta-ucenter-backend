@@ -22,7 +22,7 @@ db:
   username:
   password:
   database:
-  charset:
+  charset: 'utf8mb4'
 
 jwt:
   access_token_name:
@@ -45,6 +45,11 @@ cookies:
 sendcloud:
   user:
   key:
+  template_invoke_name_vcode:
+
+mailgun:
+  key:
+  domain:
 
 redis:
   host: '127.0.0.1'
