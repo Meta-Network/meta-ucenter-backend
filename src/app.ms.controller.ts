@@ -151,6 +151,13 @@ export class AppMsController {
         'invitation.new_when_created_meta_space',
       ) || 0;
 
+    this.logger.log('new meta space created by user', siteInfo.userId);
+    this.logger.log(
+      `generating ${this.configService.getBiz<number>(
+        'invitation.new_when_created_meta_space',
+      )} for this user`,
+    );
+
     if (newInvitations === 0) {
       return;
     }
