@@ -112,7 +112,9 @@ export class GithubStrategy implements ISocialAuthStrategy {
     });
 
     if (exists && exists.user_id !== user.id) {
-      response.redirect(authorizeCallbackDto.redirect_url + '?error=duplicate');
+      const redirectTo = new URL(authorizeCallbackDto.redirect_url);
+      redirectTo.searchParams.set('error', 'duplicate');
+      response.redirect(redirectTo.href);
       return '';
     }
 
