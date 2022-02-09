@@ -26,6 +26,23 @@ export class AppMsController {
     return 'This is microservice from ucenter says: Hello World!';
   }
 
+  @MessagePattern('getUserInfo')
+  async getUserInfo(
+    @Payload()
+    userId: number,
+  ): Promise<MetaInternalResult<User>> {
+    const result = new MetaInternalResult<User>({
+      serviceCode: ServiceCode.UCENTER,
+    });
+    try {
+      result.data = await this.usersService.getUserInfo(userId);
+    } catch (error) {
+      result.statusCode = HttpStatus.BAD_REQUEST;
+      result.message = error.message;
+    }
+    return result;
+  }
+
   @MessagePattern('getSocialAuthTokenByUserId')
   async getSocialAuthTokenByUserId(
     @Payload()
