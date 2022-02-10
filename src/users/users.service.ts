@@ -45,14 +45,9 @@ export class UsersService {
   }
 
   async validateUsername(username: string): Promise<{ isExists: boolean }> {
-    const isAlreadyExists = await this.usersRepository.findOne({ username });
-    let isExists = false;
-
-    if (isAlreadyExists) {
-      isExists = true;
-    }
-
-    return { isExists };
+    return {
+      isExists: Boolean(await this.usersRepository.findOne({ username })),
+    };
   }
 
   async updateUsername(uid: number, username: string): Promise<User> {

@@ -23,6 +23,7 @@ db:
   password:
   database:
   charset: 'utf8mb4'
+  timezone: 'Z' # UTC
 
 jwt:
   access_token_name:

@@ -1,4 +1,4 @@
-import { IsAlphanumeric, Length } from 'class-validator';
+import { Length, Matches } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateUsernameDto {
@@ -6,7 +6,7 @@ export class UpdateUsernameDto {
     default: 'metafan',
     description: '用户名',
   })
-  @IsAlphanumeric()
   @Length(3, 15)
+  @Matches(/^[a-z0-9-]+$/)
   username: string;
 }

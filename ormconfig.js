@@ -25,6 +25,7 @@ module.exports = {
   password: config.db.password,
   database: config.db.database,
   charset: config.db.charset || 'utf8mb4',
+  timezone: config.db.timezone || 'Z',
   synchronize: false,
   entities: ['src/entities/**/*.ts'],
   migrations: ['migration/**/*.ts'],
