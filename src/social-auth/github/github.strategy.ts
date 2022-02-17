@@ -104,23 +104,30 @@ export class GithubStrategy implements ISocialAuthStrategy {
     );
 
     const username = res.data.login;
-
-    const exists = await this.socialAuthRepository.findOne({
+    let exist = await this.socialAuthRepository.findOne({
       username,
       type: 'oauth2',
       platform: 'github',
     });
 
-    if (exists && exists.user_id !== user.id) {
+    const allowOverrideAuthorization = this.configService.getBiz<boolean>(
+      'github.allow_override_authorization',
+    );
+
+    if (allowOverrideAuthorization) {
+      await this.socialAuthRepository.delete(exist);
+      exist = null;
+    }
+
+    if (exist && exist.user_id !== user.id) {
       const redirectTo = new URL(authorizeCallbackDto.redirect_url);
       redirectTo.searchParams.set('error', 'duplicate');
       response.redirect(redirectTo.href);
       return '';
     }
 
-    if (exists) {
-      await this.socialAuthRepository.save({
-        id: exists.id,
+    if (exist) {
+      await this.socialAuthRepository.update(exist.id, {
         access_token: result.access_token,
       });
     } else {

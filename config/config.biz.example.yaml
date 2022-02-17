@@ -17,6 +17,7 @@ dingding_bot:
 github:
   client_id:
   client_secret:
+  allow_override_authorization: false
 
 gitee:
   client_id:

@@ -1,26 +1,52 @@
 import { serialize } from 'v8';
 import crypto, { createHash } from 'crypto';
 import { ConfigService } from 'src/config/config.service';
-import { ForbiddenException, Injectable, Logger } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { getConnection, In, Repository } from 'typeorm';
 import { Invitation } from 'src/entities/Invitation.entity';
 import { CreateInvitationDto } from './dto/create-invitation.dto';
 import { UpdateInvitationDto } from './dto/update-invitation.dto';
 import { ValidateInvitationDto } from './dto/validate-invitation.dto';
+import Events from '../events';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { UserInvitationCountPayload } from '../type';
 
 @Injectable()
 export class InvitationService {
   constructor(
     @InjectRepository(Invitation)
     private invitationRepository: Repository<Invitation>,
+    private eventEmitter: EventEmitter2,
     private configService: ConfigService,
   ) {}
 
-  private readonly logger = new Logger(InvitationService.name);
+  private availableCountModified(owner: number): void {
+    if (owner !== 0) {
+      this.invitationRepository
+        .count({
+          where: {
+            inviter_user_id: owner,
+            invitee_user_id: 0, // only count invitations that haven't been used
+          },
+        })
+        // no need to await for the event emmit
+        .then((count: number) => {
+          const payload: UserInvitationCountPayload = {
+            userId: owner,
+            count,
+          };
+          this.eventEmitter.emit(Events.UserInvitationCountUpdated, payload);
+        });
+    }
+  }
 
-  async create(invitationDto: CreateInvitationDto): Promise<Invitation> {
-    this.logger.log('handleNewInvitation', invitationDto);
+  // Because we're handling the creation event in the createMultiple function,
+  // so keep this as a private method keeps us simple to manage the functions.
+  // If you're going to create only one invitation, call the createMultiple with count=1
+  private async create(
+    invitationDto: CreateInvitationDto,
+  ): Promise<Invitation> {
     const now = new Date();
 
     const invitation: Partial<Invitation> = {
@@ -44,18 +70,23 @@ export class InvitationService {
       .update(serialize(payload))
       .digest('hex');
 
-    return await this.invitationRepository.save({ ...invitation, signature });
+    return await this.invitationRepository.save({
+      ...invitation,
+      signature,
+    });
   }
 
   async createMultiple(
-    numbers: number,
+    count: number,
     invitationDto: CreateInvitationDto,
   ): Promise<Invitation[]> {
-    this.logger.log('handleCreateMultipleInvitations', numbers, invitationDto);
     const invitations: Invitation[] = [];
-    for (let i = 0; i < numbers; i++) {
+
+    for (let i = 0; i < count; i++) {
       invitations.push(await this.create(invitationDto));
     }
+
+    this.availableCountModified(invitationDto.inviter_user_id);
     return invitations;
   }
 
@@ -68,7 +99,9 @@ export class InvitationService {
   }
 
   async update(entity: Invitation): Promise<Invitation> {
-    return await this.invitationRepository.save(entity);
+    const modified = await this.invitationRepository.save(entity);
+    this.availableCountModified(modified.inviter_user_id);
+    return modified;
   }
 
   async updateMultiple(

@@ -145,42 +145,29 @@ export class AppMsController {
     return result;
   }
 
+  // TODO: this function name doesn't fit the event it handles
   @EventPattern('newInvitationSlot')
   async handleNewInvitation(newInvitationDto: CreateInvitationDto) {
-    const newInvitations =
-      this.configService.getBiz<number>(
-        'invitation.new_when_occupied_hex_grids',
-      ) || 0;
+    const count = this.configService.getBiz<number>(
+      'invitation.new_when_occupied_hex_grids',
+    );
 
-    if (newInvitations === 0) {
-      return;
-    }
-
-    for (let i = 0; i < newInvitations; i++) {
-      await this.invitationService.create(newInvitationDto);
+    if (count) {
+      await this.invitationService.createMultiple(count, newInvitationDto);
     }
   }
 
   @EventPattern('meta.space.site.created')
   async handleMetaSpaceCreated(siteInfo: { userId: number }) {
-    const newInvitations =
-      this.configService.getBiz<number>(
-        'invitation.new_when_created_meta_space',
-      ) || 0;
-
-    this.logger.log('new meta space created by user', siteInfo.userId);
-    this.logger.log(
-      `generating ${this.configService.getBiz<number>(
-        'invitation.new_when_created_meta_space',
-      )} for this user`,
+    const count = this.configService.getBiz<number>(
+      'invitation.new_when_created_meta_space',
     );
 
-    if (newInvitations === 0) {
-      return;
-    }
+    if (count) {
+      this.logger.log('New meta space created by user', siteInfo.userId);
+      this.logger.log(`Generating ${count} invitation codes for the user.`);
 
-    for (let i = 0; i < newInvitations; i++) {
-      await this.invitationService.create({
+      await this.invitationService.createMultiple(count, {
         sub: '',
         message: '',
         inviter_user_id: siteInfo.userId,

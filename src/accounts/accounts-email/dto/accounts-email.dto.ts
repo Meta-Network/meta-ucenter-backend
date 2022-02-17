@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   Length,
-  MaxLength,
   IsEmail,
   IsNotEmpty,
   IsAlphanumeric,
+  MaxLength,
 } from 'class-validator';
 
 export class AccountsEmailDto {
@@ -18,7 +18,7 @@ export class AccountsEmailDto {
   account: string;
 
   @ApiProperty({
-    default: '571802',
+    default: 'L6OH5E5P',
     description: '生成后发送至登录者邮箱的，与邮箱绑定的验证码',
   })
   @IsNotEmpty()

@@ -3,3 +3,8 @@ export type SocialAuthBoundMessage = {
   platform: string;
   token?: string;
 };
+
+export type UserInvitationCountPayload = {
+  userId: number;
+  count: number;
+};
