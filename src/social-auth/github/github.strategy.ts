@@ -115,7 +115,7 @@ export class GithubStrategy implements ISocialAuthStrategy {
     );
 
     if (allowOverrideAuthorization) {
-      await this.socialAuthRepository.delete(exist);
+      await this.socialAuthRepository.remove(exist);
       exist = null;
     }
 
