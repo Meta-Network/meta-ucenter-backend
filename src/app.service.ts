@@ -5,6 +5,7 @@ import { OnEvent } from '@nestjs/event-emitter';
 import { User } from './entities/User.entity';
 import Events from './events';
 import { SocialAuthBoundMessage, UserInvitationCountPayload } from './type';
+import { MetaInternalResult, ServiceCode } from '@metaio/microservice-model';
 
 @Injectable()
 export class AppService {
@@ -35,7 +36,11 @@ export class AppService {
 
   @OnEvent(Events.UserInvitationCountUpdated)
   async handleUserInvitationCountUpdated(payload: UserInvitationCountPayload) {
-    this.cmsClient.emit<void>(Events.UserInvitationCountUpdated, payload);
+    const result = new MetaInternalResult<UserInvitationCountPayload>({
+      serviceCode: ServiceCode.UCENTER,
+    });
+    result.data = payload;
+    this.cmsClient.emit<void>(Events.UserInvitationCountUpdated, result);
   }
 
   async onApplicationBootstrap() {
