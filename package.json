@@ -60,7 +60,6 @@
     "logform": "^2.2.0",
     "mailgun.js": "^3.7.3",
     "ms": "^2.1.3",
-    "mysql": "^2.18.1",
     "mysql2": "^2.2.5",
     "nats": "^2.1.0",
     "nestjs-general-interceptor": "^1.0.4",

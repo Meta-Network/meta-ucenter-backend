@@ -51,14 +51,14 @@ import { configPath } from './constants';
       useFactory: async (configService: ConfigService) => ({
         type: 'mysql',
         host: configService.get<string>('db.host'),
-        ssl: {
+        ssl: configService.get<boolean>('db.enableSSL') && {
           ca: fs
             .readFileSync(join(configPath, 'rds-ca-2019-root.pem'), 'utf8')
             .toString(),
         },
         port: configService.get<number>('db.port'),
         connectTimeout: 60 * 60 * 1000,
-        acquireTimeout: 60 * 60 * 1000,
+        // acquireTimeout: 60 * 60 * 1000, // MySQL2 Node.js Driver not support, see: https://github.com/sidorares/node-mysql2/issues/673
         username: configService.get<string>('db.username'),
         password: configService.get<string>('db.password'),
         database: configService.get<string>('db.database'),
