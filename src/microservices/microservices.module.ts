@@ -33,6 +33,7 @@ import { MicroservicesService } from './microservices.service';
     ]),
   ],
   providers: [MicroservicesService],
+  controllers: [MicroservicesController],
   exports: [MicroservicesService],
 })
 export class MicroservicesModule {}
