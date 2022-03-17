@@ -1,20 +1,20 @@
 import { Controller, HttpStatus, Logger } from '@nestjs/common';
 import { EventPattern, MessagePattern, Payload } from '@nestjs/microservices';
-import { UsersService } from './users/users.service';
-import { InvitationService } from './invitation/invitation.service';
-import { SocialAuthService } from './social-auth/social-auth.service';
+import { UsersService } from '../users/users.service';
+import { InvitationService } from '../invitation/invitation.service';
+import { SocialAuthService } from '../social-auth/social-auth.service';
 import { MetaInternalResult, ServiceCode } from '@metaio/microservice-model';
-import { Invitation } from './entities/Invitation.entity';
-import { ConfigService } from './config/config.service';
-import { User } from './entities/User.entity';
-import { CreateInvitationDto } from './invitation/dto/create-invitation.dto';
-import { UpdateInvitationDto } from './invitation/dto/update-invitation.dto';
+import { Invitation } from '../entities/Invitation.entity';
+import { ConfigService } from '../config/config.service';
+import { User } from '../entities/User.entity';
+import { CreateInvitationDto } from '../invitation/dto/create-invitation.dto';
+import { UpdateInvitationDto } from '../invitation/dto/update-invitation.dto';
 import { In } from 'typeorm';
 import dayjs from 'dayjs';
 
 @Controller()
-export class AppMsController {
-  private readonly logger = new Logger(AppMsController.name);
+export class MicroservicesController {
+  private readonly logger = new Logger(MicroservicesController.name);
   constructor(
     private readonly usersService: UsersService,
     private readonly invitationService: InvitationService,

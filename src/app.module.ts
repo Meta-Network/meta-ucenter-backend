@@ -1,21 +1,19 @@
 import { Module } from '@nestjs/common';
 import configuration from './config/configuration';
-import { AppService } from './app.service';
 import { AppController } from './app.controller';
-import { AppMsController } from './app.ms.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { StorageModule } from './storage/storage.module';
 import { UsersModule } from './users/users.module';
 import { AccountsModule } from './accounts/accounts.module';
 import { SocialAuthModule } from './social-auth/social-auth.module';
 import { InvitationModule } from './invitation/invitation.module';
+import { MicroservicesModule } from './microservices/microservices.module';
 import { TwoFactorAuthModule } from './two-factor-auth/two-factor-auth.module';
 import { AccountsTokenModule } from './accounts/accounts-token/accounts-token.module';
 import { AccountsEmailModule } from './accounts/accounts-email/accounts-email.module';
 import { AccountsMetamaskModule } from './accounts/accounts-metamask/accounts-metamask.module';
 import { AccountsWebauthnModule } from './accounts/accounts-webauthn/accounts-webauthn.module';
 import { InvitationHandlerModule } from './invitation-handler/invitation-handler.module';
-import { ClientProviderOptions, ClientsModule } from '@nestjs/microservices';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
@@ -27,24 +25,6 @@ import { configPath } from './constants';
   imports: [
     ConfigModule.forRoot(configuration),
     EventEmitterModule.forRoot(),
-    ClientsModule.registerAsync([
-      {
-        name: 'NETWORK_MS_CLIENT',
-        imports: [ConfigModule],
-        useFactory: async (configService: ConfigService) =>
-          configService.get<ClientProviderOptions>(
-            'microservice.clients.network',
-          ),
-        inject: [ConfigService],
-      },
-      {
-        name: 'CMS_MS_CLIENT',
-        imports: [ConfigModule],
-        useFactory: async (configService: ConfigService) =>
-          configService.get<ClientProviderOptions>('microservice.clients.cms'),
-        inject: [ConfigService],
-      },
-    ]),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -80,8 +60,8 @@ import { configPath } from './constants';
     AccountsWebauthnModule,
     AccountsMetamaskModule,
     InvitationHandlerModule,
+    MicroservicesModule,
   ],
-  controllers: [AppController, AppMsController],
-  providers: [AppService],
+  controllers: [AppController],
 })
 export class AppModule {}

@@ -27,8 +27,8 @@ db:
   enableSSL: true
 
 jwt:
-  access_token_name:
-  refresh_token_name:
+  access_token_name: 'ucenter_access_token'
+  refresh_token_name: 'ucenter_refresh_token'
   access_token_expires: '20m'
   refresh_token_expires: '30d'
   issuer:

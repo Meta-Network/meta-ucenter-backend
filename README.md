@@ -34,11 +34,8 @@ If you're running in **docker-compose**, you need to setup these files within do
 Here's how to generate JWT key files:
 
 ```bash
-# Generate RSA Key for JWT signing
-$ openssl genrsa -out ./config/JWT_PRIVATE_KEY.pem 1024
-
-# Get RSA Public Key from the private key
-$ openssl rsa -in ./config/JWT_PRIVATE_KEY.pem -pubout > ./config/JWT_PUBLIC_KEY.pub
+# Generate RSA Key for JWT signing and get RSA Public Key from the private key
+$ yarn run keygen
 
 # development
 $ yarn run start
