@@ -1,10 +1,9 @@
 {
-  "name": "ucenter-backend",
+  "name": "meta-ucenter-backend",
   "version": "1.1.0",
   "description": "",
-  "author": "",
-  "private": true,
-  "license": "UNLICENSED",
+  "author": "Meta Network <noreply@metanetwork.online>",
+  "license": "MIT",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
