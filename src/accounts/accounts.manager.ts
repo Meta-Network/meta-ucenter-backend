@@ -11,10 +11,9 @@ export class AccountsManager {
     private readonly verify: AccountsVerifier,
   ) {}
 
-  async signup(accountDto: any, signature: string) {
+  async signup(accountDto: any) {
     return await this.accountsService.signup(
       accountDto,
-      signature,
       this.platform,
       this.verify,
     );

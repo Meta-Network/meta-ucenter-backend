@@ -2,17 +2,13 @@ import { User } from 'src/entities/User.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, Like, MoreThan, Repository } from 'typeorm';
 import {
+  BadRequestException,
+  HttpStatus,
   Injectable,
   Logger,
-  HttpStatus,
-  BadRequestException,
 } from '@nestjs/common';
-import Events from '../events';
 import { MetaInternalResult, ServiceCode } from '@metaio/microservice-model';
-import { InvitationService } from '../invitation/invitation.service';
-import { EventEmitter2 } from '@nestjs/event-emitter';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ConfigService } from '../config/config.service';
 
 @Injectable()
 export class UsersService {
@@ -20,9 +16,6 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
-    private configService: ConfigService,
-    private invitationService: InvitationService,
-    private eventEmitter: EventEmitter2,
   ) {}
 
   async findOne(uid: number, options = {}) {
@@ -63,17 +56,7 @@ export class UsersService {
     }
 
     await this.usersRepository.update(uid, { username });
-    const updatedUser = await this.usersRepository.findOne(uid);
-
-    const invitation = await this.invitationService.findOne({
-      invitee_user_id: uid,
-    });
-
-    this.eventEmitter.emit(Events.UserProfileModified, {
-      ...updatedUser,
-      inviter_user_id: invitation.inviter_user_id,
-    });
-    return updatedUser;
+    return await this.usersRepository.findOne(uid);
   }
 
   async getUserInfo(uid: number): Promise<User> {
@@ -82,23 +65,7 @@ export class UsersService {
 
   async update(uid: number, updateUserDto: UpdateUserDto): Promise<User> {
     await this.usersRepository.update(uid, updateUserDto);
-    const updatedUser = await this.usersRepository.findOne(uid);
-
-    const invitation = await this.invitationService.findOne({
-      invitee_user_id: uid,
-    });
-    const userProfileModified = {
-      ...updatedUser,
-      inviter_user_id: invitation?.inviter_user_id ?? 0,
-    };
-    this.logger.log(
-      'emit Event UserProfileModified',
-      JSON.stringify(updatedUser),
-    );
-
-    this.eventEmitter.emit(Events.UserProfileModified, userProfileModified);
-
-    return updatedUser;
+    return await this.usersRepository.findOne(uid);
   }
 
   async save(saveParams = {}): Promise<User> {
@@ -127,20 +94,6 @@ export class UsersService {
     } else {
       result.statusCode = HttpStatus.BAD_REQUEST;
       result.message = 'Query conditions not found.';
-    }
-
-    if (result.data) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      result.data = await Promise.all(
-        result.data.map(async (user) => {
-          const invitation = await this.invitationService.findOne({
-            invitee_user_id: user.id,
-          });
-
-          return { ...user, inviter_user_id: invitation?.inviter_user_id ?? 0 };
-        }),
-      );
     }
 
     return result as MetaInternalResult<(User & { inviter_user_id: string })[]>;

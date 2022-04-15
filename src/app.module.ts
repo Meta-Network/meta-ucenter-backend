@@ -6,14 +6,10 @@ import { StorageModule } from './storage/storage.module';
 import { UsersModule } from './users/users.module';
 import { AccountsModule } from './accounts/accounts.module';
 import { SocialAuthModule } from './social-auth/social-auth.module';
-import { InvitationModule } from './invitation/invitation.module';
 import { MicroservicesModule } from './microservices/microservices.module';
-import { TwoFactorAuthModule } from './two-factor-auth/two-factor-auth.module';
 import { AccountsTokenModule } from './accounts/accounts-token/accounts-token.module';
-import { AccountsEmailModule } from './accounts/accounts-email/accounts-email.module';
 import { AccountsMetamaskModule } from './accounts/accounts-metamask/accounts-metamask.module';
 import { AccountsWebauthnModule } from './accounts/accounts-webauthn/accounts-webauthn.module';
-import { InvitationHandlerModule } from './invitation-handler/invitation-handler.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
@@ -52,14 +48,10 @@ import { configPath } from './constants';
     ConfigModule,
     StorageModule,
     AccountsModule,
-    InvitationModule,
     SocialAuthModule,
-    TwoFactorAuthModule,
-    AccountsEmailModule,
     AccountsTokenModule,
-    AccountsWebauthnModule,
+    // AccountsWebauthnModule,
     AccountsMetamaskModule,
-    InvitationHandlerModule,
     MicroservicesModule,
   ],
   controllers: [AppController],

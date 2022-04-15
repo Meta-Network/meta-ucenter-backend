@@ -36,11 +36,6 @@ webauthn:
 spider_platform_allowlist:
   - 'matataki'
 
-invitation:
-  new_when_created_user: 3
-  new_when_occupied_hex_grids: 3
-  new_when_created_meta_space: 3
-
 user:
   get_vcode_times_limit_enabled: true
   get_vcode_times_ttl: 7200

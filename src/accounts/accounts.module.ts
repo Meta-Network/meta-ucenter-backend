@@ -5,7 +5,6 @@ import { UsersModule } from '../users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AccountsService } from './accounts.service';
 import { JWTCookieHelper } from './jwt-cookie-helper';
-import { InvitationModule } from '../invitation/invitation.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { AccountsController } from './accounts.controller';
 
@@ -13,7 +12,6 @@ import { AccountsController } from './accounts.controller';
   imports: [
     AuthModule,
     UsersModule,
-    InvitationModule,
     TypeOrmModule.forFeature([Account]),
     EventEmitterModule.forRoot(),
   ],
