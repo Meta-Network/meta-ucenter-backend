@@ -58,8 +58,8 @@ export class AccountsWebauthnController {
     );
   }
 
-  @Post('signup/:signature')
-  @ApiOperation({ summary: '以 WebAuthN 注册账号，需要邀请码' })
+  @Post('signup')
+  @ApiOperation({ summary: '以 WebAuthN 注册账号' })
   @ApiCreatedResponse({
     description: '返回登录的用户信息。并在 Cookies 中写入 access_token',
   })
@@ -67,13 +67,11 @@ export class AccountsWebauthnController {
     description: '传入的表单参数不正确或无效',
   })
   async signup(
-    @Param('signature') signature: string,
     @Res({ passthrough: true }) res: Response,
     @Body() accountsWebauthnDto: AccountsWebAuthNDto,
   ): Promise<{ user: User; account: Account }> {
     const { user, account, tokens } = await this.accountsWebauthnService.signup(
       accountsWebauthnDto,
-      signature,
     );
 
     await this.jwtCookieHelper.JWTCookieWriter(res, tokens);

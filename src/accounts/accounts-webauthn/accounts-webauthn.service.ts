@@ -153,14 +153,13 @@ export class AccountsWebauthnService {
     };
   }
 
-  async signup(accountsWebAuthNDto: AccountsWebAuthNDto, signature) {
+  async signup(accountsWebAuthNDto: AccountsWebAuthNDto) {
     const { credentialID, credentialPublicKey } = await this.verifyForSignup(
       accountsWebAuthNDto,
     );
 
     const signupResult = await this.accountsService.signup(
       accountsWebAuthNDto,
-      signature,
       'webauthn',
       // empty verify since we use it above to save the return result
       // eslint-disable-next-line @typescript-eslint/no-empty-function

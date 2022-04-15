@@ -31,7 +31,7 @@ export class AccountsMetamaskService {
       throw new BadRequestException('Invalid verification code.');
     }
 
-    const message = `\x19Ethereum Signed Message:\n${nonce.length}${nonce}`;
+    const message = `\x19Ethereum Signed Message:\n Code Length: ${nonce.length}; Code: ${nonce}`;
 
     // We now are in possession of msg, publicAddress and signature. We
     // will use a helper from eth-sig-util to extract the address from the signature

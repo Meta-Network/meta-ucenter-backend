@@ -1,6 +1,8 @@
 import {
   Body,
   Controller,
+  HttpCode,
+  HttpStatus,
   Logger,
   Param,
   Post,
@@ -49,8 +51,8 @@ export class AccountsMetamaskController {
     return { code };
   }
 
-  @Post('signup/:signature')
-  @ApiOperation({ summary: '以 MetaMask 钱包注册账号，需要邀请码' })
+  @Post('signup')
+  @ApiOperation({ summary: '以 MetaMask 钱包注册账号' })
   @ApiCreatedResponse({
     description: '返回登录的用户信息。并在 Cookies 中写入 access_token',
   })
@@ -58,13 +60,11 @@ export class AccountsMetamaskController {
     description: '传入的表单参数不正确或无效',
   })
   async signup(
-    @Param('signature') signature: string,
     @Res({ passthrough: true }) res: Response,
     @Body() accountsMetaMaskDto: AccountsMetaMaskDto,
   ): Promise<{ user: User; account: Account }> {
     const { user, account, tokens } = await this.accountsManager.signup(
       accountsMetaMaskDto,
-      signature,
     );
 
     await this.jwtCookieHelper.JWTCookieWriter(res, tokens);
@@ -72,6 +72,7 @@ export class AccountsMetamaskController {
   }
 
   @Post('login')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '以 MetaMask 钱包登录到现有账号' })
   @ApiCreatedResponse({
     description: '返回登录的用户信息。并在 Cookies 中写入 access_token',

@@ -13,7 +13,6 @@ import { User } from 'src/entities/User.entity';
 import { Account } from 'src/entities/Account.entity';
 import { AuthService } from 'src/auth/auth.service';
 import { UsersService } from 'src/users/users.service';
-import { InvitationService } from 'src/invitation/invitation.service';
 import { VerifyExistsDto } from './dto/verify-exists.dto';
 import { AccountsVerifier } from './accounts.verifier';
 import Events from '../events';
@@ -27,7 +26,6 @@ export class AccountsService {
     private readonly authService: AuthService,
     private readonly usersService: UsersService,
     private readonly configService: ConfigService,
-    private readonly invitationService: InvitationService,
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
@@ -98,22 +96,8 @@ export class AccountsService {
     return await this.save({ ...userAccountDto, user_id: userId });
   }
 
-  async signup(
-    accountDto: any,
-    signature: string,
-    platform: Platforms,
-    verify: AccountsVerifier,
-  ) {
+  async signup(accountDto: any, platform: Platforms, verify: AccountsVerifier) {
     await verify(accountDto);
-
-    const invitation = await this.invitationService.findOne({ signature });
-    if (!invitation) {
-      throw new BadRequestException('Invitation does not exist.');
-    }
-
-    if (invitation.invitee_user_id) {
-      throw new BadRequestException('Invitation is already used.');
-    }
 
     const userAccountData = {
       account_id: accountDto.account,
@@ -129,9 +113,6 @@ export class AccountsService {
     }
 
     const { user, userAccount } = await this.initUser(userAccountData);
-
-    invitation.invitee_user_id = user.id;
-    await this.invitationService.update(invitation);
 
     const tokens: JWTTokens = await this.authService.signLoginJWT(
       user,

@@ -11,7 +11,6 @@ import {
   AfterUpdate,
   Index,
 } from 'typeorm';
-import { TwoFactorAuth } from './TwoFactorAuth.entity';
 import { IsOptional, IsUrl, Length, Matches } from 'class-validator';
 
 @Entity()
@@ -42,22 +41,4 @@ export class User {
   @Index()
   @UpdateDateColumn()
   updated_at: Date;
-
-  @OneToMany(() => TwoFactorAuth, (twa) => twa.user, { eager: true })
-  @JoinTable()
-  twoFactors: TwoFactorAuth[];
-
-  // it should be computed by the fn below:
-  // by default it is false.
-  is2FAEnabled = false;
-
-  // update in object when load inserted or update
-  // no DB writing for this.
-  @AfterLoad()
-  @AfterInsert()
-  @AfterUpdate()
-  @IsOptional()
-  keepingTrackOf2FAStatus(): void {
-    if (this.twoFactors) this.is2FAEnabled = this.twoFactors.length > 0;
-  }
 }

@@ -13,11 +13,6 @@ import { CurrentUser } from '../utils/user.decorator';
 import { UsersService } from './users.service';
 import { JWTAuthGuard } from 'src/auth/jwt.guard';
 import { JWTDecodedUser } from '../type';
-import { TwoFactorAuthService } from 'src/two-factor-auth/two-factor-auth.service';
-import {
-  BindTwoFactorDto,
-  VerifyTwoFactorDto,
-} from './dto/bind-two-factor.dto';
 import {
   ApiTags,
   ApiOperation,
@@ -36,10 +31,7 @@ import { ValidateUsernameDto } from './dto/validate-username.dto';
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
-  constructor(
-    private usersService: UsersService,
-    private readonly tfaService: TwoFactorAuthService,
-  ) {}
+  constructor(private usersService: UsersService) {}
 
   @Get('me')
   @UseGuards(JWTAuthGuard)
@@ -99,48 +91,5 @@ export class UsersController {
   ): Promise<{ result: User[]; total: number }> {
     const { options, ...body } = searchUserDto;
     return this.usersService.search(body, options);
-  }
-
-  @UseGuards(JWTAuthGuard)
-  @Get('me/twoFactor')
-  async getMy2FA(@CurrentUser() user: JWTDecodedUser) {
-    return await this.tfaService.list2FAOf(user.id);
-  }
-
-  @UseGuards(JWTAuthGuard)
-  @Post('/twoFactor')
-  async bindTwoFactor(
-    @CurrentUser() user: JWTDecodedUser,
-    @Body() body: BindTwoFactorDto,
-  ) {
-    return await this.tfaService.bind2FA(body.type, { id: user.id });
-  }
-
-  @UseGuards(JWTAuthGuard)
-  @Post('/twoFactor/verify')
-  async verifyTwoFactor(
-    @CurrentUser() user: JWTDecodedUser,
-    @Body() body: VerifyTwoFactorDto,
-  ) {
-    const isPassed = await this.tfaService.verify(
-      body.type,
-      user.id,
-      body.code,
-    );
-    return { isPassed };
-  }
-
-  @UseGuards(JWTAuthGuard)
-  @Post('/twoFactor/enable')
-  async enableTwoFactor(
-    @CurrentUser() user: JWTDecodedUser,
-    @Body() body: VerifyTwoFactorDto,
-  ) {
-    const isPassed = await this.tfaService.enable2FA(
-      body.type,
-      user.id,
-      body.code,
-    );
-    return { isPassed };
   }
 }
