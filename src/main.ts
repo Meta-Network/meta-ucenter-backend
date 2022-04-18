@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { NotAcceptableException, ValidationPipe } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { TransformInterceptor } from 'nestjs-general-interceptor';
@@ -8,7 +8,6 @@ import { AppModule } from './app.module';
 import { ConfigService } from 'src/config/config.service';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
-import formCors from 'form-cors';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -23,32 +22,24 @@ async function bootstrap() {
     }),
   );
 
-  // with this option, we could know is protocol https or http'
-  // for 'social-auth' callback method
+  app.useGlobalInterceptors(new TransformInterceptor());
+
+  // after set this option we can know the requested protocol is https or http
+  // for 'social-auth' callback method to keep the protocol
   app.set('trust proxy');
 
   app.use(helmet());
   app.use(cookieParser());
-  app.use(
-    formCors({
-      allowList: configService.get<string[]>('cors.origins'),
-      exception: new NotAcceptableException('This request is not allowed.'),
-    }),
-  );
 
-  app.useGlobalInterceptors(new TransformInterceptor());
+  let corsOrigins: boolean | string[] =
+    configService.get<string[]>('cors.origins');
+  if (corsOrigins.includes('*')) {
+    corsOrigins = true;
+  }
   app.enableCors({
     methods: 'POST, PUT, GET, OPTIONS, DELETE, PATCH, HEAD',
-    origin: configService.get<string[]>('cors.origins'),
+    origin: corsOrigins,
     credentials: true,
-  });
-
-  app.use((req, res, next) => {
-    res.header(
-      'Access-Control-Allow-Methods',
-      'POST, PUT, GET, OPTIONS, DELETE, PATCH, HEAD',
-    );
-    next();
   });
 
   const swaggerEnabled = configService.get<boolean>('swagger.enabled');
